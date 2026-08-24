@@ -4,6 +4,11 @@
   "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-05-08",
   "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": true,
+  "secrets": {
+    "required": ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"],
+  },
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist",

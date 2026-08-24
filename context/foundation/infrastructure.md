@@ -6,8 +6,8 @@ runner_up: Render
 context_type: mvp
 tech_stack:
   language: TypeScript
-  framework: Astro 6.3.1 with React 19
-  runtime: Cloudflare Workers via @astrojs/cloudflare 13.5.0
+  framework: Astro 7.2.4 with React 19
+  runtime: Cloudflare Workers via @astrojs/cloudflare 14.2.3
 ---
 
 ## Recommendation
@@ -16,7 +16,7 @@ tech_stack:
 
 Cloudflare Workers is the only candidate that runs the repository's existing Astro adapter and Wrangler configuration without a runtime migration. It leads after weighting the current stack, the equal cost-versus-DX preference, the lack of platform familiarity, the single-region requirement, and the uncertainty around future persistent connections. Render is the runner-up because it offers persistent Node processes and predictable pricing, but it requires replacing the Cloudflare adapter and paying for an always-on instance to meet the two-second briefing target.
 
-The target is Workers, not Pages. Astro 6 with `@astrojs/cloudflare` 13 deploys full-stack applications to Workers; Pages support was removed from this adapter generation. Cloudflare recommends Workers Static Assets for new projects. Evidence: [Astro Cloudflare adapter](https://v6.docs.astro.build/en/guides/integrations-guide/cloudflare/) and [Workers best practices](https://developers.cloudflare.com/workers/best-practices/workers-best-practices/).
+The target is Workers, not Pages. Astro 7 with `@astrojs/cloudflare` 14 deploys full-stack applications to Workers; Pages support is not available in this adapter generation. Cloudflare recommends Workers Static Assets for new projects. Evidence: [Astro Cloudflare adapter](https://docs.astro.build/en/guides/integrations-guide/cloudflare/) and [Workers best practices](https://developers.cloudflare.com/workers/best-practices/workers-best-practices/).
 
 ## Platform Comparison
 
@@ -31,11 +31,11 @@ Pass = 2, Partial = 1, Fail = 0. CLI maintenance, managed operation, and stable 
 | Netlify            | Partial   | Pass                 | Pass                | Pass              | Pass              |     9 |
 | Fly.io             | Pass      | Partial              | Pass                | Pass              | Partial           |     8 |
 
-**Cloudflare Workers.** Exact stack fit breaks the scoring tie with Render. Wrangler 4.90.0 provides deterministic deploy, version listing, rollback, secrets, and log-tail commands. Static asset requests are free; dynamic requests may fit the free tier, but SSR/auth commonly makes the $5/month paid plan a safer budget. Workers cannot host an arbitrary always-on process, but GA Queues, Workflows, Durable Objects, and WebSockets cover likely future async or realtime needs. Official docs expose Markdown and `llms.txt`, and Cloudflare provides managed MCP servers whose maturity is not explicitly labelled. Evidence: [pricing](https://developers.cloudflare.com/workers/platform/pricing/), [limits](https://developers.cloudflare.com/workers/platform/limits/), and [agent-readable docs](https://developers.cloudflare.com/docs-for-agents/).
+**Cloudflare Workers.** Exact stack fit breaks the scoring tie with Render. Wrangler 4.125.0 provides deterministic deploy, version listing, rollback, secrets, and log-tail commands. Static asset requests are free; dynamic requests may fit the free tier, but SSR/auth commonly makes the $5/month paid plan a safer budget. Workers cannot host an arbitrary always-on process, but GA Queues, Workflows, Durable Objects, and WebSockets cover likely future async or realtime needs. Official docs expose Markdown and `llms.txt`, and Cloudflare provides managed MCP servers whose maturity is not explicitly labelled. Evidence: [pricing](https://developers.cloudflare.com/workers/platform/pricing/), [limits](https://developers.cloudflare.com/workers/platform/limits/), and [agent-readable docs](https://developers.cloudflare.com/docs-for-agents/).
 
-**Render.** Render scores well operationally and supports long-lived Node processes, WebSockets, workers, managed Postgres, and a GA MCP server. KeepInTouch would need to migrate to the Astro 6-compatible Node adapter and add a standalone start command. The free service sleeps and can take roughly one minute to wake, so the two-second briefing requirement implies the approximately $7/month Starter service. Evidence: [web services](https://render.com/docs/web-services), [free services](https://render.com/docs/free), and [MCP GA](https://render.com/changelog/render-mcp-server-is-now-generally-available).
+**Render.** Render scores well operationally and supports long-lived Node processes, WebSockets, workers, managed Postgres, and a GA MCP server. KeepInTouch would need to migrate to an Astro 7-compatible Node adapter and add a standalone start command. The free service sleeps and can take roughly one minute to wake, so the two-second briefing requirement implies the approximately $7/month Starter service. Evidence: [web services](https://render.com/docs/web-services), [free services](https://render.com/docs/free), and [MCP GA](https://render.com/changelog/render-mcp-server-is-now-generally-available).
 
-**Vercel.** Vercel offers excellent CLI, preview, rollback, and documentation support, and its function duration can accommodate the 15–120-second extraction window. It requires replacing the Cloudflare adapter with the Astro 6-compatible Vercel adapter. The official MCP server remains Beta, WebSocket serving is Public Beta, first-party Postgres and KV products were sunset, and the compatible Astro 6 adapter requires ISR to remain disabled because its fix lands on the Astro 7 adapter line. Evidence: [deployment CLI](https://vercel.com/docs/projects/deploy-from-cli), [MCP](https://vercel.com/docs/agent-resources/vercel-mcp), and [Astro adapter advisory](https://github.com/withastro/astro/security/advisories/GHSA-x27w-589x-frm2).
+**Vercel.** Vercel offers excellent CLI, preview, rollback, and documentation support, and its function duration can accommodate the 15–120-second extraction window. It requires replacing and revalidating the Cloudflare adapter with the Astro 7-compatible Vercel adapter. The official MCP server remains Beta, WebSocket serving is Public Beta, and first-party Postgres and KV products were sunset. Evidence: [deployment CLI](https://vercel.com/docs/projects/deploy-from-cli) and [MCP](https://vercel.com/docs/agent-resources/vercel-mcp).
 
 **Railway.** Railway supports persistent processes and long HTTP requests, publishes agent-readable docs, and offers official MCP and Codex integrations. It requires migration to the Node adapter. Rollback has no dedicated CLI command and currently uses a raw GraphQL mutation, while database templates are hosted containers rather than fully managed DBaaS. Its Hobby plan starts at $5/month. Evidence: [pricing](https://docs.railway.com/pricing), [deployment API](https://docs.railway.com/integrations/api/manage-deployments), and [MCP](https://docs.railway.com/ai/mcp-server).
 
@@ -55,7 +55,7 @@ Render is the best escape hatch if KeepInTouch later requires an ordinary persis
 
 #### 3. Vercel
 
-Vercel is the strongest alternative serverless experience. It trails because it adds an adapter migration, its MCP and WebSocket capabilities are not GA, and the compatible Astro 6 adapter carries an ISR limitation that is absent from the current design.
+Vercel is the strongest alternative serverless experience. It trails because it adds an adapter migration and its MCP and WebSocket capabilities are not GA.
 
 ## Anti-Bias Cross-Check: Cloudflare Workers
 
@@ -75,7 +75,7 @@ Supabase was provisioned in a region poorly aligned with application traffic, so
 
 ### Unknown Unknowns
 
-- `@astrojs/cloudflare` 13 targets Workers. `wrangler pages deploy` is the wrong path for this repository even though an older foundation hint names Cloudflare Pages.
+- `@astrojs/cloudflare` 14 targets Workers. `wrangler pages deploy` is the wrong path for this repository.
 - Astro development and preview use `workerd`; a separate `wrangler dev` loop is unnecessary. `CLOUDFLARE_ENV` is selected at build time and must be handled consistently.
 - Versioned and aliased preview URLs are public by default. They need Cloudflare Access before previews contain real relationship data, and runtime logs are not currently available for preview URLs. Evidence: [Preview URLs](https://developers.cloudflare.com/workers/versions-and-deployments/preview-urls/).
 - The adapter can automatically provision a Cloudflare Images binding. Image behavior and cost should be made explicit before contact photos are introduced.
@@ -84,7 +84,7 @@ Supabase was provisioned in a region poorly aligned with application traffic, so
 ## Operational Story
 
 - **Preview deploys**: Connect `qstrowy/keep-in-touch` to Workers Builds, use `main` as the production branch, and enable non-production branch builds. Production uses `npm run build` then `npx wrangler deploy`; preview branches use `npx wrangler versions upload`, which creates stable branch and version preview URLs without promoting them. Protect preview URLs with Cloudflare Access before using real personal data. Preview URL runtime logs are currently unavailable. Evidence: [build branches](https://developers.cloudflare.com/workers/ci-cd/builds/build-branches/) and [build configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
-- **Secrets**: Store `SUPABASE_URL`, `SUPABASE_KEY`, and future LLM credentials as Workers Secrets, never as committed Wrangler variables. Declare required secret names in `wrangler.jsonc`, use `.dev.vars` only locally, and scope the deployment API token to this Worker/account without DNS or billing permissions. Rotate with `npx wrangler versions secret put <KEY>`, validate the preview version, and then deploy it; secret values remain hidden from Wrangler and the dashboard.
+- **Secrets**: Store `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, and future LLM credentials as Workers Secrets, never as committed Wrangler variables. Declare required secret names in `wrangler.jsonc`, use `.dev.vars` only locally, and scope the deployment API token to this Worker/account without DNS or billing permissions. Rotate with `npx wrangler versions secret put <KEY>`, validate the preview version, and then deploy it; secret values remain hidden from Wrangler and the dashboard.
 - **Rollback**: Run `npx wrangler deployments list --json`, select a known-good version, then execute `npx wrangler rollback <VERSION_ID> --message "reason"`. The code rollback is immediate across routes, but it cannot restore deleted/modified Cloudflare resources, Supabase schema, or data. Evidence: [Workers rollbacks](https://developers.cloudflare.com/workers/versions-and-deployments/rollbacks/).
 - **Approval**: An agent may build, lint, upload preview versions, and inspect logs unattended. Production promotion, secret rotation, custom-domain changes, database migrations, resource deletion, and rollback require explicit human approval. Dropping a database or deleting a Worker remains human-only.
 - **Logs**: Read GitHub pipeline state with `gh run list` and `gh run view <RUN_ID> --log-failed`. Read production runtime logs with `npx wrangler tail keep-in-touch --format json`, optionally filtering by `--status error`. Use the official Cloudflare observability MCP only for scoped, read-only discovery; do not grant it destructive permissions.
@@ -109,10 +109,10 @@ Supabase was provisioned in a region poorly aligned with application traffic, so
 
 ## Getting Started
 
-1. Authenticate the pinned Wrangler CLI: `npx wrangler login`. Keep `wrangler` at the repository's tested 4.90.0 version until an explicit dependency update.
+1. Authenticate the pinned Wrangler CLI: `npx wrangler login`. Keep `wrangler` at the repository's tested 4.125.0 version until an explicit dependency update.
 2. Confirm `wrangler.jsonc` names the Worker `keep-in-touch`, targets `@astrojs/cloudflare/entrypoints/server`, and enables preview URLs. Declare required secret names without placing their values in source control.
-3. Add deployment secrets with `npx wrangler secret put SUPABASE_URL` and `npx wrangler secret put SUPABASE_KEY`; add the LLM key the same way when its provider is selected. These commands deploy a new version, so perform them behind the human approval gate.
-4. Develop with `npm run dev`, which already runs the Astro 6 Cloudflare adapter through `workerd`. Validate with `npm run lint` and `npm run build`; do not introduce a redundant legacy `wrangler dev` workflow.
+3. Add deployment secrets with `npx wrangler secret put SUPABASE_URL` and `npx wrangler secret put SUPABASE_PUBLISHABLE_KEY`; add the LLM key the same way when its provider is selected. These commands deploy a new version, so perform them behind the human approval gate.
+4. Develop with `npm run dev`, which already runs the Astro 7 Cloudflare adapter through `workerd`. Validate with `npm run lint` and `npm run build`; do not introduce a redundant legacy `wrangler dev` workflow.
 5. Deploy with `npx wrangler deploy`, verify with `npx wrangler deployments list --json`, and inspect runtime behavior with `npx wrangler tail keep-in-touch --format json`.
 
 ## Out of Scope

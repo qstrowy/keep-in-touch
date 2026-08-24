@@ -17,7 +17,7 @@ Upcoming birthdays are required for the MVP. Gift suggestions based on interests
 
 ## Technology
 
-- Astro 6 with React 19 and strict TypeScript
+- Astro 7 with React 19 and strict TypeScript
 - Tailwind CSS 4
 - Supabase authentication and data services
 - Cloudflare Workers runtime and deployment
@@ -25,7 +25,7 @@ Upcoming birthdays are required for the MVP. Gift suggestions based on interests
 
 ## Local setup
 
-Use Node.js 22.14.0, as declared in `.nvmrc`.
+Use Node.js 22.23.2, as declared in `.nvmrc`.
 
 ```bash
 npm ci
@@ -34,7 +34,7 @@ cp .env.example .dev.vars
 npm run dev
 ```
 
-Set `SUPABASE_URL` and `SUPABASE_KEY` in `.env` and `.dev.vars`. To run Supabase locally, Docker and approximately 7 GB of memory are required:
+Set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` in `.env` and `.dev.vars`. To run Supabase locally, Docker and approximately 7 GB of memory are required:
 
 ```bash
 npx supabase start
@@ -69,7 +69,7 @@ context/         Product, stack, and change documentation
 
 ## Security status
 
-Never commit `.env`, `.env.*`, or `.dev.vars`; `.env.example` contains placeholders only. The bootstrap dependency audit reported known direct and transitive vulnerabilities. Review the full findings in [`context/changes/bootstrap-verification/verification.md`](context/changes/bootstrap-verification/verification.md) before any production deployment. No automatic dependency fixes have been applied.
+Never commit `.env`, `.env.*`, or `.dev.vars`; `.env.example` contains placeholders only. The historical bootstrap findings remain recorded in [`context/changes/bootstrap-verification/verification.md`](context/changes/bootstrap-verification/verification.md). The first infrastructure release upgraded the affected framework and tooling; `npm audit` is a required release gate.
 
 ## Deployment
 
