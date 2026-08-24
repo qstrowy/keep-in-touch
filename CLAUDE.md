@@ -15,7 +15,7 @@ Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` 
 
 ## Architecture
 
-**Astro 6 SSR app** with React 19 islands, Tailwind 4, Supabase auth, and shadcn/ui components. Deployed to Cloudflare Workers.
+**Astro 7 SSR app** with React 19 islands, Tailwind 4, Supabase auth, and shadcn/ui components. Deployed to Cloudflare Workers.
 
 ### Rendering mode
 
@@ -23,7 +23,7 @@ Full server-side rendering (`output: "server"` in astro.config.mjs). All pages a
 
 ### Auth flow
 
-- `src/lib/supabase.ts` — creates a Supabase SSR client using `@supabase/ssr` with cookie-based sessions. Uses `astro:env/server` for `SUPABASE_URL` and `SUPABASE_KEY` (server-only secrets declared in astro.config.mjs `env.schema`).
+- `src/lib/supabase.ts` — creates a Supabase SSR client using `@supabase/ssr` with cookie-based sessions. Uses `astro:env/server` for `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` (server-only values declared in astro.config.mjs `env.schema`).
 - `src/middleware.ts` — runs on every request, resolves the current user, attaches to `context.locals.user`. Redirects unauthenticated users away from routes listed in `PROTECTED_ROUTES`.
 - API endpoints: `src/pages/api/auth/{signin,signup,signout}.ts`
 - Auth pages: `src/pages/auth/{signin,signup,confirm-email}.astro`
@@ -43,12 +43,12 @@ Full server-side rendering (`output: "server"` in astro.config.mjs). All pages a
 
 ### Environment
 
-- Node.js v22.14.0 (see `.nvmrc`)
-- Env vars: `SUPABASE_URL`, `SUPABASE_KEY` (copy `.env.example` to `.env` for Node, or `.dev.vars` for Cloudflare local dev)
+- Node.js v22.23.2 (see `.nvmrc`)
+- Env vars: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` (copy `.env.example` to `.env` for Node, or `.dev.vars` for Cloudflare local dev)
 - Local Supabase: `npx supabase start` (requires Docker)
 - Cloudflare local dev: secrets go in `.dev.vars` (gitignored)
 - Deploy: `npx wrangler deploy` (requires Cloudflare account + `wrangler` auth)
 
 ## CI
 
-GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint + build on every push and PR to master. Requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets for the build step.
+GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint + build on every push and PR to `main`. Deployment is handled by Cloudflare Workers Builds, and GitHub Actions receives no production secrets.
