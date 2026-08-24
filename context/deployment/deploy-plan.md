@@ -3,10 +3,10 @@
 ## Release decision
 
 - Release the current starter as a protected infrastructure smoke release, not the KeepInTouch MVP.
-- Deploy `main` to Cloudflare Workers at `keep-in-touch.<account>.workers.dev`.
-- Protect production and preview URLs with Cloudflare Access using one-time PIN and the owner's exact email.
+- Deploy `main` to Cloudflare Workers at `keep-in-touch.qstrowy.workers.dev`.
+- Protect production and preview URLs with Cloudflare Access using the owner's Cloudflare account and a 24-hour session.
 - Use free Cloudflare and Supabase tiers only; require approval before any paid upgrade.
-- Create Supabase in Frankfurt (`eu-central-1`).
+- Use the existing Supabase project in Paris (`eu-west-3`); the dashboard's Europe Central selection resolved there.
 - Let Cloudflare Workers Builds deploy `main`; keep GitHub Actions validation-only.
 - Tag the verified deployment as `v0.0.1-infra.1`.
 
@@ -24,25 +24,38 @@
 
 ## Accounts and deployment
 
-- [ ] Create Cloudflare and Supabase accounts, enable MFA, and store recovery information securely.
-- [ ] Create the Supabase project in Frankfurt and retain its project URL and publishable key.
-- [ ] Create a placeholder Worker named `keep-in-touch`, then protect all traffic with a 24-hour Access policy allowing only the owner's exact email through one-time PIN.
-- [ ] Authenticate Wrangler and Supabase CLI and link the Supabase project.
-- [ ] Add `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` as Worker runtime secrets.
-- [ ] Upload and verify an undeployed `release-candidate` preview.
-- [ ] Merge the release branch only after local and GitHub CI gates pass.
-- [ ] Connect the existing Worker to `qstrowy/keep-in-touch`: production branch `main`, non-production builds enabled, `SKIP_DEPENDENCY_INSTALL=1`, build `npm ci && npm run build`, production deploy `npx wrangler deploy`, preview deploy `npx wrangler versions upload`.
-- [ ] Require explicit human approval before the first production deployment.
+- [x] Create Cloudflare and Supabase accounts on their free tiers.
+- [ ] Confirm MFA is enabled and recovery information is stored securely for both provider accounts.
+- [x] Select the existing `KeepInTouch` Supabase project in Paris and retain its project URL and publishable key.
+- [x] Create an inactive Worker named `keep-in-touch`, then protect preview and production traffic with a 24-hour Access policy for the owner's Cloudflare account.
+- [x] Authenticate Wrangler and Supabase CLI and link the Supabase project without exposing the database password.
+- [x] Add `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` as Worker runtime secrets.
+- [x] Upload and verify the undeployed `release-candidate` preview.
+- [x] Merge the release branch only after local and GitHub CI gates pass.
+- [x] Connect the existing Worker to `qstrowy/keep-in-touch`: production branch `main`, non-production builds enabled, `SKIP_DEPENDENCY_INSTALL=1`, build `npm ci && npm run build`, production deploy `npx wrangler deploy`, preview deploy `npx wrangler versions upload`.
+- [x] Receive explicit human approval before the first production deployment.
+- [x] Promote Worker version `3fbd3ed4-dfa9-4702-94db-5bf07422b679` to 100% and enable the protected `workers.dev` production route.
+
+## Deployment result
+
+- Production: `https://keep-in-touch.qstrowy.workers.dev`
+- Protected preview: `https://release-candidate-keep-in-touch.qstrowy.workers.dev`
+- Active Worker version: `3fbd3ed4-dfa9-4702-94db-5bf07422b679` at 100%
+- Rollback Worker version: `06f21921-9b99-4a26-afe6-eb9dd984c98e`
+- Supabase region: Paris (`eu-west-3`)
+- Access: all Worker traffic, Cloudflare account identity, 24-hour session
 
 ## Verification and release
 
 - [x] Pass `npm ci`, `npx astro sync`, `npm run lint`, `npm run build`, and `npm audit`.
 - [x] Confirm the generated deployment contains no KV or Images binding.
-- [ ] Confirm Access blocks unauthenticated visitors and admits only the configured email.
-- [ ] Confirm the landing page and static assets load, Supabase is configured, and `/dashboard` redirects to application sign-in.
-- [ ] Inspect deployment history and production error logs.
-- [ ] Confirm no secrets appear in Git, HTML, build logs, or GitHub Actions.
-- [ ] On failure, roll back to the known-good version and leave the release untagged.
+- [x] Confirm Access blocks unauthenticated visitors and admits the owner's configured Cloudflare account.
+- [x] Confirm the landing page and static assets load and that both Supabase runtime bindings are present.
+- [x] Confirm `/dashboard` redirects to application sign-in from an authenticated Access session.
+- [x] Inspect deployment history and record rollback version `06f21921-9b99-4a26-afe6-eb9dd984c98e`.
+- [x] Monitor production error-only logs during authenticated traffic; no Worker errors were emitted.
+- [x] Confirm no secret or service-role credentials appear in Git, HTML, build output, or GitHub Actions; only the intended publishable client key is used at runtime.
+- [x] Retain the inactive bootstrap version as the known rollback target; no release failure required rollback.
 - [ ] After successful verification, create and push annotated tag `v0.0.1-infra.1` at the deployed commit.
 
 ## Out of scope
