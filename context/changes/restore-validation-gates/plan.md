@@ -252,22 +252,22 @@ There is no data, API, resource, or deployment migration. Rollback before merge 
 
 #### Automated
 
-- [x] 2.1 Confirm the stale Supabase lint diagnostics disappear without source changes
-- [x] 2.2 Verify the effective Astro parser configuration retains typed linting
-- [x] 2.3 Run lint with no findings or parser compatibility notices
+- [x] 2.1 Confirm the stale Supabase lint diagnostics disappear without source changes — 27b7576
+- [x] 2.2 Verify the effective Astro parser configuration retains typed linting — 27b7576
+- [x] 2.3 Run lint with no findings or parser compatibility notices — 27b7576
 
 #### Manual
 
-- [x] 2.4 Confirm lint cleanliness comes from configuration rather than suppression
+- [x] 2.4 Confirm lint cleanliness comes from configuration rather than suppression — 27b7576
 
 ### Phase 3: Verify the Validation and Worker Contracts
 
 #### Automated
 
-- [ ] 3.1 Pass the complete local sync, lint, and production-build sequence
-- [ ] 3.2 Verify the fresh Worker output has Assets and no KV or Images bindings
-- [ ] 3.3 Confirm pinned toolchain, deployment configuration, and protected source files remain unchanged
+- [x] 3.1 Pass the complete local sync, lint, and production-build sequence
+- [x] 3.2 Verify the fresh Worker output has Assets and no KV or Images bindings
+- [x] 3.3 Confirm pinned toolchain, deployment configuration, and protected source files remain unchanged
 
 #### Manual
 
-- [ ] 3.4 Confirm GitHub CI passes and no deployment or Cloudflare mutation occurred
+- [x] 3.4 Confirm GitHub CI passes and no deployment or Cloudflare mutation occurred
