@@ -226,25 +226,25 @@ There is no existing relationship data to migrate. The IndexedDB schema starts v
 
 #### Automated
 
-- [x] 1.1 Add the local-store test command and development-only test dependencies
-- [x] 1.2 Publish the local-data privacy contract and generic relationship-data interface
-- [x] 1.3 Pass test setup, lint, and production build checks
+- [x] 1.1 Add the local-store test command and development-only test dependencies — 88bcb8c
+- [x] 1.2 Publish the local-data privacy contract and generic relationship-data interface — 88bcb8c
+- [x] 1.3 Pass test setup, lint, and production build checks — 88bcb8c
 
 #### Manual
 
-- [x] 1.4 Confirm the agreed MVP privacy boundary is documented without expanding scope
+- [x] 1.4 Confirm the agreed MVP privacy boundary is documented without expanding scope — 88bcb8c
 
 ### Phase 2: Implement the owner-scoped local vault
 
 #### Automated
 
-- [ ] 2.1 Implement native IndexedDB owner scope and generic local record operations
-- [ ] 2.2 Prove owner isolation, input validation, local re-open, and parent lookup with tests
-- [ ] 2.3 Pass the test, lint, and build suite without network or Supabase requirements
+- [x] 2.1 Implement native IndexedDB owner scope and generic local record operations
+- [x] 2.2 Prove owner isolation, input validation, local re-open, and parent lookup with tests
+- [x] 2.3 Pass the test, lint, and build suite without network or Supabase requirements
 
 #### Manual
 
-- [ ] 2.4 Confirm browser inspection shows relationship data only in local IndexedDB
+- [x] 2.4 Confirm browser inspection shows relationship data only in local IndexedDB
 
 ### Phase 3: Enforce deletion and remote-boundary guarantees
 
