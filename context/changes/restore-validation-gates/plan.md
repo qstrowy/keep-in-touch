@@ -240,25 +240,25 @@ There is no data, API, resource, or deployment migration. Rollback before merge 
 
 #### Automated
 
-- [x] 1.1 Confirm the active Node and npm runtime
-- [x] 1.2 Install and verify the exact locked dependency graph
-- [x] 1.3 Regenerate Astro environment types without manifest drift
+- [x] 1.1 Confirm the active Node and npm runtime — fb84863
+- [x] 1.2 Install and verify the exact locked dependency graph — fb84863
+- [x] 1.3 Regenerate Astro environment types without manifest drift — fb84863
 
 #### Manual
 
-- [x] 1.4 Confirm the clean baseline preceded any tracked workaround
+- [x] 1.4 Confirm the clean baseline preceded any tracked workaround — fb84863
 
 ### Phase 2: Restore Clean Lint Output
 
 #### Automated
 
-- [ ] 2.1 Confirm the stale Supabase lint diagnostics disappear without source changes
-- [ ] 2.2 Verify the effective Astro parser configuration retains typed linting
-- [ ] 2.3 Run lint with no findings or parser compatibility notices
+- [x] 2.1 Confirm the stale Supabase lint diagnostics disappear without source changes
+- [x] 2.2 Verify the effective Astro parser configuration retains typed linting
+- [x] 2.3 Run lint with no findings or parser compatibility notices
 
 #### Manual
 
-- [ ] 2.4 Confirm lint cleanliness comes from configuration rather than suppression
+- [x] 2.4 Confirm lint cleanliness comes from configuration rather than suppression
 
 ### Phase 3: Verify the Validation and Worker Contracts
 
