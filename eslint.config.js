@@ -75,6 +75,56 @@ const astroConfig = tseslint.config({
   },
 });
 
+const relationshipDataConfig = tseslint.config({
+  files: ["src/lib/relationship-data/**/*.ts"],
+  rules: {
+    "no-restricted-imports": [
+      "error",
+      {
+        paths: [
+          {
+            name: "@/lib/supabase",
+            message: "Relationship data must remain in the browser-local vault.",
+          },
+          {
+            name: "@supabase/ssr",
+            message: "Relationship data must remain in the browser-local vault.",
+          },
+          {
+            name: "@supabase/supabase-js",
+            message: "Relationship data must remain in the browser-local vault.",
+          },
+          {
+            name: "astro:env/server",
+            message: "Relationship data must not use server-only environment values.",
+          },
+        ],
+        patterns: [
+          {
+            group: ["@supabase/*", "@/pages/api/*"],
+            message: "Relationship data must not depend on remote persistence paths.",
+          },
+        ],
+      },
+    ],
+    "no-restricted-globals": [
+      "error",
+      { name: "fetch", message: "Relationship data must not call network APIs." },
+      { name: "XMLHttpRequest", message: "Relationship data must not call network APIs." },
+      { name: "WebSocket", message: "Relationship data must not call network APIs." },
+      { name: "EventSource", message: "Relationship data must not call network APIs." },
+    ],
+    "no-restricted-properties": [
+      "error",
+      {
+        object: "navigator",
+        property: "sendBeacon",
+        message: "Relationship data must not call network APIs.",
+      },
+    ],
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
@@ -82,5 +132,6 @@ export default tseslint.config(
   eslintPluginAstro.configs["flat/recommended"],
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
+  relationshipDataConfig,
   eslintPluginPrettier,
 );

@@ -238,22 +238,22 @@ There is no existing relationship data to migrate. The IndexedDB schema starts v
 
 #### Automated
 
-- [x] 2.1 Implement native IndexedDB owner scope and generic local record operations
-- [x] 2.2 Prove owner isolation, input validation, local re-open, and parent lookup with tests
-- [x] 2.3 Pass the test, lint, and build suite without network or Supabase requirements
+- [x] 2.1 Implement native IndexedDB owner scope and generic local record operations — bd65110
+- [x] 2.2 Prove owner isolation, input validation, local re-open, and parent lookup with tests — bd65110
+- [x] 2.3 Pass the test, lint, and build suite without network or Supabase requirements — bd65110
 
 #### Manual
 
-- [x] 2.4 Confirm browser inspection shows relationship data only in local IndexedDB
+- [x] 2.4 Confirm browser inspection shows relationship data only in local IndexedDB — bd65110
 
 ### Phase 3: Enforce deletion and remote-boundary guarantees
 
 #### Automated
 
-- [ ] 3.1 Implement and prove atomic cascade deletion
-- [ ] 3.2 Enforce the no-remote relationship-data module boundary
-- [ ] 3.3 Pass full validation and confirm auth, Supabase, and Worker configuration are unchanged
+- [x] 3.1 Implement and prove atomic cascade deletion
+- [x] 3.2 Enforce the no-remote relationship-data module boundary
+- [x] 3.3 Pass full validation and confirm auth, Supabase, and Worker configuration are unchanged
 
 #### Manual
 
-- [ ] 3.4 Confirm the final privacy boundary and absence of remote mutations
+- [x] 3.4 Confirm the final privacy boundary and absence of remote mutations

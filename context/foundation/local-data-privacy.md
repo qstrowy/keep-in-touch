@@ -15,6 +15,7 @@ This contract governs every feature that persists relationship data. It implemen
 
 - Relationship data is stored only in the active browser profile through the native IndexedDB API.
 - Every local vault operation requires the stable ID of the authenticated owner. A missing or blank owner ID is an error; an anonymous or shared default vault is prohibited.
+- Parent references use both a collection and record ID, so generic record IDs cannot collide across future collections.
 - The relationship-data module is browser-only. It does not import Supabase, server environment values, or server-only modules, and it does not call network APIs.
 
 ## Deletion guarantee
@@ -34,7 +35,7 @@ For this MVP, protection comes from the user's device and browser profile. The a
 
 ## Verification
 
-- `npm test` verifies owner scope and, once implemented, local-vault behavior and cascade deletion.
+- `npm test` verifies owner scope, local-vault behavior, cascade deletion, and failed-operation reporting.
 - `npm run lint` prevents relationship-data modules from importing remote persistence paths or calling network APIs.
 - `npm run build` confirms the application and generated Worker configuration remain valid without a data binding.
 

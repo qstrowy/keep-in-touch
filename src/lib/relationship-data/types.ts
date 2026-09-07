@@ -1,7 +1,10 @@
-export interface RelationshipRecord {
-  id: string;
+export interface RelationshipRecordReference {
   collection: string;
-  parentId?: string;
+  id: string;
+}
+
+export interface RelationshipRecord extends RelationshipRecordReference {
+  parent?: RelationshipRecordReference;
   payload: Record<string, unknown>;
 }
 
@@ -12,8 +15,8 @@ export interface StoredRelationshipRecord extends RelationshipRecord {
 export interface RelationshipVault {
   put(record: RelationshipRecord): Promise<void>;
   get(collection: string, id: string): Promise<StoredRelationshipRecord | null>;
-  listByParent(parentId: string): Promise<StoredRelationshipRecord[]>;
-  deleteCascade(parentId: string): Promise<void>;
+  listByParent(parent: RelationshipRecordReference): Promise<StoredRelationshipRecord[]>;
+  deleteCascade(root: RelationshipRecordReference): Promise<void>;
 }
 
 export interface RelationshipVaultOptions {
@@ -34,9 +37,9 @@ export class RelationshipVaultUnavailableError extends Error {
   }
 }
 
-export class RelationshipVaultOperationError extends Error {
-  constructor(operation: string) {
-    super(`The relationship-data ${operation} operation is not available yet.`);
-    this.name = "RelationshipVaultOperationError";
+export class RelationshipRecordNotFoundError extends Error {
+  constructor(reference: RelationshipRecordReference) {
+    super(`The ${reference.collection} record "${reference.id}" does not exist for this owner.`);
+    this.name = "RelationshipRecordNotFoundError";
   }
 }

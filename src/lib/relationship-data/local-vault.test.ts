@@ -2,7 +2,7 @@ import { IDBFactory } from "fake-indexeddb";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { createRelationshipVault } from "./local-vault";
-import { MissingRelationshipOwnerError, type RelationshipRecord } from "./types";
+import { MissingRelationshipOwnerError, RelationshipRecordNotFoundError, type RelationshipRecord } from "./types";
 
 const contactRecord: RelationshipRecord = {
   id: "contact-1",
@@ -50,16 +50,55 @@ describe("relationship local vault", () => {
     await ownerVault.put({
       id: "note-1",
       collection: "notes",
-      parentId: "contact-1",
+      parent: { collection: "contacts", id: "contact-1" },
       payload: { body: "Ask about the new role" },
     });
     await otherOwnerVault.put({
       id: "note-1",
       collection: "notes",
-      parentId: "contact-1",
+      parent: { collection: "contacts", id: "contact-1" },
       payload: { body: "Private to the second owner" },
     });
 
-    await expect(ownerVault.listByParent("contact-1")).resolves.toMatchObject([{ id: "note-1", ownerId: "owner-a" }]);
+    await expect(ownerVault.listByParent({ collection: "contacts", id: "contact-1" })).resolves.toMatchObject([
+      { id: "note-1", ownerId: "owner-a" },
+    ]);
+  });
+
+  it("atomically removes a root record and all of its descendants", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const otherOwnerVault = createRelationshipVault("owner-b", { idbFactory });
+
+    await ownerVault.put(contactRecord);
+    await ownerVault.put({
+      id: "note-1",
+      collection: "notes",
+      parent: { collection: "contacts", id: "contact-1" },
+      payload: { body: "Ask about the new role" },
+    });
+    await ownerVault.put({
+      id: "anchor-1",
+      collection: "anchors",
+      parent: { collection: "notes", id: "note-1" },
+      payload: { label: "New role" },
+    });
+    await otherOwnerVault.put(contactRecord);
+
+    await ownerVault.deleteCascade({ collection: "contacts", id: "contact-1" });
+
+    await expect(ownerVault.get("contacts", "contact-1")).resolves.toBeNull();
+    await expect(ownerVault.get("notes", "note-1")).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", "anchor-1")).resolves.toBeNull();
+    await expect(otherOwnerVault.get("contacts", "contact-1")).resolves.toMatchObject({ ownerId: "owner-b" });
+  });
+
+  it("reports a missing root as a failed deletion", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    await ownerVault.put(contactRecord);
+
+    await expect(ownerVault.deleteCascade({ collection: "contacts", id: "missing" })).rejects.toThrow(
+      RelationshipRecordNotFoundError,
+    );
+    await expect(ownerVault.get("contacts", "contact-1")).resolves.toMatchObject(contactRecord);
   });
 });
