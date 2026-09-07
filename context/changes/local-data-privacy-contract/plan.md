@@ -250,10 +250,10 @@ There is no existing relationship data to migrate. The IndexedDB schema starts v
 
 #### Automated
 
-- [x] 3.1 Implement and prove atomic cascade deletion
-- [x] 3.2 Enforce the no-remote relationship-data module boundary
-- [x] 3.3 Pass full validation and confirm auth, Supabase, and Worker configuration are unchanged
+- [x] 3.1 Implement and prove atomic cascade deletion — 9187685
+- [x] 3.2 Enforce the no-remote relationship-data module boundary — 9187685
+- [x] 3.3 Pass full validation and confirm auth, Supabase, and Worker configuration are unchanged — 9187685
 
 #### Manual
 
-- [x] 3.4 Confirm the final privacy boundary and absence of remote mutations
+- [x] 3.4 Confirm the final privacy boundary and absence of remote mutations — 9187685
