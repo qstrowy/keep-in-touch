@@ -264,10 +264,10 @@ There is no data, API, resource, or deployment migration. Rollback before merge 
 
 #### Automated
 
-- [x] 3.1 Pass the complete local sync, lint, and production-build sequence
-- [x] 3.2 Verify the fresh Worker output has Assets and no KV or Images bindings
-- [x] 3.3 Confirm pinned toolchain, deployment configuration, and protected source files remain unchanged
+- [x] 3.1 Pass the complete local sync, lint, and production-build sequence — 4305762
+- [x] 3.2 Verify the fresh Worker output has Assets and no KV or Images bindings — 4305762
+- [x] 3.3 Confirm pinned toolchain, deployment configuration, and protected source files remain unchanged — 4305762
 
 #### Manual
 
-- [x] 3.4 Confirm GitHub CI passes and no deployment or Cloudflare mutation occurred
+- [x] 3.4 Confirm GitHub CI passes and no deployment or Cloudflare mutation occurred — 4305762

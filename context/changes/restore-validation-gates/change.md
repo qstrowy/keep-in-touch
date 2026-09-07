@@ -1,7 +1,7 @@
 ---
 change_id: restore-validation-gates
 title: Restore validation gates
-status: implementing
+status: implemented
 created: 2026-09-07
 updated: 2026-09-07
 archived_at: null
