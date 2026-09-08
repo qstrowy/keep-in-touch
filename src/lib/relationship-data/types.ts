@@ -15,6 +15,7 @@ export interface StoredRelationshipRecord extends RelationshipRecord {
 export interface RelationshipVault {
   put(record: RelationshipRecord): Promise<void>;
   get(collection: string, id: string): Promise<StoredRelationshipRecord | null>;
+  listByCollection(collection: string): Promise<StoredRelationshipRecord[]>;
   listByParent(parent: RelationshipRecordReference): Promise<StoredRelationshipRecord[]>;
   deleteCascade(root: RelationshipRecordReference): Promise<void>;
 }

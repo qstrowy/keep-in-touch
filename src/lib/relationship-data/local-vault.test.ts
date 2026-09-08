@@ -43,6 +43,23 @@ describe("relationship local vault", () => {
     await expect(reopenedVault.get("contacts", "contact-1")).resolves.toMatchObject(contactRecord);
   });
 
+  it("lists only records in the requested collection for the active owner", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const otherOwnerVault = createRelationshipVault("owner-b", { idbFactory });
+
+    await ownerVault.put(contactRecord);
+    await ownerVault.put({
+      id: "note-1",
+      collection: "notes",
+      payload: { body: "Ask about the new role" },
+    });
+    await otherOwnerVault.put(contactRecord);
+
+    await expect(ownerVault.listByCollection("contacts")).resolves.toMatchObject([
+      { id: "contact-1", collection: "contacts", ownerId: "owner-a" },
+    ]);
+  });
+
   it("lists only the active owner's parent-linked records", async () => {
     const ownerVault = createRelationshipVault("owner-a", { idbFactory });
     const otherOwnerVault = createRelationshipVault("owner-b", { idbFactory });

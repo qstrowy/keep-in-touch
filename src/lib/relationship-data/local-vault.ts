@@ -43,6 +43,16 @@ export function createRelationshipVault(ownerId: string, options: RelationshipVa
       >;
       return requestResult<StoredRelationshipRecord | undefined>(request).then((record) => record ?? null);
     },
+    async listByCollection(collection) {
+      const db = await database;
+      const transaction = db.transaction(RECORDS_STORE, "readonly");
+      const request = transaction.objectStore(RECORDS_STORE).index(OWNER_INDEX).getAll(normalizedOwnerId) as IDBRequest<
+        StoredRelationshipRecord[]
+      >;
+      return requestResult<StoredRelationshipRecord[]>(request).then((records) =>
+        records.filter((record) => record.collection === collection),
+      );
+    },
     async listByParent(parent) {
       const db = await database;
       const transaction = db.transaction(RECORDS_STORE, "readonly");
