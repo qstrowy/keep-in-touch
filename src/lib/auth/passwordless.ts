@@ -10,6 +10,16 @@ export interface MagicLinkCodeExchange {
   exchangeCodeForSession(code: string): Promise<{ error: unknown }>;
 }
 
+export interface MagicLinkRequester {
+  signInWithOtp(input: {
+    email: string;
+    options: {
+      emailRedirectTo: string;
+      shouldCreateUser: true;
+    };
+  }): Promise<{ error: unknown }>;
+}
+
 export function isValidEmail(value: string): boolean {
   return EMAIL_PATTERN.test(value);
 }
@@ -31,6 +41,30 @@ export function signInErrorPath(message: string): string {
   return `${SIGN_IN_PATH}?error=${encodeURIComponent(message)}`;
 }
 
+export async function requestMagicLink(
+  email: string,
+  origin: string,
+  magicLinkRequester: MagicLinkRequester | null,
+): Promise<string> {
+  if (!magicLinkRequester) {
+    return signInErrorPath(MAGIC_LINK_REQUEST_ERROR);
+  }
+
+  try {
+    const { error } = await magicLinkRequester.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: magicLinkCallbackUrl(origin),
+        shouldCreateUser: true,
+      },
+    });
+
+    return error ? signInErrorPath(MAGIC_LINK_REQUEST_ERROR) : CHECK_EMAIL_PATH;
+  } catch {
+    return signInErrorPath(MAGIC_LINK_REQUEST_ERROR);
+  }
+}
+
 export async function completeMagicLinkSignIn(
   code: string | null,
   codeExchange: MagicLinkCodeExchange | null,
@@ -39,6 +73,10 @@ export async function completeMagicLinkSignIn(
     return signInErrorPath(MAGIC_LINK_RETRY_ERROR);
   }
 
-  const { error } = await codeExchange.exchangeCodeForSession(code);
-  return error ? signInErrorPath(MAGIC_LINK_RETRY_ERROR) : PRIVATE_START_PATH;
+  try {
+    const { error } = await codeExchange.exchangeCodeForSession(code);
+    return error ? signInErrorPath(MAGIC_LINK_RETRY_ERROR) : PRIVATE_START_PATH;
+  } catch {
+    return signInErrorPath(MAGIC_LINK_RETRY_ERROR);
+  }
 }

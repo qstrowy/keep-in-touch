@@ -22,6 +22,9 @@ pnpm-debug.log*
 .dev.vars
 .wrangler/
 
+# Supabase local runtime files
+supabase/.temp/
+
 # macOS-specific files
 .DS_Store
 

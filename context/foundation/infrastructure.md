@@ -89,6 +89,20 @@ Supabase was provisioned in a region poorly aligned with application traffic, so
 - **Approval**: An agent may build, lint, upload preview versions, and inspect logs unattended. Production promotion, secret rotation, custom-domain changes, database migrations, resource deletion, and rollback require explicit human approval. Dropping a database or deleting a Worker remains human-only.
 - **Logs**: Read GitHub pipeline state with `gh run list` and `gh run view <RUN_ID> --log-failed`. Read production runtime logs with `npx wrangler tail keep-in-touch --format json`, optionally filtering by `--status error`. Use the official Cloudflare observability MCP only for scoped, read-only discovery; do not grant it destructive permissions.
 
+## Passwordless authentication operation
+
+Before relying on hosted magic links, a human owner completes these external Supabase and Cloudflare steps. They are configuration changes, not repository changes, and require explicit approval.
+
+1. In Supabase Dashboard **Authentication → URL Configuration**, set the Site URL to `https://keep-in-touch.qstrowy.workers.dev` and allow these exact callback URLs:
+   - `https://keep-in-touch.qstrowy.workers.dev/api/auth/callback`
+   - `https://release-candidate-keep-in-touch.qstrowy.workers.dev/api/auth/callback`
+     Keep the allowlist limited to known, Cloudflare-Access-protected application origins; do not add wildcard or user-provided destinations.
+2. In Supabase Dashboard **Authentication → SMTP Settings**, configure and verify a production SMTP provider and sender identity. Keep SMTP credentials only in Supabase; do not place them in this repository, Worker configuration, or browser-accessible environment values.
+3. In an Access-authorized browser, request a sign-in link from the protected production URL or the stable preview URL. Open the received link in that same browser and confirm it reaches `/dashboard`; refresh once to confirm the session persists.
+4. Sign out, then retry a missing, expired, or already-used callback link. It must return to sign-in with generic retry guidance and no authenticated session. Record only the outcome in deployment notes—never a magic-link URL, session cookie, or email contents.
+
+Treat Site URL, redirect allowlist, SMTP, and Cloudflare Access policy changes as separate human-approved operational actions. The application deliberately has no caller-controlled post-login redirect.
+
 ## Risk Register
 
 | Risk                                                           | Source           | Likelihood | Impact | Mitigation                                                                                                          |

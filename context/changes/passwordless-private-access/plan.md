@@ -230,21 +230,21 @@ Existing password-created Supabase users can request a magic link to the same em
 
 #### Automated
 
-- [x] 2.1 Add the safe PKCE callback exchange and fixed dashboard destination
-- [x] 2.2 Redirect legacy sign-up and unify public navigation around sign-in
-- [x] 2.3 Pass lint and production build checks without changing deployment or local-data boundaries
+- [x] 2.1 Add the safe PKCE callback exchange and fixed dashboard destination — 82cd581
+- [x] 2.2 Redirect legacy sign-up and unify public navigation around sign-in — 82cd581
+- [x] 2.3 Pass lint and production build checks without changing deployment or local-data boundaries — 82cd581
 
 #### Manual
 
-- [x] 2.4 Confirm valid, invalid, protected, refreshed, and signed-out session behavior locally
+- [x] 2.4 Confirm valid, invalid, protected, refreshed, and signed-out session behavior locally — 82cd581
 
 ### Phase 3: Verify and prepare hosted authentication
 
 #### Automated
 
-- [ ] 3.1 Add focused passwordless validation and safe-redirect tests
-- [ ] 3.2 Document the hosted Supabase Auth setup without mutating external configuration
-- [ ] 3.3 Pass the complete test, lint, build, and protected-boundary validation suite
+- [x] 3.1 Add focused passwordless validation and safe-redirect tests
+- [x] 3.2 Document the hosted Supabase Auth setup without mutating external configuration
+- [x] 3.3 Pass the complete test, lint, build, and protected-boundary validation suite
 
 #### Manual
 
