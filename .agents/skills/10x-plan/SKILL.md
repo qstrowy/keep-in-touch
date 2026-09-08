@@ -88,8 +88,8 @@ Before any reading, identify what kinds of upstream artifacts the user passed in
 
 2. **Spawn initial research tasks to gather context** (skip or narrow based on Step 1.0):
    Before asking the user any questions, use your AI coding assistant to create parallel sub-agents to research:
-   - **Explore agent** (specify its role as "Explore") — find all files related to the task, search for patterns, trace code paths. Use for file discovery and codebase structure questions.
-   - **general-purpose agent** (specify its role as "general-purpose") — for deeper analysis that may require reading many files and synthesizing findings. Use for understanding complex systems.
+   - **Explore agent** (`subagent_type: "Explore"`) — find all files related to the task, search for patterns, trace code paths. Use for file discovery and codebase structure questions.
+   - **general-purpose agent** (`subagent_type: "general-purpose"`) — for deeper analysis that may require reading many files and synthesizing findings. Use for understanding complex systems.
 
    Example: spawn 2-3 Explore agents in parallel for different search dimensions (e.g., "find all files related to X", "find similar implementations of Y", "find prior decisions about Z in `context/changes/**/` and `context/archive/**/`").
 
@@ -278,15 +278,15 @@ After getting initial clarifications from the user, NOW is when you address the 
    - Read the specific files/directories they mention
    - Only proceed once you've verified the facts yourself
 
-3. **Create research tasks** using your AI assistant's task management features to track exploration (these appear in the user's status bar). Update them as research completes.
+3. **Create research tasks** using your AI coding assistant's task management features to track exploration (these appear in the user's status bar). Update them as research completes.
 
 4. **Spawn parallel sub-tasks for comprehensive research**:
    - Create multiple AI agents to research different aspects concurrently
    - Use the right agent type for each research need:
 
    **For codebase investigation:**
-   - **Explore** (specify its role as "Explore") — Fast file/pattern search, code structure analysis
-   - **general-purpose** (specify its role as "general-purpose") — Deep analysis requiring multi-step reasoning
+   - **Explore** (`subagent_type: "Explore"`) — Fast file/pattern search, code structure analysis
+   - **general-purpose** (`subagent_type: "general-purpose"`) — Deep analysis requiring multi-step reasoning
 
    **For historical context:**
    - **Explore** — Search `context/changes/**/research.md` and `context/changes/**/plan.md` (and the same paths under `context/archive/`) for related documents
@@ -673,7 +673,7 @@ Do this in Step 4 (right after the `change.md` → `planned` stamp). The lookup 
    - Include "what we're NOT doing"
 
 5. **Track Progress**:
-   - Use your AI assistant's task creation features to create planning tasks and update them as you progress
+   - Use your AI coding assistant's task management features to create planning tasks and mark them completed as you progress
    - Tasks appear in the user's status bar for visibility
    - Mark tasks completed as you finish research areas
 
@@ -738,7 +738,7 @@ Planning can be context-heavy due to research + iteration. Keep context efficien
   ```
   This lets `/10x-plan` reload the draft and continue iterating with full context available.
 
-## Example Question Probing by Feature Type
+## Example Probing by Feature Type
 
 ### Example 1: Software / UI Feature — MEDIUM complexity (e.g., Pagination)
 
@@ -750,6 +750,7 @@ Options:
 - "Inline spinner" (description: "Small spinner below existing content. · Strength: User keeps seeing current items, minimal UI work. · Tradeoff: Feels slower than skeleton — users see a generic spinner instead of content shape.")
 - "⭐ Recommended: Skeleton screens" (description: "Placeholder shapes matching item layout. · Strength: Perceived performance is 30-40% better — matches existing LoadingSkeleton component pattern. · Tradeoff: Requires a skeleton variant per item type; breaks if layout changes.")
 - "Full-page spinner" (description: "Replace content with spinner. · Strength: Simplest to implement — one component, no layout concerns. · Tradeoff: Blocks all interaction; feels broken on slow connections.")
+
 Ask the user: "How many items should this handle gracefully?"
 Header: "Scale"
 Options:
@@ -767,6 +768,7 @@ Options:
 - "⭐ Recommended: Build a working prototype" (description: "Learner produces a functional artifact using the techniques taught. · Strength: Forces genuine skill transfer — the artifact proves competence. Matches the 'Innovate' lesson format from 10xDevs3. · Tradeoff: Requires well-designed starter templates and clear acceptance criteria; takes 2-3x longer to prep.")
 - "Complete a guided exercise" (description: "Step-by-step walkthrough with expected output. · Strength: Low barrier — everyone finishes, builds confidence. · Tradeoff: May produce 'tutorial zombies' who can follow but not apply independently.")
 - "Pass a knowledge check" (description: "Quiz or code review proving conceptual understanding. · Strength: Fast to create, easy to grade at scale. · Tradeoff: Tests recognition not production — learner may understand but not be able to execute.")
+
 Ask the user: "How should this module handle different skill levels in the audience?"
 Header: "Levels"
 Options:
