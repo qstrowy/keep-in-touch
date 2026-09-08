@@ -242,10 +242,10 @@ Existing password-created Supabase users can request a magic link to the same em
 
 #### Automated
 
-- [x] 3.1 Add focused passwordless validation and safe-redirect tests
-- [x] 3.2 Document the hosted Supabase Auth setup without mutating external configuration
-- [x] 3.3 Pass the complete test, lint, build, and protected-boundary validation suite
+- [x] 3.1 Add focused passwordless validation and safe-redirect tests — 846bea0
+- [x] 3.2 Document the hosted Supabase Auth setup without mutating external configuration — 846bea0
+- [x] 3.3 Pass the complete test, lint, build, and protected-boundary validation suite — 846bea0
 
 #### Manual
 
-- [ ] 3.4 Confirm the hosted Auth runbook and production-or-preview magic-link flow
+- [x] 3.4 Confirm the hosted Auth runbook and production-or-preview magic-link flow — 846bea0
