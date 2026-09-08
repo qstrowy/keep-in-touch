@@ -218,25 +218,25 @@ Existing password-created Supabase users can request a magic link to the same em
 
 #### Automated
 
-- [x] 1.1 Replace password routes and forms with the email-only magic-link request flow
-- [x] 1.2 Align local Supabase callback configuration with the Astro development origin
-- [x] 1.3 Pass lint and production build checks after the request-flow replacement
+- [x] 1.1 Replace password routes and forms with the email-only magic-link request flow — c861365
+- [x] 1.2 Align local Supabase callback configuration with the Astro development origin — c861365
+- [x] 1.3 Pass lint and production build checks after the request-flow replacement — c861365
 
 #### Manual
 
-- [x] 1.4 Confirm neutral request feedback and one signed-out entry path
+- [x] 1.4 Confirm neutral request feedback and one signed-out entry path — c861365
 
 ### Phase 2: Exchange links into private sessions
 
 #### Automated
 
-- [ ] 2.1 Add the safe PKCE callback exchange and fixed dashboard destination
-- [ ] 2.2 Redirect legacy sign-up and unify public navigation around sign-in
-- [ ] 2.3 Pass lint and production build checks without changing deployment or local-data boundaries
+- [x] 2.1 Add the safe PKCE callback exchange and fixed dashboard destination
+- [x] 2.2 Redirect legacy sign-up and unify public navigation around sign-in
+- [x] 2.3 Pass lint and production build checks without changing deployment or local-data boundaries
 
 #### Manual
 
-- [ ] 2.4 Confirm valid, invalid, protected, refreshed, and signed-out session behavior locally
+- [x] 2.4 Confirm valid, invalid, protected, refreshed, and signed-out session behavior locally
 
 ### Phase 3: Verify and prepare hosted authentication
 
