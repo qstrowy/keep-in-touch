@@ -48,7 +48,7 @@ Here, the north star means the smallest end-to-end result that proves the produc
 | S-02 | create-first-person | create and view a person with a relationship circle and birthday | F-01, F-02, S-01 | FR-002 | done |
 | S-03 | maintain-and-delete-person | edit a person or delete them with all associated relationship data | S-02 | FR-002, Non-Functional Requirements | done |
 | S-04 | record-dated-interaction | save a dated free-text interaction for a person | F-01, F-02, S-02 | US-01, FR-003 | done |
-| S-05 | extracted-anchor-briefing | see an extracted open topic or follow-up in the person's later briefing | F-01, F-02, F-03, S-04 | US-01, FR-004, FR-007 | blocked |
+| S-05 | extracted-anchor-briefing | see an extracted open topic or follow-up in the person's later briefing | F-01, F-02, F-03, S-04 | US-01, FR-004, FR-007 | ready |
 | S-06 | manage-conversation-anchors | correct, dismiss, or resolve an extracted conversation anchor | S-05 | US-01, FR-005, FR-006 | proposed |
 | S-07 | view-upcoming-birthdays | see upcoming birthdays from saved people | S-02 | FR-008 | blocked |
 
@@ -60,7 +60,7 @@ Navigation aid — groups items that share a prerequisites chain. Canonical orde
 | --- | --- | --- | --- |
 | A | Access and people | `F-01` → `S-01` → `S-02` → `S-03` → `S-07` | Restores a safe delivery path, then establishes the people the core flow needs. |
 | B | Private interactions | `F-02` → `S-04` → `S-05` → `S-06` | Carries the shortest route from a saved note to a trustworthy reusable anchor. |
-| C | External extraction boundary | `F-03` | Joins Stream B at `S-05` once the provider decision is resolved. |
+| C | External extraction boundary | `F-03` | Joins Stream B at `S-05` now that the provider route is verified. |
 
 ## Baseline
 
@@ -110,8 +110,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Prerequisites:** F-02
 - **Parallel with:** S-01, S-02, S-03, S-04, S-07
 - **Blockers:** —
-- **Unknowns:**
-  - Which external processor demonstrably meets the PRD's no-retention, no-training, and data-minimization requirements? — Owner: user. Block: yes.
+- **Unknowns:** —
 - **Risk:** Choosing a processor during implementation without prior evidence could invalidate the privacy promise at the exact point the central product flow is introduced.
 - **Status:** done
 
@@ -173,10 +172,9 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Prerequisites:** F-01, F-02, F-03, S-04
 - **Parallel with:** S-03, S-07
 - **Blockers:** —
-- **Unknowns:**
-  - Which external processor demonstrably meets the PRD's no-retention, no-training, and data-minimization requirements? — Owner: user. Block: yes.
+- **Unknowns:** —
 - **Risk:** This is the first slice that proves the product is more useful than a manual journal, but shipping it before the privacy boundary is approved would undermine trust.
-- **Status:** blocked
+- **Status:** ready
 
 ### S-06: Correct and close conversation anchors
 
@@ -207,21 +205,20 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
 | --- | --- | --- | --- | --- |
-| F-01 | restore-validation-gates | Restore trustworthy lint and build validation | yes | Run `/10x-plan restore-validation-gates` |
-| F-02 | local-data-privacy-contract | Establish the local relationship-data privacy contract | yes | Run `/10x-plan local-data-privacy-contract` |
-| F-03 | private-extraction-contract | Approve a privacy-qualified extraction boundary | no | Resolve the extraction-provider question first |
-| S-01 | passwordless-private-access | Let the owner enter the private app without a password | no | Requires F-01 |
-| S-02 | create-first-person | Let the owner create the first person | no | Requires F-01, F-02, S-01 |
-| S-03 | maintain-and-delete-person | Let the owner maintain or remove a person | no | Requires S-02 |
-| S-04 | record-dated-interaction | Let the owner preserve a dated interaction | no | Requires F-01, F-02, S-02 |
-| S-05 | extracted-anchor-briefing | Show an extracted conversation anchor in the briefing | no | Requires F-01, F-02, F-03, S-04 and the provider decision |
+| F-01 | restore-validation-gates | Restore trustworthy lint and build validation | no | Archived; no further planning required |
+| F-02 | local-data-privacy-contract | Establish the local relationship-data privacy contract | no | Archived; no further planning required |
+| F-03 | private-extraction-contract | Approve a privacy-qualified extraction boundary | no | Archived; provider route and synthetic deployment verification complete |
+| S-01 | passwordless-private-access | Let the owner enter the private app without a password | no | Archived; no further planning required |
+| S-02 | create-first-person | Let the owner create the first person | no | Archived; no further planning required |
+| S-03 | maintain-and-delete-person | Let the owner maintain or remove a person | no | Archived; no further planning required |
+| S-04 | record-dated-interaction | Let the owner preserve a dated interaction | no | Archived; no further planning required |
+| S-05 | extracted-anchor-briefing | Show an extracted conversation anchor in the briefing | yes | All prerequisites are done; provider verification is complete. Run `/10x-plan extracted-anchor-briefing` |
 | S-06 | manage-conversation-anchors | Let the owner correct and close conversation anchors | no | Requires S-05 |
 | S-07 | view-upcoming-birthdays | Show upcoming birthdays | no | Requires S-02 and a defined birthday window |
 
 ## Open Roadmap Questions
 
-1. **Which external processor demonstrably meets the PRD's no-retention, no-training, and data-minimization requirements?** — Owner: user. Block: F-03, S-05.
-2. **What future window counts as "upcoming" for the MVP birthday view?** — Owner: user. Block: S-07.
+1. **What future window counts as "upcoming" for the MVP birthday view?** — Owner: user. Block: S-07.
 
 ## Parked
 
