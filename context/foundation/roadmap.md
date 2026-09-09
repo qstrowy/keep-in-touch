@@ -3,7 +3,7 @@ project: KeepInTouch
 version: 1
 status: draft
 created: 2026-09-07
-updated: 2026-09-07
+updated: 2026-09-09
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -43,11 +43,11 @@ Here, the north star means the smallest end-to-end result that proves the produc
 | --- | --- | --- | --- | --- | --- |
 | F-01 | restore-validation-gates | (foundation) repository validation is trustworthy before feature work begins | — | `tech-stack.md` §Why this stack | in-progress |
 | F-02 | local-data-privacy-contract | (foundation) the local relationship-data boundary and privacy checks are explicit | — | Non-Functional Requirements, Access Control | in-progress |
-| F-03 | private-extraction-contract | (foundation) an extraction service boundary is approved against the note-processing guardrails | F-02 | Non-Functional Requirements, FR-004 | blocked |
+| F-03 | private-extraction-contract | (foundation) an extraction service boundary is approved against the note-processing guardrails | F-02 | Non-Functional Requirements, FR-004 | in-progress |
 | S-01 | passwordless-private-access | sign in by passwordless email and reach the private application | F-01 | FR-001 | in-progress |
-| S-02 | create-first-person | create and view a person with a relationship circle and birthday | F-01, F-02, S-01 | FR-002 | proposed |
-| S-03 | maintain-and-delete-person | edit a person or delete them with all associated relationship data | S-02 | FR-002, Non-Functional Requirements | proposed |
-| S-04 | record-dated-interaction | save a dated free-text interaction for a person | F-01, F-02, S-02 | US-01, FR-003 | proposed |
+| S-02 | create-first-person | create and view a person with a relationship circle and birthday | F-01, F-02, S-01 | FR-002 | in-progress |
+| S-03 | maintain-and-delete-person | edit a person or delete them with all associated relationship data | S-02 | FR-002, Non-Functional Requirements | in-progress |
+| S-04 | record-dated-interaction | save a dated free-text interaction for a person | F-01, F-02, S-02 | US-01, FR-003 | in-progress |
 | S-05 | extracted-anchor-briefing | see an extracted open topic or follow-up in the person's later briefing | F-01, F-02, F-03, S-04 | US-01, FR-004, FR-007 | blocked |
 | S-06 | manage-conversation-anchors | correct, dismiss, or resolve an extracted conversation anchor | S-05 | US-01, FR-005, FR-006 | proposed |
 | S-07 | view-upcoming-birthdays | see upcoming birthdays from saved people | S-02 | FR-008 | blocked |
@@ -113,7 +113,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Unknowns:**
   - Which external processor demonstrably meets the PRD's no-retention, no-training, and data-minimization requirements? — Owner: user. Block: yes.
 - **Risk:** Choosing a processor during implementation without prior evidence could invalidate the privacy promise at the exact point the central product flow is introduced.
-- **Status:** blocked
+- **Status:** in-progress
 
 ## Slices
 
@@ -139,7 +139,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** The person record anchors every interaction and briefing, so introducing only the fields required by the PRD keeps later slices connected without broad contact-management scope.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-03: Maintain or remove a person
 
@@ -151,7 +151,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Deletion is a privacy guarantee rather than ordinary polish, so it follows the first persisted person before interactions multiply the associated data.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-04: Preserve a dated interaction
 
@@ -163,7 +163,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Separating reliable note preservation from extraction makes the original user-authored record available even when external processing fails.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-05: See an extracted conversation anchor in a briefing
 
