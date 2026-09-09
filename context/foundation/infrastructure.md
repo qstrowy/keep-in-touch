@@ -89,6 +89,21 @@ Supabase was provisioned in a region poorly aligned with application traffic, so
 - **Approval**: An agent may build, lint, upload preview versions, and inspect logs unattended. Production promotion, secret rotation, custom-domain changes, database migrations, resource deletion, and rollback require explicit human approval. Dropping a database or deleting a Worker remains human-only.
 - **Logs**: Read GitHub pipeline state with `gh run list` and `gh run view <RUN_ID> --log-failed`. Read production runtime logs with `npx wrangler tail keep-in-touch --format json`, optionally filtering by `--status error`. Use the official Cloudflare observability MCP only for scoped, read-only discovery; do not grant it destructive permissions.
 
+### Private extraction secret provisioning
+
+Keep the three OpenRouter values out of Git, Wrangler configuration, Astro client variables, and browser storage. `.env.example` contains names only; `.dev.vars` is for local synthetic development and must not be committed.
+
+For a human-approved preview, provision each value as a Cloudflare Worker Secret using the tested Wrangler version. These commands prompt for values and create a new version; run them only with synthetic data and record the resulting version for review:
+
+```text
+npx wrangler versions secret put OPENROUTER_API_KEY
+npx wrangler versions secret put OPENROUTER_MODEL
+npx wrangler versions secret put OPENROUTER_PROVIDER
+npx wrangler versions upload
+```
+
+Before provisioning, confirm the exact OpenRouter model/provider route is ZDR-compatible, pinned, and configured with prompt logging disabled and no fallback. After the first human-approved deployment, make one authenticated same-origin request containing only a synthetic `note`, then inspect the response and available logs for neutral failure behavior and absence of key or note content. Do not send real notes until the private-extraction contract records the route, evidence source/date, secret location, and synthetic outcome. Repeat this review after provider changes, secret rotation, logging/observability changes, or production promotion.
+
 ## Passwordless authentication operation
 
 Before relying on hosted magic links, a human owner completes these external Supabase and Cloudflare steps. They are configuration changes, not repository changes, and require explicit approval.

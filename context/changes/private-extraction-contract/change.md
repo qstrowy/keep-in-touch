@@ -10,3 +10,5 @@ archived_at: null
 ## Notes
 
 [roadmap.md](context/foundation/roadmap.md)
+
+Phase 3 records the pending provider-approval gate and the S-05 handoff constraints. Real-note extraction remains blocked until a human verifies the exact OpenRouter route and a synthetic request against the deployed Worker with its secrets.

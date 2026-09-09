@@ -6,6 +6,8 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
   "preview_urls": true,
+  // Keep provider credentials and route identifiers in Worker Secrets. Values
+  // are intentionally absent from this file and from the browser bundle.
   "secrets": {
     "required": [
       "SUPABASE_URL",

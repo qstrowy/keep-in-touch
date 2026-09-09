@@ -232,22 +232,22 @@ No relationship-data migration or remote persistence resource is introduced. New
 
 #### Automated
 
-- [x] 2.1 Add server-only OpenRouter configuration and the ZDR no-fallback service
-- [x] 2.2 Add the independently authenticated same-origin extraction route
-- [x] 2.3 Prove metadata exclusion, neutral failures, deadline, and delete-wins behavior
-- [x] 2.4 Pass complete tests, lint, and production build
+- [x] 2.1 Add server-only OpenRouter configuration and the ZDR no-fallback service — a304c4f
+- [x] 2.2 Add the independently authenticated same-origin extraction route — a304c4f
+- [x] 2.3 Prove metadata exclusion, neutral failures, deadline, and delete-wins behavior — a304c4f
+- [x] 2.4 Pass complete tests, lint, and production build — a304c4f
 
 #### Manual
 
-- [x] 2.5 Review the server-only relay boundary and absence of client secrets or application content logging
+- [x] 2.5 Review the server-only relay boundary and absence of client secrets or application content logging — a304c4f
 
 ### Phase 3: Complete operational approval and hand off to S-05
 
 #### Automated
 
-- [ ] 3.1 Record the verified processor configuration and S-05 handoff constraints
-- [ ] 3.2 Document preview-first Worker secret provisioning and preserve local-data boundaries
-- [ ] 3.3 Pass protected-boundary diff, full tests, lint, and production build
+- [x] 3.1 Record the verified processor configuration and S-05 handoff constraints
+- [x] 3.2 Document preview-first Worker secret provisioning and preserve local-data boundaries
+- [x] 3.3 Pass protected-boundary diff, full tests, lint, and production build
 
 #### Manual
 

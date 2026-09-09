@@ -49,3 +49,32 @@ S-05 owns the manual “Extract anchors” control. Each action initially sends 
 - Automated tests prove that only a valid note crosses the public boundary, malformed candidate responses are rejected, and protected local modules remain unable to make network calls.
 - Synthetic text is the only permitted input until a human records the exact pinned OpenRouter provider/model, ZDR evidence, disabled prompt logging, no-fallback configuration, Worker-secret location, and a successful preview verification.
 - Real-note use, production promotion, secret rotation, logging/observability changes, or processor changes require human approval and another verification record.
+
+## Operational verification record
+
+This record is the source of truth for the provider approval gate. It is intentionally pending until a human selects the route, provisions deployed Worker secrets, and completes the synthetic request. Do not replace these fields with secret values or real note content.
+
+| Field                     | Current record                                                                                       |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Verification status       | `pending-human-verification`                                                                         |
+| Processor account         | Product-owned OpenRouter account; account identity and region must be confirmed by the owner         |
+| OpenRouter model          | Verified: `deepseek/deepseek-v4-flash-0731`                                                          |
+| OpenRouter provider       | Verified: `deepinfra/fp8`                                                                            |
+| ZDR evidence              | Confirmed by owner on 2026-09-09; evidence reference: https://openrouter.ai/docs/guides/features/zdr |
+| Prompt logging            | Required disabled at the account/provider level; evidence pending                                    |
+| Fallback routing          | Disabled in application request with one provider; preview evidence pending                          |
+| Worker secret location    | Cloudflare Workers Secrets for `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, and `OPENROUTER_PROVIDER`   |
+| Synthetic deployed result | Not run; real-note use remains blocked                                                               |
+
+The owner must update this record after the deployed check, retaining only the model/provider identifiers, evidence source and date, configuration outcome, and synthetic success/failure category. Never record a key, note text, response body, cookie, or authorization material.
+
+## S-05 handoff checklist
+
+S-05 may proceed only after the operational verification record above is complete:
+
+- Expose extraction only behind an explicit owner action and show the approved short notice before sending any note.
+- Send all raw note texts for one selected person initially, but send only the exact `{ note }` payload to this relay; do not include person, interaction, date, birthday, account, or browser metadata.
+- Persist candidate anchors and source provenance only in the owner-local IndexedDB vault.
+- Re-check local source existence immediately before writing candidates so a delete wins over a late response.
+- Keep retry user-initiated and preserve the original local interaction on every neutral failure.
+- Keep real-note use blocked if the provider route, account controls, secrets, logging configuration, or preview verification changes.
