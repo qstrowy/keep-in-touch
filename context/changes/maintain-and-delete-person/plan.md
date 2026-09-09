@@ -191,9 +191,9 @@ No database or IndexedDB schema migration is required. Existing generic people r
 
 #### Automated
 
-- [x] 3.1 Add inline confirmed deletion with retry-safe failure behavior
-- [x] 3.2 Pass complete validation and protected-boundary checks
+- [x] 3.1 Add inline confirmed deletion with retry-safe failure behavior — 5277fc8
+- [x] 3.2 Pass complete validation and protected-boundary checks — 5277fc8
 
 #### Manual
 
-- [x] 3.3 Confirm cancellation, cascaded deletion, post-delete list behavior, owner isolation, and IndexedDB-only storage
+- [x] 3.3 Confirm cancellation, cascaded deletion, post-delete list behavior, owner isolation, and IndexedDB-only storage — 5277fc8
