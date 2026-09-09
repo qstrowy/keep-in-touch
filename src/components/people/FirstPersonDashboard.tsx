@@ -24,29 +24,35 @@ const INITIAL_FORM: PersonFormInput = {
 };
 
 type ScreenState = "loading" | "form" | "saving" | "summary";
+type FormMode = "create" | "edit";
 
 export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardProps) {
   const [screenState, setScreenState] = useState<ScreenState>("loading");
-  const [person, setPerson] = useState<Person | null>(null);
+  const [formMode, setFormMode] = useState<FormMode>("create");
+  const [people, setPeople] = useState<Person[]>([]);
+  const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
   const [form, setForm] = useState<PersonFormInput>(INITIAL_FORM);
   const [fieldErrors, setFieldErrors] = useState<PersonFieldErrors>({});
   const [storageError, setStorageError] = useState<string | null>(null);
 
+  const selectedPerson = people.find((person) => person.id === selectedPersonId) ?? null;
+
   useEffect(() => {
     let isActive = true;
 
-    async function loadPerson() {
+    async function loadPeople() {
       try {
         const vault = createRelationshipVault(ownerId);
         const records = await vault.listByCollection(PEOPLE_COLLECTION);
-        const savedPerson = records.map(personFromRecord).find((record): record is Person => record !== null) ?? null;
+        const savedPeople = records.map(personFromRecord).filter((person): person is Person => person !== null);
 
         if (!isActive) {
           return;
         }
 
-        setPerson(savedPerson);
-        setScreenState(savedPerson ? "summary" : "form");
+        setPeople(savedPeople);
+        setSelectedPersonId(savedPeople[0]?.id ?? null);
+        setScreenState(savedPeople.length > 0 ? "summary" : "form");
       } catch {
         if (!isActive) {
           return;
@@ -57,7 +63,7 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
       }
     }
 
-    void loadPerson();
+    void loadPeople();
 
     return () => {
       isActive = false;
@@ -73,6 +79,40 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
     setStorageError(null);
   }
 
+  function startCreatingPerson() {
+    setFormMode("create");
+    setForm(INITIAL_FORM);
+    setFieldErrors({});
+    setStorageError(null);
+    setScreenState("form");
+  }
+
+  function startEditingPerson() {
+    if (!selectedPerson) {
+      return;
+    }
+
+    setFormMode("edit");
+    setForm(personToFormInput(selectedPerson));
+    setFieldErrors({});
+    setStorageError(null);
+    setScreenState("form");
+  }
+
+  function selectPerson(personId: string) {
+    setSelectedPersonId(personId);
+    setFieldErrors({});
+    setStorageError(null);
+    setScreenState("summary");
+  }
+
+  function cancelForm() {
+    setForm(INITIAL_FORM);
+    setFieldErrors({});
+    setStorageError(null);
+    setScreenState(selectedPerson ? "summary" : "form");
+  }
+
   async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -82,22 +122,33 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
       return;
     }
 
+    const personId = formMode === "edit" && selectedPerson ? selectedPerson.id : globalThis.crypto.randomUUID();
+
     setScreenState("saving");
     setStorageError(null);
 
     try {
       const vault = createRelationshipVault(ownerId);
-      const id = globalThis.crypto.randomUUID();
-      const record = createPersonRecord(validation.person, id);
+      const record = createPersonRecord(validation.person, personId);
       await vault.put(record);
 
-      const savedRecord = await vault.get(PEOPLE_COLLECTION, id);
+      const savedRecord = await vault.get(PEOPLE_COLLECTION, personId);
       const savedPerson = savedRecord ? personFromRecord(savedRecord) : null;
       if (!savedPerson) {
         throw new Error("The saved person could not be read from private browser storage.");
       }
 
-      setPerson(savedPerson);
+      setPeople((current) => {
+        const existingIndex = current.findIndex((person) => person.id === savedPerson.id);
+        if (existingIndex === -1) {
+          return [...current, savedPerson];
+        }
+
+        return current.map((person) => (person.id === savedPerson.id ? savedPerson : person));
+      });
+      setSelectedPersonId(savedPerson.id);
+      setForm(INITIAL_FORM);
+      setFieldErrors({});
       setScreenState("summary");
     } catch {
       setStorageError(
@@ -111,20 +162,102 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
     return <p role="status">Loading your private people…</p>;
   }
 
-  if (person) {
-    return <PersonSummary person={person} />;
-  }
-
   const isSaving = screenState === "saving";
 
   return (
-    <section aria-labelledby="first-person-heading">
-      <h2 id="first-person-heading" className="text-2xl font-semibold">
-        Add the first person you want to keep in touch with
+    <div className="space-y-8">
+      {people.length > 0 && (
+        <section aria-labelledby="people-list-heading">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-lg font-semibold" id="people-list-heading">
+              Saved people
+            </h2>
+            <button
+              className="rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isSaving}
+              onClick={startCreatingPerson}
+              type="button"
+            >
+              Add person
+            </button>
+          </div>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {people.map((person) => (
+              <li key={person.id}>
+                <button
+                  aria-pressed={person.id === selectedPersonId && screenState === "summary"}
+                  className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60 aria-pressed:border-blue-200 aria-pressed:bg-blue-200 aria-pressed:text-slate-950"
+                  disabled={isSaving}
+                  onClick={() => {
+                    selectPerson(person.id);
+                  }}
+                  type="button"
+                >
+                  {person.displayName}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {screenState === "summary" && selectedPerson ? (
+        <PersonSummary onEdit={startEditingPerson} person={selectedPerson} />
+      ) : (
+        <PersonForm
+          fieldErrors={fieldErrors}
+          form={form}
+          formMode={formMode}
+          hasSavedPeople={people.length > 0}
+          isSaving={isSaving}
+          onCancel={cancelForm}
+          onSubmit={handleSubmit}
+          onUpdate={updateForm}
+          storageError={storageError}
+        />
+      )}
+    </div>
+  );
+}
+
+interface PersonFormProps {
+  fieldErrors: PersonFieldErrors;
+  form: PersonFormInput;
+  formMode: FormMode;
+  hasSavedPeople: boolean;
+  isSaving: boolean;
+  onCancel: () => void;
+  onSubmit: (event: SyntheticEvent<HTMLFormElement>) => Promise<void>;
+  onUpdate: <Field extends keyof PersonFormInput>(field: Field, value: PersonFormInput[Field]) => void;
+  storageError: string | null;
+}
+
+function PersonForm({
+  fieldErrors,
+  form,
+  formMode,
+  hasSavedPeople,
+  isSaving,
+  onCancel,
+  onSubmit,
+  onUpdate,
+  storageError,
+}: PersonFormProps) {
+  const isEditing = formMode === "edit";
+  const heading = isEditing
+    ? `Edit ${form.displayName || "person"}`
+    : hasSavedPeople
+      ? "Add another person"
+      : "Add the first person you want to keep in touch with";
+
+  return (
+    <section aria-labelledby="person-form-heading">
+      <h2 id="person-form-heading" className="text-2xl font-semibold">
+        {heading}
       </h2>
       <p className="mt-2 text-sm text-blue-100/75">This information is stored only in this browser.</p>
 
-      <form className="mt-6 space-y-5" noValidate onSubmit={handleSubmit}>
+      <form className="mt-6 space-y-5" noValidate onSubmit={onSubmit}>
         <div>
           <label className="block text-sm font-medium" htmlFor="person-display-name">
             Name
@@ -136,7 +269,7 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
             disabled={isSaving}
             id="person-display-name"
             onChange={(event) => {
-              updateForm("displayName", event.target.value);
+              onUpdate("displayName", event.target.value);
             }}
             placeholder="For example, Marta"
             type="text"
@@ -160,7 +293,7 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
             disabled={isSaving}
             id="person-relationship-circle"
             onChange={(event) => {
-              updateForm("relationshipCircle", event.target.value);
+              onUpdate("relationshipCircle", event.target.value);
             }}
             value={form.relationshipCircle}
           >
@@ -186,10 +319,11 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
             <select
               aria-describedby={fieldErrors.birthday ? "person-birthday-error" : undefined}
               aria-invalid={Boolean(fieldErrors.birthday)}
+              aria-label="Birthday month"
               className="rounded-lg border border-white/20 bg-slate-900 px-3 py-2 text-white"
               disabled={isSaving}
               onChange={(event) => {
-                updateForm("birthdayMonth", event.target.value);
+                onUpdate("birthdayMonth", event.target.value);
               }}
               value={form.birthdayMonth}
             >
@@ -203,10 +337,11 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
             <select
               aria-describedby={fieldErrors.birthday ? "person-birthday-error" : undefined}
               aria-invalid={Boolean(fieldErrors.birthday)}
+              aria-label="Birthday day"
               className="rounded-lg border border-white/20 bg-slate-900 px-3 py-2 text-white"
               disabled={isSaving}
               onChange={(event) => {
-                updateForm("birthdayDay", event.target.value);
+                onUpdate("birthdayDay", event.target.value);
               }}
               value={form.birthdayDay}
             >
@@ -231,19 +366,31 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
           </p>
         )}
 
-        <button
-          className="w-full rounded-lg bg-blue-200 px-4 py-2 font-semibold text-slate-950 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={isSaving}
-          type="submit"
-        >
-          {isSaving ? "Saving person…" : "Save person"}
-        </button>
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          {hasSavedPeople && (
+            <button
+              className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 font-semibold transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isSaving}
+              onClick={onCancel}
+              type="button"
+            >
+              Cancel
+            </button>
+          )}
+          <button
+            className="rounded-lg bg-blue-200 px-4 py-2 font-semibold text-slate-950 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-40"
+            disabled={isSaving}
+            type="submit"
+          >
+            {isSaving ? "Saving person…" : isEditing ? "Save changes" : "Save person"}
+          </button>
+        </div>
       </form>
     </section>
   );
 }
 
-function PersonSummary({ person }: { person: Person }) {
+function PersonSummary({ onEdit, person }: { onEdit: () => void; person: Person }) {
   return (
     <section aria-labelledby="saved-person-heading">
       <p className="text-sm font-medium text-blue-100/75">Saved privately in this browser</p>
@@ -264,8 +411,24 @@ function PersonSummary({ person }: { person: Person }) {
           </div>
         )}
       </dl>
+      <button
+        className="mt-6 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold transition-colors hover:bg-white/20"
+        onClick={onEdit}
+        type="button"
+      >
+        Edit person
+      </button>
     </section>
   );
+}
+
+function personToFormInput(person: Person): PersonFormInput {
+  return {
+    displayName: person.displayName,
+    relationshipCircle: person.relationshipCircle,
+    birthdayMonth: person.birthday ? String(person.birthday.month) : "",
+    birthdayDay: person.birthday ? String(person.birthday.day) : "",
+  };
 }
 
 function formatCircle(circle: string): string {

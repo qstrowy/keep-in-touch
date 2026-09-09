@@ -173,15 +173,15 @@ No database or IndexedDB schema migration is required. Existing generic people r
 
 #### Automated
 
-- [x] 1.1 Add same-ID update, cascade deletion, reload, and owner-isolation person-storage tests
-- [x] 1.2 Pass focused storage tests and lint without a remote-boundary regression
+- [x] 1.1 Add same-ID update, cascade deletion, reload, and owner-isolation person-storage tests — d01b34d
+- [x] 1.2 Pass focused storage tests and lint without a remote-boundary regression — d01b34d
 
 ### Phase 2: Build local people selection and editing
 
 #### Automated
 
-- [ ] 2.1 Add local people-list selection, add-person, and in-place edit behavior
-- [ ] 2.2 Pass full tests, lint, and build without a remote product-data path
+- [x] 2.1 Add local people-list selection, add-person, and in-place edit behavior
+- [x] 2.2 Pass full tests, lint, and build without a remote product-data path
 
 #### Manual
 
