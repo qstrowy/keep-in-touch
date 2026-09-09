@@ -23,7 +23,7 @@ const INITIAL_FORM: PersonFormInput = {
   birthdayDay: "",
 };
 
-type ScreenState = "loading" | "form" | "saving" | "summary";
+type ScreenState = "loading" | "form" | "saving" | "list" | "summary" | "deleting";
 type FormMode = "create" | "edit";
 
 export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardProps) {
@@ -34,6 +34,7 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
   const [form, setForm] = useState<PersonFormInput>(INITIAL_FORM);
   const [fieldErrors, setFieldErrors] = useState<PersonFieldErrors>({});
   const [storageError, setStorageError] = useState<string | null>(null);
+  const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
 
   const selectedPerson = people.find((person) => person.id === selectedPersonId) ?? null;
 
@@ -113,6 +114,16 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
     setScreenState(selectedPerson ? "summary" : "form");
   }
 
+  function showDeleteConfirmation() {
+    setStorageError(null);
+    setIsDeleteConfirmationVisible(true);
+  }
+
+  function cancelDeleteConfirmation() {
+    setStorageError(null);
+    setIsDeleteConfirmationVisible(false);
+  }
+
   async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -158,11 +169,47 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
     }
   }
 
+  async function handleDelete() {
+    if (!selectedPerson) {
+      return;
+    }
+
+    const personId = selectedPerson.id;
+    setScreenState("deleting");
+    setStorageError(null);
+
+    try {
+      const vault = createRelationshipVault(ownerId);
+      await vault.deleteCascade({ collection: PEOPLE_COLLECTION, id: personId });
+
+      const remainingPeople = people.filter((person) => person.id !== personId);
+      setPeople(remainingPeople);
+      setSelectedPersonId(null);
+      setIsDeleteConfirmationVisible(false);
+
+      if (remainingPeople.length > 0) {
+        setScreenState("list");
+        return;
+      }
+
+      setFormMode("create");
+      setForm(INITIAL_FORM);
+      setScreenState("form");
+    } catch {
+      setStorageError(
+        "We could not delete this person from private browser storage. Nothing was removed; please try again.",
+      );
+      setScreenState("summary");
+    }
+  }
+
   if (screenState === "loading") {
     return <p role="status">Loading your private people…</p>;
   }
 
   const isSaving = screenState === "saving";
+  const isDeleting = screenState === "deleting";
+  const isInteractionLocked = isSaving || isDeleting || isDeleteConfirmationVisible;
 
   return (
     <div className="space-y-8">
@@ -174,7 +221,7 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
             </h2>
             <button
               className="rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isSaving}
+              disabled={isInteractionLocked}
               onClick={startCreatingPerson}
               type="button"
             >
@@ -187,7 +234,7 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
                 <button
                   aria-pressed={person.id === selectedPersonId && screenState === "summary"}
                   className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60 aria-pressed:border-blue-200 aria-pressed:bg-blue-200 aria-pressed:text-slate-950"
-                  disabled={isSaving}
+                  disabled={isInteractionLocked}
                   onClick={() => {
                     selectPerson(person.id);
                   }}
@@ -201,8 +248,21 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
         </section>
       )}
 
-      {screenState === "summary" && selectedPerson ? (
-        <PersonSummary onEdit={startEditingPerson} person={selectedPerson} />
+      {screenState === "list" ? (
+        <p className="text-sm text-blue-100/75" role="status">
+          Choose a person to view their saved details.
+        </p>
+      ) : selectedPerson && (screenState === "summary" || screenState === "deleting") ? (
+        <PersonSummary
+          isDeleteConfirmationVisible={isDeleteConfirmationVisible}
+          isDeleting={isDeleting}
+          onCancelDelete={cancelDeleteConfirmation}
+          onDelete={handleDelete}
+          onEdit={startEditingPerson}
+          onShowDeleteConfirmation={showDeleteConfirmation}
+          person={selectedPerson}
+          storageError={storageError}
+        />
       ) : (
         <PersonForm
           fieldErrors={fieldErrors}
@@ -390,7 +450,27 @@ function PersonForm({
   );
 }
 
-function PersonSummary({ onEdit, person }: { onEdit: () => void; person: Person }) {
+interface PersonSummaryProps {
+  isDeleteConfirmationVisible: boolean;
+  isDeleting: boolean;
+  onCancelDelete: () => void;
+  onDelete: () => Promise<void>;
+  onEdit: () => void;
+  onShowDeleteConfirmation: () => void;
+  person: Person;
+  storageError: string | null;
+}
+
+function PersonSummary({
+  isDeleteConfirmationVisible,
+  isDeleting,
+  onCancelDelete,
+  onDelete,
+  onEdit,
+  onShowDeleteConfirmation,
+  person,
+  storageError,
+}: PersonSummaryProps) {
   return (
     <section aria-labelledby="saved-person-heading">
       <p className="text-sm font-medium text-blue-100/75">Saved privately in this browser</p>
@@ -411,13 +491,61 @@ function PersonSummary({ onEdit, person }: { onEdit: () => void; person: Person 
           </div>
         )}
       </dl>
-      <button
-        className="mt-6 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold transition-colors hover:bg-white/20"
-        onClick={onEdit}
-        type="button"
-      >
-        Edit person
-      </button>
+      {isDeleteConfirmationVisible ? (
+        <section
+          className="mt-6 rounded-lg border border-red-200/40 bg-red-950/30 p-4"
+          aria-labelledby="delete-person-heading"
+        >
+          <h3 className="font-semibold" id="delete-person-heading">
+            Delete {person.displayName} permanently?
+          </h3>
+          <p className="mt-2 text-sm text-red-100">
+            This permanently removes this person and any associated relationship data stored in this browser.
+          </p>
+          {storageError && (
+            <p className="mt-3 text-sm text-red-100" role="alert">
+              {storageError}
+            </p>
+          )}
+          <div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+              className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isDeleting}
+              onClick={onCancelDelete}
+              type="button"
+            >
+              Cancel
+            </button>
+            <button
+              className="rounded-lg bg-red-200 px-4 py-2 text-sm font-semibold text-red-950 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isDeleting}
+              onClick={() => {
+                void onDelete();
+              }}
+              type="button"
+            >
+              {isDeleting ? "Deleting person…" : "Delete permanently"}
+            </button>
+          </div>
+        </section>
+      ) : (
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <button
+            className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold transition-colors hover:bg-white/20"
+            onClick={onEdit}
+            type="button"
+          >
+            Edit person
+          </button>
+          <button
+            className="rounded-lg border border-red-200/50 bg-red-950/30 px-4 py-2 text-sm font-semibold text-red-100 transition-colors hover:bg-red-950/50"
+            onClick={onShowDeleteConfirmation}
+            type="button"
+          >
+            Delete person
+          </button>
+        </div>
+      )}
     </section>
   );
 }

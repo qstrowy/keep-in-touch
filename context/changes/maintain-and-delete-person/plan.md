@@ -180,20 +180,20 @@ No database or IndexedDB schema migration is required. Existing generic people r
 
 #### Automated
 
-- [x] 2.1 Add local people-list selection, add-person, and in-place edit behavior
-- [x] 2.2 Pass full tests, lint, and build without a remote product-data path
+- [x] 2.1 Add local people-list selection, add-person, and in-place edit behavior — 09ae67b
+- [x] 2.2 Pass full tests, lint, and build without a remote product-data path — 09ae67b
 
 #### Manual
 
-- [ ] 2.3 Confirm adding, selecting, editing, validation, birthday removal, and retry behavior in an authenticated browser
+- [x] 2.3 Confirm adding, selecting, editing, validation, birthday removal, and retry behavior in an authenticated browser — 09ae67b
 
 ### Phase 3: Confirm irreversible removal
 
 #### Automated
 
-- [ ] 3.1 Add inline confirmed deletion with retry-safe failure behavior
-- [ ] 3.2 Pass complete validation and protected-boundary checks
+- [x] 3.1 Add inline confirmed deletion with retry-safe failure behavior
+- [x] 3.2 Pass complete validation and protected-boundary checks
 
 #### Manual
 
-- [ ] 3.3 Confirm cancellation, cascaded deletion, post-delete list behavior, owner isolation, and IndexedDB-only storage
+- [x] 3.3 Confirm cancellation, cascaded deletion, post-delete list behavior, owner isolation, and IndexedDB-only storage
