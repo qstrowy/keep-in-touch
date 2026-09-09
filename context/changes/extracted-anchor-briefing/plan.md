@@ -212,9 +212,9 @@ No IndexedDB schema migration is required because anchors use the existing gener
 
 #### Automated
 
-- [x] 1.1 Add validated local anchors and atomic owner-local replacement
-- [x] 1.2 Add bounded combined-history request construction and browser client coverage
-- [x] 1.3 Pass focused anchor, vault, extraction, lint, and protected-boundary verification
+- [x] 1.1 Add validated local anchors and atomic owner-local replacement — 6c56763
+- [x] 1.2 Add bounded combined-history request construction and browser client coverage — 6c56763
+- [x] 1.3 Pass focused anchor, vault, extraction, lint, and protected-boundary verification — 6c56763
 
 #### Manual
 
@@ -224,9 +224,9 @@ No IndexedDB schema migration is required because anchors use the existing gener
 
 #### Automated
 
-- [ ] 2.1 Add the person briefing, compact disclosure, and explicit extraction control
-- [ ] 2.2 Implement replacement, empty-result, neutral-failure, and retry UI lifecycle
-- [ ] 2.3 Pass focused UI/coordinator, full test, lint, and build verification
+- [x] 2.1 Add the person briefing, compact disclosure, and explicit extraction control
+- [x] 2.2 Implement replacement, empty-result, neutral-failure, and retry UI lifecycle
+- [x] 2.3 Pass focused UI/coordinator, full test, lint, and build verification
 
 #### Manual
 

@@ -88,7 +88,7 @@ export function createAnchorRecords(
 ): RelationshipRecord[] {
   return candidates.map((candidate, index) =>
     createAnchorRecord({
-      id: `anchor-${createdAt}-${index}`,
+      id: `anchor-${createdAt}-${index}-${globalThis.crypto.randomUUID()}`,
       personId,
       createdAt,
       sourceInteractionIds,

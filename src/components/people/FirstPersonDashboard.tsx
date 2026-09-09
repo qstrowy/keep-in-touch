@@ -12,6 +12,8 @@ import {
 } from "@/lib/people/person";
 import { createRelationshipVault } from "@/lib/relationship-data/local-vault";
 import InteractionPanel from "@/components/interactions/InteractionPanel";
+import AnchorBriefing from "@/components/anchors/AnchorBriefing";
+import type { Interaction } from "@/lib/interactions/interaction";
 
 interface FirstPersonDashboardProps {
   ownerId: string;
@@ -36,6 +38,7 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
   const [fieldErrors, setFieldErrors] = useState<PersonFieldErrors>({});
   const [storageError, setStorageError] = useState<string | null>(null);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
+  const [interactionRevision, setInteractionRevision] = useState(0);
 
   const selectedPerson = people.find((person) => person.id === selectedPersonId) ?? null;
 
@@ -263,6 +266,10 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
           onShowDeleteConfirmation={showDeleteConfirmation}
           ownerId={ownerId}
           person={selectedPerson}
+          interactionRevision={interactionRevision}
+          onInteractionSaved={() => {
+            setInteractionRevision((current) => current + 1);
+          }}
           storageError={storageError}
         />
       ) : (
@@ -462,6 +469,8 @@ interface PersonSummaryProps {
   person: Person;
   ownerId: string;
   storageError: string | null;
+  interactionRevision: number;
+  onInteractionSaved: (interaction: Interaction) => void;
 }
 
 function PersonSummary({
@@ -473,6 +482,8 @@ function PersonSummary({
   onShowDeleteConfirmation,
   ownerId,
   person,
+  interactionRevision,
+  onInteractionSaved,
   storageError,
 }: PersonSummaryProps) {
   return (
@@ -495,7 +506,8 @@ function PersonSummary({
           </div>
         )}
       </dl>
-      <InteractionPanel ownerId={ownerId} personId={person.id} />
+      <AnchorBriefing ownerId={ownerId} personId={person.id} refreshToken={interactionRevision} />
+      <InteractionPanel ownerId={ownerId} personId={person.id} onInteractionSaved={onInteractionSaved} />
       {isDeleteConfirmationVisible ? (
         <section
           className="mt-6 rounded-lg border border-red-200/40 bg-red-950/30 p-4"

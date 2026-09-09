@@ -6,10 +6,16 @@ export const MAX_EXTRACTION_CANDIDATE_TEXT_LENGTH = 500;
 export const MAX_COMBINED_EXTRACTION_NOTE_LENGTH = 20_000;
 
 const EXTRACTION_PROMPT = [
-  "Extract concise conversation anchors from the supplied interaction note.",
+  "Extract useful conversation anchors from the supplied interaction note.",
   "Return only JSON with a candidates array.",
-  "Each candidate has kind topic, follow_up, or proposed_interaction and a concise text value.",
+  "Use topic for a concrete subject or situation worth remembering.",
+  "Use follow_up for an unresolved detail or a concise question that would deepen understanding of the topic.",
+  "Use proposed_interaction for a practical, grounded way to reconnect or offer help based on the note.",
+  "Prefer specific detail-seeking questions when the note leaves an important detail open.",
   "Do not invent details not supported by the note.",
+  "Do not add generic facts, stereotypes, or unrelated advice about a named person, product, place, or brand.",
+  "It is valid to return no candidates when the note contains no useful anchor.",
+  "Write every candidate in the same language as the supplied note; do not translate it.",
 ].join(" ");
 
 export type ExtractionCandidateKind = "topic" | "follow_up" | "proposed_interaction";

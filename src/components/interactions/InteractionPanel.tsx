@@ -16,13 +16,14 @@ import { createRelationshipVault } from "@/lib/relationship-data/local-vault";
 interface InteractionPanelProps {
   ownerId: string;
   personId: string;
+  onInteractionSaved?: (interaction: Interaction) => void;
 }
 
 function initialForm(): InteractionFormInput {
   return { occurredOn: localDateString(new Date()), note: "" };
 }
 
-export default function InteractionPanel({ ownerId, personId }: InteractionPanelProps) {
+export default function InteractionPanel({ ownerId, personId, onInteractionSaved }: InteractionPanelProps) {
   const [interactions, setInteractions] = useState<Interaction[]>([]);
   const [form, setForm] = useState<InteractionFormInput>(initialForm);
   const [fieldErrors, setFieldErrors] = useState<InteractionFieldErrors>({});
@@ -79,6 +80,7 @@ export default function InteractionPanel({ ownerId, personId }: InteractionPanel
       const interaction = saved ? interactionFromRecord(saved) : null;
       if (!interaction) throw new Error("Saved interaction could not be read.");
       setInteractions((current) => sortInteractionsNewestFirst([...current, interaction]));
+      onInteractionSaved?.(interaction);
       setForm(initialForm());
     } catch {
       setStorageError(

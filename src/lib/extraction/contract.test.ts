@@ -19,7 +19,10 @@ describe("extraction request contract", () => {
 
     const providerInput = createExtractionProviderInput(request);
     expect(providerInput.promptVersion).toBe(EXTRACTION_PROMPT_VERSION);
-    expect(providerInput.instruction).toContain("Extract concise conversation anchors");
+    expect(providerInput.instruction).toContain("Extract useful conversation anchors");
+    expect(providerInput.instruction).toContain("specific detail-seeking questions");
+    expect(providerInput.instruction).toContain("generic facts, stereotypes");
+    expect(providerInput.instruction).toContain("same language as the supplied note");
     expect(providerInput.note).toBe("Ask about the recital next week.");
   });
 
