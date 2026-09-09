@@ -125,8 +125,7 @@ Add the smallest server-only OpenRouter integration and same-origin API surface 
 
 #### Manual Verification
 
-- With a synthetic note only, an authenticated same-origin request reaches the configured preview relay and returns a validated candidate response or a neutral error.
-- Browser developer tools and Worker configuration show no client-side OpenRouter key, no request payload logged by application code, and no relationship-data persistence resource added.
+- Review the relay source, browser bundle configuration, and Worker declarations to confirm no client-side OpenRouter key, application content logging, or relationship-data persistence resource was introduced. The credentialed synthetic preview request is deferred to Phase 3, where provider approval and secret provisioning are verified.
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase.
 
@@ -233,14 +232,14 @@ No relationship-data migration or remote persistence resource is introduced. New
 
 #### Automated
 
-- [ ] 2.1 Add server-only OpenRouter configuration and the ZDR no-fallback service
-- [ ] 2.2 Add the independently authenticated same-origin extraction route
-- [ ] 2.3 Prove metadata exclusion, neutral failures, deadline, and delete-wins behavior
-- [ ] 2.4 Pass complete tests, lint, and production build
+- [x] 2.1 Add server-only OpenRouter configuration and the ZDR no-fallback service
+- [x] 2.2 Add the independently authenticated same-origin extraction route
+- [x] 2.3 Prove metadata exclusion, neutral failures, deadline, and delete-wins behavior
+- [x] 2.4 Pass complete tests, lint, and production build
 
 #### Manual
 
-- [ ] 2.5 Verify the synthetic relay flow and absence of client secrets or application content logging
+- [x] 2.5 Review the server-only relay boundary and absence of client secrets or application content logging
 
 ### Phase 3: Complete operational approval and hand off to S-05
 

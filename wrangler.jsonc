@@ -7,7 +7,13 @@
   "workers_dev": true,
   "preview_urls": true,
   "secrets": {
-    "required": ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"],
+    "required": [
+      "SUPABASE_URL",
+      "SUPABASE_PUBLISHABLE_KEY",
+      "OPENROUTER_API_KEY",
+      "OPENROUTER_MODEL",
+      "OPENROUTER_PROVIDER",
+    ],
   },
   "assets": {
     "binding": "ASSETS",

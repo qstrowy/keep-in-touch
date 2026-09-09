@@ -34,6 +34,19 @@ export interface ExtractionCandidateResponse {
 
 export type ExtractionPublicError = "invalid_request" | "unavailable" | "timeout" | "invalid_response";
 
+export async function persistCandidateResponseIfSourceExists(
+  sourceExists: () => Promise<boolean>,
+  persist: (response: ExtractionCandidateResponse) => Promise<void>,
+  response: ExtractionCandidateResponse,
+): Promise<boolean> {
+  if (!(await sourceExists())) {
+    return false;
+  }
+
+  await persist(response);
+  return true;
+}
+
 export function parseExtractionRequest(value: unknown): ExtractionRequest | null {
   if (!isExactRecord(value, ["note"]) || typeof value.note !== "string") {
     return null;

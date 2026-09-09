@@ -7,6 +7,7 @@ import {
   createExtractionProviderInput,
   parseExtractionCandidateResponse,
   parseExtractionRequest,
+  persistCandidateResponseIfSourceExists,
 } from "./contract";
 
 describe("extraction request contract", () => {
@@ -28,6 +29,22 @@ describe("extraction request contract", () => {
     expect(parseExtractionRequest({ note: "   " })).toBeNull();
     expect(parseExtractionRequest({ note: "a".repeat(5_001) })).toBeNull();
     expect(parseExtractionRequest({ note: "Call next week", personId: "private-person-id" })).toBeNull();
+  });
+});
+
+describe("late extraction result handling", () => {
+  it("discards a candidate response when its local source was deleted", async () => {
+    const persisted: string[] = [];
+    const response = { candidates: [{ kind: "topic" as const, text: "Recital" }] };
+
+    await expect(
+      persistCandidateResponseIfSourceExists(
+        () => Promise.resolve(false),
+        () => Promise.resolve(persisted.push("should not persist")).then(() => undefined),
+        response,
+      ),
+    ).resolves.toBe(false);
+    expect(persisted).toEqual([]);
   });
 });
 
