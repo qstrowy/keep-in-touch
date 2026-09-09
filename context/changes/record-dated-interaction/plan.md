@@ -162,17 +162,17 @@ No IndexedDB schema migration is required: the generic `records` store and owner
 
 #### Automated
 
-- [x] 1.1 Add validated interaction types, record conversion, and contract tests
-- [x] 1.2 Add owner-local interaction storage and cascade-deletion tests
-- [x] 1.3 Extend interaction remote-boundary protection and pass focused validation
+- [x] 1.1 Add validated interaction types, record conversion, and contract tests — eda868a
+- [x] 1.2 Add owner-local interaction storage and cascade-deletion tests — eda868a
+- [x] 1.3 Extend interaction remote-boundary protection and pass focused validation — eda868a
 
 ### Phase 2: Add the selected-person interaction flow
 
 #### Automated
 
-- [ ] 2.1 Add the selected-person interaction form, local history, and retry behavior
-- [ ] 2.2 Pass full tests, lint, build, and protected-boundary checks
+- [x] 2.1 Add the selected-person interaction form, local history, and retry behavior
+- [x] 2.2 Pass full tests, lint, build, and protected-boundary checks
 
 #### Manual
 
-- [ ] 2.3 Confirm local save, reload, validation, retry, owner isolation, cascade deletion, and IndexedDB-only storage in an authenticated browser
+- [x] 2.3 Confirm local save, reload, validation, retry, owner isolation, cascade deletion, and IndexedDB-only storage in an authenticated browser

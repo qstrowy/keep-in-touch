@@ -11,6 +11,7 @@ import {
   validatePersonInput,
 } from "@/lib/people/person";
 import { createRelationshipVault } from "@/lib/relationship-data/local-vault";
+import InteractionPanel from "@/components/interactions/InteractionPanel";
 
 interface FirstPersonDashboardProps {
   ownerId: string;
@@ -260,6 +261,7 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
           onDelete={handleDelete}
           onEdit={startEditingPerson}
           onShowDeleteConfirmation={showDeleteConfirmation}
+          ownerId={ownerId}
           person={selectedPerson}
           storageError={storageError}
         />
@@ -458,6 +460,7 @@ interface PersonSummaryProps {
   onEdit: () => void;
   onShowDeleteConfirmation: () => void;
   person: Person;
+  ownerId: string;
   storageError: string | null;
 }
 
@@ -468,6 +471,7 @@ function PersonSummary({
   onDelete,
   onEdit,
   onShowDeleteConfirmation,
+  ownerId,
   person,
   storageError,
 }: PersonSummaryProps) {
@@ -491,6 +495,7 @@ function PersonSummary({
           </div>
         )}
       </dl>
+      <InteractionPanel ownerId={ownerId} personId={person.id} />
       {isDeleteConfirmationVisible ? (
         <section
           className="mt-6 rounded-lg border border-red-200/40 bg-red-950/30 p-4"
