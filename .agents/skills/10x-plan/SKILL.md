@@ -139,10 +139,10 @@ Before any reading, identify what kinds of upstream artifacts the user passed in
    ```
 
    Ask the user: "Does this complexity assessment match your expectations?"
-   Provide options:
-   - "Agree — proceed with [N] questions" (description: "The assessment is accurate, let's dig into the details.")
-   - "Higher — ask more questions" (description: "There's more complexity than identified. I'll explain what's missing.")
-   - "Lower — fewer questions needed" (description: "This is simpler than it looks. Let's keep it focused.")
+   Options:
+   - "Agree — proceed with [N] questions" (The assessment is accurate, let's dig into the details.)
+   - "Higher — ask more questions" (There's more complexity than identified. I'll explain what's missing.)
+   - "Lower — fewer questions needed" (This is simpler than it looks. Let's keep it focused.)
 
    **Complexity scale:**
 
@@ -175,18 +175,18 @@ Before any reading, identify what kinds of upstream artifacts the user passed in
    Ask the user: "How should the system handle conflicts when two users edit simultaneously?"
    Header: "Conflicts"
    Options:
-   - "Last write wins" (description: "Later save silently overwrites earlier one. · Strength: Zero added complexity, no UI changes needed. · Tradeoff: Users can lose work without warning — acceptable only if edits are rare or low-stakes.")
-   - "⭐ Recommended: Notify and merge" (description: "Show conflict to user, let them choose which version to keep. · Strength: Prevents data loss while keeping UX simple — matches the pattern in existing EditPanel component. · Tradeoff: Adds a conflict resolution modal and WebSocket subscription for real-time detection.")
-   - "Lock-based" (description: "First editor locks the resource; others see read-only until released. · Strength: Prevents conflicts entirely — simplest mental model for users. · Tradeoff: Stale locks require TTL + cleanup logic; blocks legitimate concurrent work.")
+   - "Last write wins" (Later save silently overwrites earlier one. · Strength: Zero added complexity, no UI changes needed. · Tradeoff: Users can lose work without warning — acceptable only if edits are rare or low-stakes.)
+   - "⭐ Recommended: Notify and merge" (Show conflict to user, let them choose which version to keep. · Strength: Prevents data loss while keeping UX simple — matches the pattern in existing EditPanel component. · Tradeoff: Adds a conflict resolution modal and WebSocket subscription for real-time detection.)
+   - "Lock-based" (First editor locks the resource; others see read-only until released. · Strength: Prevents conflicts entirely — simplest mental model for users. · Tradeoff: Stale locks require TTL + cleanup logic; blocks legitimate concurrent work.)
 
    **Example question with recommendations (non-software — content/strategy):** `Depth` is `[D]` — diagnostic about audience/scope; skip if a frame brief already settled who this is for.
 
    Ask the user: "What depth of technical detail should the course module target?"
    Header: "Depth"
    Options:
-   - "Conceptual overview" (description: "High-level principles, no code. · Strength: Accessible to all skill levels, faster to produce. · Tradeoff: Advanced learners may find it too shallow — risks losing engagement.")
-   - "⭐ Recommended: Hands-on with guided examples" (description: "Concepts paired with step-by-step exercises. · Strength: Balances understanding and practice — matches the format that got highest completion rates in 10xDevs2. · Tradeoff: 2-3x more prep time per lesson; requires working example repos.")
-   - "Deep dive with open challenges" (description: "Minimal scaffolding, real-world problems. · Strength: Forces genuine problem-solving, highest learning retention. · Tradeoff: High dropout risk for less experienced learners; harder to support at scale.")
+   - "Conceptual overview" (High-level principles, no code. · Strength: Accessible to all skill levels, faster to produce. · Tradeoff: Advanced learners may find it too shallow — risks losing engagement.)
+   - "⭐ Recommended: Hands-on with guided examples" (Concepts paired with step-by-step exercises. · Strength: Balances understanding and practice — matches the format that got highest completion rates in 10xDevs2. · Tradeoff: 2-3x more prep time per lesson; requires working example repos.)
+   - "Deep dive with open challenges" (Minimal scaffolding, real-world problems. · Strength: Forces genuine problem-solving, highest learning retention. · Tradeoff: High dropout risk for less experienced learners; harder to support at scale.)
 
    **What to ask about** — adapt categories to the domain of the task:
 
@@ -281,7 +281,7 @@ After getting initial clarifications from the user, NOW is when you address the 
 3. **Create research tasks** using your AI coding assistant's task management features to track exploration (these appear in the user's status bar). Update them as research completes.
 
 4. **Spawn parallel sub-tasks for comprehensive research**:
-   - Create multiple AI agents to research different aspects concurrently
+   - Create multiple AI assistant agents to research different aspects concurrently
    - Use the right agent type for each research need:
 
    **For codebase investigation:**
@@ -317,8 +317,8 @@ After getting initial clarifications from the user, NOW is when you address the 
    Ask the user: "Which implementation approach should we use?"
    Header: "Approach"
    Options:
-   - "[Option A name]" (description: "[Key tradeoffs: simpler but X, or faster but Y]")
-   - "[Option B name]" (description: "[Key tradeoffs]")
+   - "[Option A name]" ([Key tradeoffs: simpler but X, or faster but Y])
+   - "[Option B name]" ([Key tradeoffs])
 
    If there's clearly one best approach, skip asking the user and explain why you chose it.
    Only ask when the choice genuinely matters and you can't determine the answer from codebase patterns.
@@ -346,10 +346,10 @@ Once aligned on approach:
    Then ask the user: "Does this phase breakdown look right?"
    Header: "Phases"
    Options:
-   - "Looks good, proceed" (description: "Write the detailed plan with these phases.")
-   - "Needs adjustment" (description: "I'll explain what to change before you write the detailed plan.")
-   - "Too granular" (description: "Combine some phases — this is simpler than it looks.")
-   - "Too coarse" (description: "Split some phases — there are hidden complexities.")
+   - "Looks good, proceed" (Write the detailed plan with these phases.)
+   - "Needs adjustment" (I'll explain what to change before you write the detailed plan.)
+   - "Too granular" (Combine some phases — this is simpler than it looks.)
+   - "Too coarse" (Split some phases — there are hidden complexities.)
 
 ### Step 4: Detailed Plan Writing
 
@@ -747,16 +747,16 @@ Mixed: `Loading UX` is `[S]` (UI behavior — solution detail); `Scale` is `[D]`
 Ask the user: "What should the user see while new items load?"
 Header: "Loading UX"
 Options:
-- "Inline spinner" (description: "Small spinner below existing content. · Strength: User keeps seeing current items, minimal UI work. · Tradeoff: Feels slower than skeleton — users see a generic spinner instead of content shape.")
-- "⭐ Recommended: Skeleton screens" (description: "Placeholder shapes matching item layout. · Strength: Perceived performance is 30-40% better — matches existing LoadingSkeleton component pattern. · Tradeoff: Requires a skeleton variant per item type; breaks if layout changes.")
-- "Full-page spinner" (description: "Replace content with spinner. · Strength: Simplest to implement — one component, no layout concerns. · Tradeoff: Blocks all interaction; feels broken on slow connections.")
+- "Inline spinner" (Small spinner below existing content. · Strength: User keeps seeing current items, minimal UI work. · Tradeoff: Feels slower than skeleton — users see a generic spinner instead of content shape.)
+- "⭐ Recommended: Skeleton screens" (Placeholder shapes matching item layout. · Strength: Perceived performance is 30-40% better — matches existing LoadingSkeleton component pattern. · Tradeoff: Requires a skeleton variant per item type; breaks if layout changes.)
+- "Full-page spinner" (Replace content with spinner. · Strength: Simplest to implement — one component, no layout concerns. · Tradeoff: Blocks all interaction; feels broken on slow connections.)
 
 Ask the user: "How many items should this handle gracefully?"
 Header: "Scale"
 Options:
-- "⭐ Recommended: Hundreds" (description: "Standard offset pagination. · Strength: Simple, well-understood, works with existing SQL queries. · Tradeoff: Breaks down past ~5k items — acceptable given current data volumes.")
-- "Thousands" (description: "Cursor-based pagination + virtual scrolling. · Strength: Handles growth without performance cliff. · Tradeoff: 2-3x more implementation work; changes API contract.")
-- "Tens of thousands" (description: "Server-side filtering + virtual list + search. · Strength: Scales indefinitely. · Tradeoff: Significant complexity; requires search index and new API design.")
+- "⭐ Recommended: Hundreds" (Standard offset pagination. · Strength: Simple, well-understood, works with existing SQL queries. · Tradeoff: Breaks down past ~5k items — acceptable given current data volumes.)
+- "Thousands" (Cursor-based pagination + virtual scrolling. · Strength: Handles growth without performance cliff. · Tradeoff: 2-3x more implementation work; changes API contract.)
+- "Tens of thousands" (Server-side filtering + virtual list + search. · Strength: Scales indefinitely. · Tradeoff: Significant complexity; requires search index and new API design.)
 
 ### Example 2: Content / Education — HIGH complexity (e.g., Course Module Design)
 
@@ -765,16 +765,16 @@ Mixed: `Outcome` is `[D]` (defines what success looks like — pure problem fram
 Ask the user: "What should the learner be able to DO after this module — not just know?"
 Header: "Outcome"
 Options:
-- "⭐ Recommended: Build a working prototype" (description: "Learner produces a functional artifact using the techniques taught. · Strength: Forces genuine skill transfer — the artifact proves competence. Matches the 'Innovate' lesson format from 10xDevs3. · Tradeoff: Requires well-designed starter templates and clear acceptance criteria; takes 2-3x longer to prep.")
-- "Complete a guided exercise" (description: "Step-by-step walkthrough with expected output. · Strength: Low barrier — everyone finishes, builds confidence. · Tradeoff: May produce 'tutorial zombies' who can follow but not apply independently.")
-- "Pass a knowledge check" (description: "Quiz or code review proving conceptual understanding. · Strength: Fast to create, easy to grade at scale. · Tradeoff: Tests recognition not production — learner may understand but not be able to execute.")
+- "⭐ Recommended: Build a working prototype" (Learner produces a functional artifact using the techniques taught. · Strength: Forces genuine skill transfer — the artifact proves competence. Matches the 'Innovate' lesson format from 10xDevs3. · Tradeoff: Requires well-designed starter templates and clear acceptance criteria; takes 2-3x longer to prep.)
+- "Complete a guided exercise" (Step-by-step walkthrough with expected output. · Strength: Low barrier — everyone finishes, builds confidence. · Tradeoff: May produce 'tutorial zombies' who can follow but not apply independently.)
+- "Pass a knowledge check" (Quiz or code review proving conceptual understanding. · Strength: Fast to create, easy to grade at scale. · Tradeoff: Tests recognition not production — learner may understand but not be able to execute.)
 
 Ask the user: "How should this module handle different skill levels in the audience?"
 Header: "Levels"
 Options:
-- "Single track, advanced" (description: "One path targeting experienced devs. · Strength: Deep content, no hand-holding, respects expert time. · Tradeoff: Alienates beginners — they'll drop off or flood support channels.")
-- "⭐ Recommended: Layered depth" (description: "Core path everyone follows + optional deep-dive sections. · Strength: Everyone gets value; advanced learners self-select into harder material. · Tradeoff: More content to maintain; risk of 'optional' sections being ignored.")
-- "Separate beginner/advanced tracks" (description: "Two parallel paths diverging early. · Strength: Each audience gets perfectly targeted content. · Tradeoff: 2x production cost; splitting a small cohort may hurt community dynamics.")
+- "Single track, advanced" (One path targeting experienced devs. · Strength: Deep content, no hand-holding, respects expert time. · Tradeoff: Alienates beginners — they'll drop off or flood support channels.)
+- "⭐ Recommended: Layered depth" (Core path everyone follows + optional deep-dive sections. · Strength: Everyone gets value; advanced learners self-select into harder material. · Tradeoff: More content to maintain; risk of 'optional' sections being ignored.)
+- "Separate beginner/advanced tracks" (Two parallel paths diverging early. · Strength: Each audience gets perfectly targeted content. · Tradeoff: 2x production cost; splitting a small cohort may hurt community dynamics.)
 
 ### Example 3: Strategy / Process — MEDIUM complexity (e.g., Newsletter Workflow)
 
@@ -783,8 +783,8 @@ Options:
 Ask the user: "What's the primary bottleneck in the current newsletter pipeline?"
 Header: "Bottleneck"
 Options:
-- "⭐ Recommended: Curation takes too long" (description: "Finding and evaluating links is the slow step. · Strength: Directly targets time-to-publish — automating curation yields the biggest time savings based on current pipeline timings. · Tradeoff: Automated curation risks losing the personal editorial voice that subscribers value.")
-- "Writing the commentary" (description: "Links are ready but writing around them is slow. · Strength: AI-assisted drafting can cut this in half. · Tradeoff: Heavy AI drafting can make the newsletter feel generic — needs careful voice calibration.")
-- "Distribution and scheduling" (description: "Content is ready but publishing is manual. · Strength: Easiest to automate — clear inputs and outputs. · Tradeoff: Lowest impact if curation or writing is still the bottleneck.")
+- "⭐ Recommended: Curation takes too long" (Finding and evaluating links is the slow step. · Strength: Directly targets time-to-publish — automating curation yields the biggest time savings based on current pipeline timings. · Tradeoff: Automated curation risks losing the personal editorial voice that subscribers value.)
+- "Writing the commentary" (Links are ready but writing around them is slow. · Strength: AI-assisted drafting can cut this in half. · Tradeoff: Heavy AI drafting can make the newsletter feel generic — needs careful voice calibration.)
+- "Distribution and scheduling" (Content is ready but publishing is manual. · Strength: Easiest to automate — clear inputs and outputs. · Tradeoff: Lowest impact if curation or writing is still the bottleneck.)
 
 **Note**: Questions focus on **WHAT should happen** (requirements, behavior, outcomes) — NOT **HOW to implement it** (code patterns, specific tools). The `⭐ Recommended` pick is grounded in research and context — the user always has the final say.
