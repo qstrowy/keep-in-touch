@@ -45,7 +45,7 @@ Here, the north star means the smallest end-to-end result that proves the produc
 | F-02 | local-data-privacy-contract | (foundation) the local relationship-data boundary and privacy checks are explicit | — | Non-Functional Requirements, Access Control | done |
 | F-03 | private-extraction-contract | (foundation) an extraction service boundary is approved against the note-processing guardrails | F-02 | Non-Functional Requirements, FR-004 | in-progress |
 | S-01 | passwordless-private-access | sign in by passwordless email and reach the private application | F-01 | FR-001 | done |
-| S-02 | create-first-person | create and view a person with a relationship circle and birthday | F-01, F-02, S-01 | FR-002 | in-progress |
+| S-02 | create-first-person | create and view a person with a relationship circle and birthday | F-01, F-02, S-01 | FR-002 | done |
 | S-03 | maintain-and-delete-person | edit a person or delete them with all associated relationship data | S-02 | FR-002, Non-Functional Requirements | in-progress |
 | S-04 | record-dated-interaction | save a dated free-text interaction for a person | F-01, F-02, S-02 | US-01, FR-003 | in-progress |
 | S-05 | extracted-anchor-briefing | see an extracted open topic or follow-up in the person's later briefing | F-01, F-02, F-03, S-04 | US-01, FR-004, FR-007 | blocked |
@@ -139,7 +139,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** The person record anchors every interaction and briefing, so introducing only the fields required by the PRD keeps later slices connected without broad contact-management scope.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-03: Maintain or remove a person
 
@@ -242,3 +242,4 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **F-01: (foundation) the repository's required lint and production-build checks pass again and can verify every downstream slice.** — Archived 2026-09-09 → `context/archive/2026-09-07-restore-validation-gates/`. Lesson: —.
 - **F-02: (foundation) the owner-only local relationship-data boundary, deletion guarantee, and verification rules are explicit before personal data is persisted.** — Archived 2026-09-09 → `context/archive/2026-09-07-local-data-privacy-contract/`. Lesson: —.
 - **S-01: the user can sign in by passwordless email and reach the private application while unauthenticated visitors remain excluded.** — Archived 2026-09-09 → `context/archive/2026-09-07-passwordless-private-access/`. Lesson: —.
+- **S-02: the user can create and view a person with a relationship circle and birthday inside the private application.** — Archived 2026-09-09 → `context/archive/2026-09-09-create-first-person/`. Lesson: —.
