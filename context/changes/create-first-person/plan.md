@@ -208,33 +208,33 @@ There is no existing person data to migrate. Person fields are stored as a typed
 
 #### Automated
 
-- [x] 1.1 Add the owner-scoped collection lookup to the generic local vault
-- [x] 1.2 Add typed person validation and generic-record conversion tests
-- [x] 1.3 Pass focused vault/person tests and lint without a remote-boundary regression
+- [x] 1.1 Add the owner-scoped collection lookup to the generic local vault — dd01e69
+- [x] 1.2 Add typed person validation and generic-record conversion tests — dd01e69
+- [x] 1.3 Pass focused vault/person tests and lint without a remote-boundary regression — dd01e69
 
 #### Manual
 
-- [x] 1.4 Confirm the person data contract stores only the agreed MVP fields
+- [x] 1.4 Confirm the person data contract stores only the agreed MVP fields — dd01e69
 
 ### Phase 2: Build the private create-and-view dashboard
 
 #### Automated
 
-- [ ] 2.1 Add the client-side first-person form, save state, error recovery, and summary view
-- [ ] 2.2 Replace the protected dashboard placeholder with the owner-ID island handoff
-- [ ] 2.3 Pass test, lint, and production-build checks without a remote product-data path
+- [x] 2.1 Add the client-side first-person form, save state, error recovery, and summary view
+- [x] 2.2 Replace the protected dashboard placeholder with the owner-ID island handoff
+- [x] 2.3 Pass test, lint, and production-build checks without a remote product-data path
 
 #### Manual
 
-- [ ] 2.4 Confirm create, validation, pending, retry, and saved-summary behavior in an authenticated browser
+- [x] 2.4 Confirm create, validation, pending, retry, and saved-summary behavior in an authenticated browser
 
 ### Phase 3: Prove owner-local persistence end to end
 
 #### Automated
 
-- [ ] 3.1 Add person-to-vault round-trip and cross-owner isolation integration tests
-- [ ] 3.2 Pass complete validation and protected-boundary checks under Node 22
+- [x] 3.1 Add person-to-vault round-trip and cross-owner isolation integration tests
+- [x] 3.2 Pass complete validation and protected-boundary checks under Node 22
 
 #### Manual
 
-- [ ] 3.3 Confirm reload persistence, signed-out protection, second-owner isolation, and IndexedDB-only storage
+- [x] 3.3 Confirm reload persistence, signed-out protection, second-owner isolation, and IndexedDB-only storage
