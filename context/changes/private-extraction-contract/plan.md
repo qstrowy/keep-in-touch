@@ -251,5 +251,5 @@ No relationship-data migration or remote persistence resource is introduced. New
 
 #### Manual
 
-- [ ] 3.4 Verify ZDR/no-log/no-fallback provider configuration and preview deployment with synthetic data
-- [ ] 3.5 Confirm real-note use is gated on this verification and S-05 owns the manual full-history UI
+- [x] 3.4 Verify ZDR/no-log/no-fallback provider configuration and preview deployment with synthetic data
+- [x] 3.5 Confirm real-note use is gated on this verification and S-05 owns the manual full-history UI

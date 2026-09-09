@@ -11,4 +11,4 @@ archived_at: null
 
 [roadmap.md](context/foundation/roadmap.md)
 
-Phase 3 records the pending provider-approval gate and the S-05 handoff constraints. Real-note extraction remains blocked until a human verifies the exact OpenRouter route and a synthetic request against the deployed Worker with its secrets.
+Phase 3 verification recorded a successful schema-valid synthetic request against the deployed Worker using the approved pinned OpenRouter route. Real-note extraction remains blocked until S-05 adds the documented explicit manual UI, notice, and local-only persistence safeguards.

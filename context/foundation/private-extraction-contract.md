@@ -1,6 +1,6 @@
 ---
 project: KeepInTouch
-status: approved-for-synthetic-verification
+status: approved-for-s05-handoff
 created: 2026-09-09
 updated: 2026-09-09
 ---
@@ -52,21 +52,21 @@ S-05 owns the manual “Extract anchors” control. Each action initially sends 
 
 ## Operational verification record
 
-This record is the source of truth for the provider approval gate. It is intentionally pending until a human selects the route, provisions deployed Worker secrets, and completes the synthetic request. Do not replace these fields with secret values or real note content.
+This record is the source of truth for the provider approval gate. Do not replace these fields with secret values or real note content.
 
 | Field                     | Current record                                                                                       |
 | ------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Verification status       | `pending-human-verification`                                                                         |
+| Verification status       | `verified-deployed` on 2026-09-09                                                                    |
 | Processor account         | Product-owned OpenRouter account; account identity and region must be confirmed by the owner         |
 | OpenRouter model          | Verified: `deepseek/deepseek-v4-flash-0731`                                                          |
 | OpenRouter provider       | Verified: `deepinfra/fp8`                                                                            |
 | ZDR evidence              | Confirmed by owner on 2026-09-09; evidence reference: https://openrouter.ai/docs/guides/features/zdr |
-| Prompt logging            | Required disabled at the account/provider level; evidence pending                                    |
-| Fallback routing          | Disabled in application request with one provider; preview evidence pending                          |
+| Prompt logging            | Confirmed disabled by the owner on 2026-09-09                                                        |
+| Fallback routing          | Disabled in every application request with one provider; verified by deployed synthetic success     |
 | Worker secret location    | Cloudflare Workers Secrets for `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, and `OPENROUTER_PROVIDER`   |
-| Synthetic deployed result | Not run; real-note use remains blocked                                                               |
+| Synthetic deployed result | Authenticated same-origin synthetic request returned HTTP 200 with a schema-valid candidate response |
 
-The owner must update this record after the deployed check, retaining only the model/provider identifiers, evidence source and date, configuration outcome, and synthetic success/failure category. Never record a key, note text, response body, cookie, or authorization material.
+This record retains only the model/provider identifiers, evidence source and date, configuration outcome, and synthetic success/failure category. It never records a key, note text, response body, cookie, or authorization material.
 
 ## S-05 handoff checklist
 
