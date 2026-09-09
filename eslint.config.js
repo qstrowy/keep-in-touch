@@ -76,7 +76,7 @@ const astroConfig = tseslint.config({
 });
 
 const relationshipDataConfig = tseslint.config({
-  files: ["src/lib/relationship-data/**/*.ts"],
+  files: ["src/lib/relationship-data/**/*.ts", "src/lib/interactions/**/*.ts"],
   rules: {
     "no-restricted-imports": [
       "error",
