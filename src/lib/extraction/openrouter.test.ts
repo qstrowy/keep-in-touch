@@ -49,8 +49,36 @@ describe("OpenRouter extraction service", () => {
       provider: {
         only: ["example-provider"],
         allow_fallbacks: false,
+        require_parameters: true,
         data_collection: "deny",
         zdr: true,
+      },
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          name: "extraction_candidates",
+          strict: true,
+          schema: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              candidates: {
+                type: "array",
+                maxItems: 12,
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  properties: {
+                    kind: { type: "string", enum: ["topic", "follow_up", "proposed_interaction"] },
+                    text: { type: "string", minLength: 1, maxLength: 500 },
+                  },
+                  required: ["kind", "text"],
+                },
+              },
+            },
+            required: ["candidates"],
+          },
+        },
       },
       stream: false,
     });

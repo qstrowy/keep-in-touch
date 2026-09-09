@@ -8,6 +8,34 @@ import {
 const OPENROUTER_CHAT_COMPLETIONS_URL = "https://openrouter.ai/api/v1/chat/completions";
 export const EXTRACTION_TIMEOUT_MS = 90_000;
 
+const EXTRACTION_RESPONSE_FORMAT = {
+  type: "json_schema",
+  json_schema: {
+    name: "extraction_candidates",
+    strict: true,
+    schema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        candidates: {
+          type: "array",
+          maxItems: 12,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              kind: { type: "string", enum: ["topic", "follow_up", "proposed_interaction"] },
+              text: { type: "string", minLength: 1, maxLength: 500 },
+            },
+            required: ["kind", "text"],
+          },
+        },
+      },
+      required: ["candidates"],
+    },
+  },
+} as const;
+
 export interface OpenRouterConfiguration {
   apiKey: string | undefined;
   model: string | undefined;
@@ -63,9 +91,11 @@ export function createOpenRouterExtractor(
             provider: {
               only: [provider],
               allow_fallbacks: false,
+              require_parameters: true,
               data_collection: "deny",
               zdr: true,
             },
+            response_format: EXTRACTION_RESPONSE_FORMAT,
             stream: false,
           }),
           signal: controller.signal,
