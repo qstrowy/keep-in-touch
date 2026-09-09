@@ -32,6 +32,7 @@ For this MVP, protection comes from the user's device and browser profile. The a
 - No encryption, recovery passphrase, export, backup, or recovery flow.
 - No service worker, installability, or offline asset-caching promise.
 - No Supabase relationship-data table, storage bucket, API route, or Cloudflare data binding.
+- No product API route persists relationship data. The narrow exception is the ephemeral note-only relay approved in `private-extraction-contract.md`: it has no relationship-data storage, queue, cache, or binding and sends no linked metadata to its processor.
 
 ## Verification
 
@@ -41,4 +42,4 @@ For this MVP, protection comes from the user's device and browser profile. The a
 
 ## Follow-on ownership
 
-S-02 owns person fields and creation. S-04 owns interaction fields. S-05 and S-06 own extracted-anchor fields and behavior. Any future synchronization or recovery work requires a new, explicit privacy design.
+S-02 owns person fields and creation. S-04 owns interaction fields. F-03 owns the external note-processing boundary. S-05 and S-06 own extracted-anchor fields and behavior. Any future synchronization or recovery work requires a new, explicit privacy design.
