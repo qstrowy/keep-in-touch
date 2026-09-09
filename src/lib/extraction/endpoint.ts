@@ -1,4 +1,9 @@
-import { parseExtractionRequest, type ExtractionCandidateResponse, type ExtractionRequest } from "./contract";
+import {
+  MAX_COMBINED_EXTRACTION_NOTE_LENGTH,
+  parseExtractionRequest,
+  type ExtractionCandidateResponse,
+  type ExtractionRequest,
+} from "./contract";
 import type { OpenRouterExtractionResult } from "./openrouter";
 
 export const MAX_EXTRACTION_REQUEST_BYTES = 25_000;
@@ -38,7 +43,7 @@ export async function handleExtractionRequest(
     return errorResponse("invalid_request", 413);
   }
 
-  const extractionRequest = parseExtractionRequest(parseJson(body));
+  const extractionRequest = parseExtractionRequest(parseJson(body), MAX_COMBINED_EXTRACTION_NOTE_LENGTH);
   if (!extractionRequest) {
     return errorResponse("invalid_request", 400);
   }

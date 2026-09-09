@@ -42,7 +42,7 @@ Raw note text may itself contain personal information. The product does not clai
 
 ## S-05 handoff
 
-S-05 owns the manual “Extract anchors” control. Each action initially sends all raw note texts for the selected person, without dates or linked metadata; context-size management is a later change. S-05 stores candidate anchors and source provenance only as owner-local descendants, re-checks source existence before writing, and implements the notice, success/error state, and retry UI.
+S-05 owns the manual “Extract anchors” control. Each action initially combines all raw note texts for the selected person in chronological order, without dates or linked metadata, and sends one bounded serialized `{ note }` request. If that request exceeds the dedicated safe context budget below the relay's 25 KB ceiling, the browser refuses before sending and never silently drops older notes; richer context-size management is a later change. S-05 stores candidate anchors and source provenance only as owner-local descendants, re-checks source existence before writing, and implements the notice, success/error state, and retry UI.
 
 ## Verification and operational gate
 
@@ -54,18 +54,18 @@ S-05 owns the manual “Extract anchors” control. Each action initially sends 
 
 This record is the source of truth for the provider approval gate. Do not replace these fields with secret values or real note content.
 
-| Field                     | Current record                                                                                       |
-| ------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Verification status       | `verified-deployed` on 2026-09-09                                                                    |
-| Processor account         | Product-owned OpenRouter account; account identity and region must be confirmed by the owner         |
-| OpenRouter model          | Verified: `deepseek/deepseek-v4-flash-0731`                                                          |
-| OpenRouter provider       | Verified: `deepinfra/fp8`                                                                            |
-| ZDR evidence              | Confirmed by owner on 2026-09-09; evidence reference: https://openrouter.ai/docs/guides/features/zdr |
-| Prompt logging            | Confirmed disabled by the owner on 2026-09-09                                                        |
-| Fallback routing          | Disabled in every application request with one provider; verified by deployed synthetic success     |
+| Field                     | Current record                                                                                        |
+| ------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Verification status       | `verified-deployed` on 2026-09-09                                                                     |
+| Processor account         | Product-owned OpenRouter account; account identity and region must be confirmed by the owner          |
+| OpenRouter model          | Verified: `deepseek/deepseek-v4-flash-0731`                                                           |
+| OpenRouter provider       | Verified: `deepinfra/fp8`                                                                             |
+| ZDR evidence              | Confirmed by owner on 2026-09-09; evidence reference: https://openrouter.ai/docs/guides/features/zdr  |
+| Prompt logging            | Confirmed disabled by the owner on 2026-09-09                                                         |
+| Fallback routing          | Disabled in every application request with one provider; verified by deployed synthetic success       |
 | Deployment environment    | Production Worker verified with explicit owner approval after preview authentication redirect blocked |
-| Worker secret location    | Cloudflare Workers Secrets for `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, and `OPENROUTER_PROVIDER`   |
-| Synthetic deployed result | Authenticated same-origin synthetic request returned HTTP 200 with a schema-valid candidate response |
+| Worker secret location    | Cloudflare Workers Secrets for `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, and `OPENROUTER_PROVIDER`    |
+| Synthetic deployed result | Authenticated same-origin synthetic request returned HTTP 200 with a schema-valid candidate response  |
 
 This record retains only the model/provider identifiers, evidence source and date, configuration outcome, and synthetic success/failure category. It never records a key, note text, response body, cookie, or authorization material.
 

@@ -118,4 +118,77 @@ describe("relationship local vault", () => {
     );
     await expect(ownerVault.get("contacts", "contact-1")).resolves.toMatchObject(contactRecord);
   });
+
+  it("atomically replaces only generated children after rechecking every source", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const otherOwnerVault = createRelationshipVault("owner-b", { idbFactory });
+    const person = { collection: "people", id: "person-1" };
+    const source = { collection: "interactions", id: "interaction-1" };
+
+    await ownerVault.put({ ...person, payload: { displayName: "Marek" } });
+    await ownerVault.put({ ...source, parent: person, payload: { note: "Garden" } });
+    await ownerVault.put({
+      id: "old-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: { kind: "topic", text: "Old", createdAt: 1, sourceInteractionIds: [source.id] },
+    });
+    await ownerVault.put({
+      id: "unrelated-child",
+      collection: "other",
+      parent: person,
+      payload: { value: true },
+    });
+    await otherOwnerVault.put({ ...person, payload: { displayName: "Other" } });
+    await otherOwnerVault.put({ ...source, parent: person, payload: { note: "Private" } });
+    await otherOwnerVault.put({
+      id: "other-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: { kind: "topic", text: "Other", createdAt: 1, sourceInteractionIds: [source.id] },
+    });
+
+    await expect(
+      ownerVault.replaceChildrenIfSourcesExist(person, [source], "anchors", [
+        {
+          id: "new-anchor",
+          collection: "anchors",
+          parent: person,
+          payload: { kind: "topic", text: "New", createdAt: 2, sourceInteractionIds: [source.id] },
+        },
+      ]),
+    ).resolves.toBe(true);
+
+    await expect(ownerVault.get("anchors", "old-anchor")).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", "new-anchor")).resolves.toMatchObject({ ownerId: "owner-a" });
+    await expect(ownerVault.get("other", "unrelated-child")).resolves.toBeTruthy();
+    await expect(otherOwnerVault.get("anchors", "other-anchor")).resolves.toMatchObject({ ownerId: "owner-b" });
+  });
+
+  it("leaves the existing generated set untouched when a source disappeared", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const person = { collection: "people", id: "person-1" };
+    const source = { collection: "interactions", id: "interaction-1" };
+
+    await ownerVault.put({ ...person, payload: { displayName: "Marek" } });
+    await ownerVault.put({
+      id: "old-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: { kind: "topic", text: "Old", createdAt: 1, sourceInteractionIds: [source.id] },
+    });
+
+    await expect(
+      ownerVault.replaceChildrenIfSourcesExist(person, [source], "anchors", [
+        {
+          id: "new-anchor",
+          collection: "anchors",
+          parent: person,
+          payload: { kind: "topic", text: "New", createdAt: 2, sourceInteractionIds: [source.id] },
+        },
+      ]),
+    ).resolves.toBe(false);
+    await expect(ownerVault.get("anchors", "old-anchor")).resolves.toBeTruthy();
+    await expect(ownerVault.get("anchors", "new-anchor")).resolves.toBeNull();
+  });
 });

@@ -62,6 +62,64 @@ export function createRelationshipVault(ownerId: string, options: RelationshipVa
         .getAll([normalizedOwnerId, parent.collection, parent.id]) as IDBRequest<StoredRelationshipRecord[]>;
       return requestResult<StoredRelationshipRecord[]>(request);
     },
+    async replaceChildrenIfSourcesExist(parent, sourceRecords, childCollection, replacementRecords) {
+      const db = await database;
+      const transaction = db.transaction(RECORDS_STORE, "readwrite");
+      const store = transaction.objectStore(RECORDS_STORE);
+      const rootRecord = await requestResult<StoredRelationshipRecord | undefined>(
+        store.get([normalizedOwnerId, parent.collection, parent.id]) as IDBRequest<
+          StoredRelationshipRecord | undefined
+        >,
+      );
+
+      let valid = Boolean(rootRecord);
+      const sourceRecordValues: StoredRelationshipRecord[] = [];
+      if (valid) {
+        for (const source of sourceRecords) {
+          const sourceRecord = await requestResult<StoredRelationshipRecord | undefined>(
+            store.get([normalizedOwnerId, source.collection, source.id]) as IDBRequest<
+              StoredRelationshipRecord | undefined
+            >,
+          );
+          if (!sourceRecord || !sameReference(sourceRecord.parent, parent)) {
+            valid = false;
+            break;
+          }
+          sourceRecordValues.push(sourceRecord);
+        }
+      }
+
+      if (valid && (!sourceRecords.length || sourceRecordValues.length !== sourceRecords.length)) {
+        valid = false;
+      }
+      if (
+        valid &&
+        replacementRecords.some(
+          (record) => record.collection !== childCollection || !sameReference(record.parent, parent),
+        )
+      ) {
+        valid = false;
+      }
+
+      if (valid) {
+        const existingChildren = await requestResult<StoredRelationshipRecord[]>(
+          store.index(OWNER_PARENT_INDEX).getAll([normalizedOwnerId, parent.collection, parent.id]) as IDBRequest<
+            StoredRelationshipRecord[]
+          >,
+        );
+        for (const child of existingChildren) {
+          if (child.collection === childCollection) {
+            store.delete([normalizedOwnerId, child.collection, child.id]);
+          }
+        }
+        for (const record of replacementRecords) {
+          store.put({ ...record, ownerId: normalizedOwnerId });
+        }
+      }
+
+      await transactionComplete(transaction);
+      return valid;
+    },
     async deleteCascade(root) {
       const db = await database;
       const transaction = db.transaction(RECORDS_STORE, "readwrite");
@@ -167,4 +225,8 @@ function indexedDbError(operation: string, error: DOMException | null): Error {
 
 function relationshipRecordKey(reference: RelationshipRecordReference): string {
   return `${reference.collection}\u0000${reference.id}`;
+}
+
+function sameReference(left: RelationshipRecordReference | undefined, right: RelationshipRecordReference): boolean {
+  return left?.collection === right.collection && left.id === right.id;
 }

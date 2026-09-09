@@ -17,6 +17,12 @@ export interface RelationshipVault {
   get(collection: string, id: string): Promise<StoredRelationshipRecord | null>;
   listByCollection(collection: string): Promise<StoredRelationshipRecord[]>;
   listByParent(parent: RelationshipRecordReference): Promise<StoredRelationshipRecord[]>;
+  replaceChildrenIfSourcesExist(
+    parent: RelationshipRecordReference,
+    sourceRecords: RelationshipRecordReference[],
+    childCollection: string,
+    replacementRecords: RelationshipRecord[],
+  ): Promise<boolean>;
   deleteCascade(root: RelationshipRecordReference): Promise<void>;
 }
 

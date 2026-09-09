@@ -3,6 +3,7 @@ import { MAX_INTERACTION_NOTE_LENGTH } from "../interactions/interaction";
 export const EXTRACTION_PROMPT_VERSION = "2026-09-09";
 export const MAX_EXTRACTION_CANDIDATES = 12;
 export const MAX_EXTRACTION_CANDIDATE_TEXT_LENGTH = 500;
+export const MAX_COMBINED_EXTRACTION_NOTE_LENGTH = 20_000;
 
 const EXTRACTION_PROMPT = [
   "Extract concise conversation anchors from the supplied interaction note.",
@@ -47,13 +48,16 @@ export async function persistCandidateResponseIfSourceExists(
   return true;
 }
 
-export function parseExtractionRequest(value: unknown): ExtractionRequest | null {
+export function parseExtractionRequest(
+  value: unknown,
+  maxNoteLength = MAX_INTERACTION_NOTE_LENGTH,
+): ExtractionRequest | null {
   if (!isExactRecord(value, ["note"]) || typeof value.note !== "string") {
     return null;
   }
 
   const note = value.note.trim();
-  if (!note || note.length > MAX_INTERACTION_NOTE_LENGTH) {
+  if (!note || note.length > maxNoteLength) {
     return null;
   }
 
