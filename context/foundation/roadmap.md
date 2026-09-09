@@ -41,7 +41,7 @@ Here, the north star means the smallest end-to-end result that proves the produc
 
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 | --- | --- | --- | --- | --- | --- |
-| F-01 | restore-validation-gates | (foundation) repository validation is trustworthy before feature work begins | — | `tech-stack.md` §Why this stack | in-progress |
+| F-01 | restore-validation-gates | (foundation) repository validation is trustworthy before feature work begins | — | `tech-stack.md` §Why this stack | done |
 | F-02 | local-data-privacy-contract | (foundation) the local relationship-data boundary and privacy checks are explicit | — | Non-Functional Requirements, Access Control | in-progress |
 | F-03 | private-extraction-contract | (foundation) an extraction service boundary is approved against the note-processing guardrails | F-02 | Non-Functional Requirements, FR-004 | in-progress |
 | S-01 | passwordless-private-access | sign in by passwordless email and reach the private application | F-01 | FR-001 | in-progress |
@@ -86,7 +86,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Building features on failing checks would hide regressions and slow every later integration, so the smallest repair comes first.
-- **Status:** in-progress
+- **Status:** done
 
 ### F-02: Establish the local data privacy contract
 
@@ -239,4 +239,4 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 
 ## Done
 
-(Empty — completed changes will be recorded here by the archive workflow.)
+- **F-01: (foundation) the repository's required lint and production-build checks pass again and can verify every downstream slice.** — Archived 2026-09-09 → `context/archive/2026-09-07-restore-validation-gates/`. Lesson: —.
