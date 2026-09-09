@@ -43,7 +43,7 @@ Here, the north star means the smallest end-to-end result that proves the produc
 | --- | --- | --- | --- | --- | --- |
 | F-01 | restore-validation-gates | (foundation) repository validation is trustworthy before feature work begins | — | `tech-stack.md` §Why this stack | done |
 | F-02 | local-data-privacy-contract | (foundation) the local relationship-data boundary and privacy checks are explicit | — | Non-Functional Requirements, Access Control | done |
-| F-03 | private-extraction-contract | (foundation) an extraction service boundary is approved against the note-processing guardrails | F-02 | Non-Functional Requirements, FR-004 | in-progress |
+| F-03 | private-extraction-contract | (foundation) an extraction service boundary is approved against the note-processing guardrails | F-02 | Non-Functional Requirements, FR-004 | done |
 | S-01 | passwordless-private-access | sign in by passwordless email and reach the private application | F-01 | FR-001 | done |
 | S-02 | create-first-person | create and view a person with a relationship circle and birthday | F-01, F-02, S-01 | FR-002 | done |
 | S-03 | maintain-and-delete-person | edit a person or delete them with all associated relationship data | S-02 | FR-002, Non-Functional Requirements | done |
@@ -113,7 +113,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Unknowns:**
   - Which external processor demonstrably meets the PRD's no-retention, no-training, and data-minimization requirements? — Owner: user. Block: yes.
 - **Risk:** Choosing a processor during implementation without prior evidence could invalidate the privacy promise at the exact point the central product flow is introduced.
-- **Status:** in-progress
+- **Status:** done
 
 ## Slices
 
@@ -245,3 +245,4 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **S-02: the user can create and view a person with a relationship circle and birthday inside the private application.** — Archived 2026-09-09 → `context/archive/2026-09-09-create-first-person/`. Lesson: —.
 - **S-03: the user can edit a person's details or delete the person and all associated relationship data immediately.** — Archived 2026-09-09 → `context/archive/2026-09-09-maintain-and-delete-person/`. Lesson: —.
 - **S-04: the user can save a dated free-text interaction for a person and see that the original note was preserved.** — Archived 2026-09-09 → `context/archive/2026-09-09-record-dated-interaction/`. Lesson: —.
+- **F-03: (foundation) the external extraction boundary has evidence-backed rules for data minimization, retention, training use, and failure handling.** — Archived 2026-09-09 → `context/archive/2026-09-09-private-extraction-contract/`. Lesson: —.
