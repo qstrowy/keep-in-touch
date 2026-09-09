@@ -37,4 +37,69 @@ describe("person storage", () => {
     const otherOwnerVault = createRelationshipVault("owner-b", { idbFactory });
     await expect(otherOwnerVault.listByCollection(PEOPLE_COLLECTION)).resolves.toEqual([]);
   });
+
+  it("replaces a person's payload when the owner saves the same ID again", async () => {
+    const idbFactory = new IDBFactory();
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const initialPerson = validatePersonInput({
+      displayName: "Marta",
+      relationshipCircle: "family",
+      birthdayMonth: "2",
+      birthdayDay: "29",
+    });
+    const editedPerson = validatePersonInput({
+      displayName: "Marta Nowak",
+      relationshipCircle: "professional",
+      birthdayMonth: "",
+      birthdayDay: "",
+    });
+
+    if (!initialPerson.person || !editedPerson.person) {
+      throw new Error("Expected valid person input.");
+    }
+
+    await ownerVault.put(createPersonRecord(initialPerson.person, "person-1"));
+    await ownerVault.put(createPersonRecord(editedPerson.person, "person-1"));
+
+    const reopenedOwnerVault = createRelationshipVault("owner-a", { idbFactory });
+    await expect(reopenedOwnerVault.listByCollection(PEOPLE_COLLECTION)).resolves.toEqual([
+      expect.objectContaining({
+        id: "person-1",
+        payload: { displayName: "Marta Nowak", relationshipCircle: "professional" },
+      }),
+    ]);
+  });
+
+  it("cascades a person's linked records without deleting another owner's person", async () => {
+    const idbFactory = new IDBFactory();
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const otherOwnerVault = createRelationshipVault("owner-b", { idbFactory });
+    const validation = validatePersonInput({
+      displayName: "Marta",
+      relationshipCircle: "family",
+      birthdayMonth: "",
+      birthdayDay: "",
+    });
+
+    if (!validation.person) {
+      throw new Error("Expected valid person input.");
+    }
+
+    await ownerVault.put(createPersonRecord(validation.person, "person-1"));
+    await ownerVault.put({
+      collection: "interactions",
+      id: "interaction-1",
+      parent: { collection: PEOPLE_COLLECTION, id: "person-1" },
+      payload: { body: "Ask about the new role" },
+    });
+    await otherOwnerVault.put(createPersonRecord(validation.person, "person-1"));
+
+    await ownerVault.deleteCascade({ collection: PEOPLE_COLLECTION, id: "person-1" });
+
+    await expect(ownerVault.listByCollection(PEOPLE_COLLECTION)).resolves.toEqual([]);
+    await expect(ownerVault.listByCollection("interactions")).resolves.toEqual([]);
+    await expect(otherOwnerVault.listByCollection(PEOPLE_COLLECTION)).resolves.toEqual([
+      expect.objectContaining({ id: "person-1", ownerId: "owner-b" }),
+    ]);
+  });
 });
