@@ -170,9 +170,9 @@ No IndexedDB schema migration is required: the generic `records` store and owner
 
 #### Automated
 
-- [x] 2.1 Add the selected-person interaction form, local history, and retry behavior
-- [x] 2.2 Pass full tests, lint, build, and protected-boundary checks
+- [x] 2.1 Add the selected-person interaction form, local history, and retry behavior — 63c214a
+- [x] 2.2 Pass full tests, lint, build, and protected-boundary checks — 63c214a
 
 #### Manual
 
-- [x] 2.3 Confirm local save, reload, validation, retry, owner isolation, cascade deletion, and IndexedDB-only storage in an authenticated browser
+- [x] 2.3 Confirm local save, reload, validation, retry, owner isolation, cascade deletion, and IndexedDB-only storage in an authenticated browser — 63c214a
