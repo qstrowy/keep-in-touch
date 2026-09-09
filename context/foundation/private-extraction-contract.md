@@ -47,7 +47,7 @@ S-05 owns the manual “Extract anchors” control. Each action initially sends 
 ## Verification and operational gate
 
 - Automated tests prove that only a valid note crosses the public boundary, malformed candidate responses are rejected, and protected local modules remain unable to make network calls.
-- Synthetic text is the only permitted input until a human records the exact pinned OpenRouter provider/model, ZDR evidence, disabled prompt logging, no-fallback configuration, Worker-secret location, and a successful preview verification.
+- Synthetic text is the only permitted input until a human records the exact pinned OpenRouter provider/model, ZDR evidence, disabled prompt logging, no-fallback configuration, Worker-secret location, and a successful deployed verification. Preview is preferred; production verification requires explicit owner approval and the same synthetic-only guardrails.
 - Real-note use, production promotion, secret rotation, logging/observability changes, or processor changes require human approval and another verification record.
 
 ## Operational verification record
@@ -63,6 +63,7 @@ This record is the source of truth for the provider approval gate. Do not replac
 | ZDR evidence              | Confirmed by owner on 2026-09-09; evidence reference: https://openrouter.ai/docs/guides/features/zdr |
 | Prompt logging            | Confirmed disabled by the owner on 2026-09-09                                                        |
 | Fallback routing          | Disabled in every application request with one provider; verified by deployed synthetic success     |
+| Deployment environment    | Production Worker verified with explicit owner approval after preview authentication redirect blocked |
 | Worker secret location    | Cloudflare Workers Secrets for `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, and `OPENROUTER_PROVIDER`   |
 | Synthetic deployed result | Authenticated same-origin synthetic request returned HTTP 200 with a schema-valid candidate response |
 
@@ -77,4 +78,4 @@ S-05 may proceed only after the operational verification record above is complet
 - Persist candidate anchors and source provenance only in the owner-local IndexedDB vault.
 - Re-check local source existence immediately before writing candidates so a delete wins over a late response.
 - Keep retry user-initiated and preserve the original local interaction on every neutral failure.
-- Keep real-note use blocked if the provider route, account controls, secrets, logging configuration, or preview verification changes.
+- Keep real-note use blocked if the provider route, account controls, secrets, logging configuration, or verified deployment changes.
