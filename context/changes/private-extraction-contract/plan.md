@@ -221,13 +221,13 @@ No relationship-data migration or remote persistence resource is introduced. New
 
 #### Automated
 
-- [x] 1.1 Add the durable private-extraction contract and narrow local-data exception
-- [x] 1.2 Add and test the note-only request and candidate-response contracts
-- [x] 1.3 Pass contract, local-boundary, lint, and full test verification
+- [x] 1.1 Add the durable private-extraction contract and narrow local-data exception — 411ef57
+- [x] 1.2 Add and test the note-only request and candidate-response contracts — 411ef57
+- [x] 1.3 Pass contract, local-boundary, lint, and full test verification — 411ef57
 
 #### Manual
 
-- [ ] 1.4 Review the approved contract against the PRD and privacy requirements
+- [x] 1.4 Review the approved contract against the PRD and privacy requirements — 411ef57
 
 ### Phase 2: Implement and test the authenticated no-persistence relay
 
