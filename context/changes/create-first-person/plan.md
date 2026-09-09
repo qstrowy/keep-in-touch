@@ -220,21 +220,21 @@ There is no existing person data to migrate. Person fields are stored as a typed
 
 #### Automated
 
-- [x] 2.1 Add the client-side first-person form, save state, error recovery, and summary view
-- [x] 2.2 Replace the protected dashboard placeholder with the owner-ID island handoff
-- [x] 2.3 Pass test, lint, and production-build checks without a remote product-data path
+- [x] 2.1 Add the client-side first-person form, save state, error recovery, and summary view — 5dee056
+- [x] 2.2 Replace the protected dashboard placeholder with the owner-ID island handoff — 5dee056
+- [x] 2.3 Pass test, lint, and production-build checks without a remote product-data path — 5dee056
 
 #### Manual
 
-- [x] 2.4 Confirm create, validation, pending, retry, and saved-summary behavior in an authenticated browser
+- [x] 2.4 Confirm create, validation, pending, retry, and saved-summary behavior in an authenticated browser — 5dee056
 
 ### Phase 3: Prove owner-local persistence end to end
 
 #### Automated
 
-- [x] 3.1 Add person-to-vault round-trip and cross-owner isolation integration tests
-- [x] 3.2 Pass complete validation and protected-boundary checks under Node 22
+- [x] 3.1 Add person-to-vault round-trip and cross-owner isolation integration tests — 5dee056
+- [x] 3.2 Pass complete validation and protected-boundary checks under Node 22 — 5dee056
 
 #### Manual
 
-- [x] 3.3 Confirm reload persistence, signed-out protection, second-owner isolation, and IndexedDB-only storage
+- [x] 3.3 Confirm reload persistence, signed-out protection, second-owner isolation, and IndexedDB-only storage — 5dee056
