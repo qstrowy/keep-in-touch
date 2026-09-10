@@ -1,9 +1,9 @@
 ---
 change_id: extracted-anchor-briefing
 title: Extracted anchor briefing
-status: implementing
+status: implemented
 created: 2026-09-09
-updated: 2026-09-09
+updated: 2026-09-10
 archived_at: null
 ---
 

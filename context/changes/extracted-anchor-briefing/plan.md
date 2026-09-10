@@ -218,7 +218,7 @@ No IndexedDB schema migration is required because anchors use the existing gener
 
 #### Manual
 
-- [x] 1.4 Review local-only provenance and exact note-only browser request shape
+- [x] 1.4 Review local-only provenance and exact note-only browser request shape — cdbde0d
 
 ### Phase 2: Add the explicit extraction and briefing interface
 
@@ -230,17 +230,17 @@ No IndexedDB schema migration is required because anchors use the existing gener
 
 #### Manual
 
-- [x] 2.4 Confirm synthetic extraction, grouped briefing, retained history, and retry behavior in an authenticated browser
+- [x] 2.4 Confirm synthetic extraction, grouped briefing, retained history, and retry behavior in an authenticated browser — cdbde0d
 
 ### Phase 3: Prove end-to-end safety and prepare real use
 
 #### Automated
 
-- [x] 3.1 Add end-to-end boundary, delete-wins, and no-request counterexample coverage
-- [x] 3.2 Record synthetic-only acceptance and preserve the explicit real-note gate
-- [x] 3.3 Pass full boundary diff, test, lint, and production-build verification
+- [x] 3.1 Add end-to-end boundary, delete-wins, and no-request counterexample coverage — cdbde0d
+- [x] 3.2 Record synthetic-only acceptance and preserve the explicit real-note gate — cdbde0d
+- [x] 3.3 Pass full boundary diff, test, lint, and production-build verification — cdbde0d
 
 #### Manual
 
-- [x] 3.4 Verify deployed synthetic extraction, privacy visibility, performance, and deletion behavior
-- [x] 3.5 Confirm or explicitly defer real-note authorization after deployed inspection
+- [x] 3.4 Verify deployed synthetic extraction, privacy visibility, performance, and deletion behavior — cdbde0d
+- [x] 3.5 Confirm or explicitly defer real-note authorization after deployed inspection — cdbde0d
