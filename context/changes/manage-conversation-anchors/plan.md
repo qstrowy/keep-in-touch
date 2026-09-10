@@ -215,33 +215,33 @@ No IndexedDB schema migration is needed because the generic record store remains
 
 #### Automated
 
-- [x] 1.1 Add backward-compatible anchor lifecycle parsing and mutation helpers
-- [x] 1.2 Reconcile generated children atomically while preserving managed anchors
-- [x] 1.3 Pass focused anchor and owner-local vault lifecycle coverage
+- [x] 1.1 Add backward-compatible anchor lifecycle parsing and mutation helpers — f31fff3
+- [x] 1.2 Reconcile generated children atomically while preserving managed anchors — f31fff3
+- [x] 1.3 Pass focused anchor and owner-local vault lifecycle coverage — f31fff3
 
 #### Manual
 
-- [x] 1.4 Confirm lifecycle records and original interactions remain browser-local
+- [x] 1.4 Confirm lifecycle records and original interactions remain browser-local — f31fff3
 
 ### Phase 2: Add compact owner controls to the briefing
 
 #### Automated
 
-- [x] 2.1 Filter and group only open anchors across all three kinds
-- [x] 2.2 Add inline edit, resolve, dismiss, confirmation, and race-safe briefing behavior
-- [x] 2.3 Route manual extraction through managed-anchor reconciliation and retain protected-boundary coverage
+- [x] 2.1 Filter and group only open anchors across all three kinds — f31fff3
+- [x] 2.2 Add inline edit, resolve, dismiss, confirmation, and race-safe briefing behavior — f31fff3
+- [x] 2.3 Route manual extraction through managed-anchor reconciliation and retain protected-boundary coverage — f31fff3
 
 #### Manual
 
-- [x] 2.4 Confirm inline controls, confirmations, reload persistence, neutral storage errors, and later extraction behavior
+- [x] 2.4 Confirm inline controls, confirmations, reload persistence, neutral storage errors, and later extraction behavior — f31fff3
 
 ### Phase 3: Verify privacy, lifecycle, and full regression safety
 
 #### Automated
 
-- [x] 3.1 Add lifecycle delete-wins and no-network counterexample coverage
-- [x] 3.2 Pass full test, lint, production-build, and whitespace verification
+- [x] 3.1 Add lifecycle delete-wins and no-network counterexample coverage — f31fff3
+- [x] 3.2 Pass full test, lint, production-build, and whitespace verification — f31fff3
 
 #### Manual
 
-- [x] 3.3 Confirm the end-to-end owner-control and person-deletion workflow in an authenticated browser
+- [x] 3.3 Confirm the end-to-end owner-control and person-deletion workflow in an authenticated browser — f31fff3
