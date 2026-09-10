@@ -48,7 +48,7 @@ Here, the north star means the smallest end-to-end result that proves the produc
 | S-02 | create-first-person | create and view a person with a relationship circle and birthday | F-01, F-02, S-01 | FR-002 | done |
 | S-03 | maintain-and-delete-person | edit a person or delete them with all associated relationship data | S-02 | FR-002, Non-Functional Requirements | done |
 | S-04 | record-dated-interaction | save a dated free-text interaction for a person | F-01, F-02, S-02 | US-01, FR-003 | done |
-| S-05 | extracted-anchor-briefing | see an extracted open topic or follow-up in the person's later briefing | F-01, F-02, F-03, S-04 | US-01, FR-004, FR-007 | in-progress |
+| S-05 | extracted-anchor-briefing | see an extracted open topic or follow-up in the person's later briefing | F-01, F-02, F-03, S-04 | US-01, FR-004, FR-007 | done |
 | S-06 | manage-conversation-anchors | correct, dismiss, or resolve an extracted conversation anchor | S-05 | US-01, FR-005, FR-006 | proposed |
 | S-07 | view-upcoming-birthdays | see upcoming birthdays from saved people | S-02 | FR-008 | blocked |
 
@@ -174,7 +174,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** This is the first slice that proves the product is more useful than a manual journal, but shipping it before the privacy boundary is approved would undermine trust.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-06: Correct and close conversation anchors
 
@@ -244,3 +244,4 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **S-03: the user can edit a person's details or delete the person and all associated relationship data immediately.** — Archived 2026-09-09 → `context/archive/2026-09-09-maintain-and-delete-person/`. Lesson: —.
 - **S-04: the user can save a dated free-text interaction for a person and see that the original note was preserved.** — Archived 2026-09-09 → `context/archive/2026-09-09-record-dated-interaction/`. Lesson: —.
 - **F-03: (foundation) the external extraction boundary has evidence-backed rules for data minimization, retention, training use, and failure handling.** — Archived 2026-09-09 → `context/archive/2026-09-09-private-extraction-contract/`. Lesson: —.
+- **S-05: after saving an interaction, the user can see a relevant open topic or potential follow-up in that person's later briefing alongside recent context.** — Archived 2026-09-10 → `context/archive/2026-09-09-extracted-anchor-briefing/`. Lesson: —.
