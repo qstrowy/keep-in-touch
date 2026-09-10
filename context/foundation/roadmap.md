@@ -3,7 +3,7 @@ project: KeepInTouch
 version: 1
 status: draft
 created: 2026-09-07
-updated: 2026-09-09
+updated: 2026-09-10
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -48,7 +48,7 @@ Here, the north star means the smallest end-to-end result that proves the produc
 | S-02 | create-first-person | create and view a person with a relationship circle and birthday | F-01, F-02, S-01 | FR-002 | done |
 | S-03 | maintain-and-delete-person | edit a person or delete them with all associated relationship data | S-02 | FR-002, Non-Functional Requirements | done |
 | S-04 | record-dated-interaction | save a dated free-text interaction for a person | F-01, F-02, S-02 | US-01, FR-003 | done |
-| S-05 | extracted-anchor-briefing | see an extracted open topic or follow-up in the person's later briefing | F-01, F-02, F-03, S-04 | US-01, FR-004, FR-007 | ready |
+| S-05 | extracted-anchor-briefing | see an extracted open topic or follow-up in the person's later briefing | F-01, F-02, F-03, S-04 | US-01, FR-004, FR-007 | in-progress |
 | S-06 | manage-conversation-anchors | correct, dismiss, or resolve an extracted conversation anchor | S-05 | US-01, FR-005, FR-006 | proposed |
 | S-07 | view-upcoming-birthdays | see upcoming birthdays from saved people | S-02 | FR-008 | blocked |
 
@@ -174,7 +174,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** This is the first slice that proves the product is more useful than a manual journal, but shipping it before the privacy boundary is approved would undermine trust.
-- **Status:** ready
+- **Status:** in-progress
 
 ### S-06: Correct and close conversation anchors
 
@@ -212,7 +212,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 | S-02 | create-first-person | Let the owner create the first person | no | Archived; no further planning required |
 | S-03 | maintain-and-delete-person | Let the owner maintain or remove a person | no | Archived; no further planning required |
 | S-04 | record-dated-interaction | Let the owner preserve a dated interaction | no | Archived; no further planning required |
-| S-05 | extracted-anchor-briefing | Show an extracted conversation anchor in the briefing | yes | All prerequisites are done; provider verification is complete. Run `/10x-plan extracted-anchor-briefing` |
+| S-05 | extracted-anchor-briefing | Show an extracted conversation anchor in the briefing | no | Planning is in progress; implementation follows plan approval |
 | S-06 | manage-conversation-anchors | Let the owner correct and close conversation anchors | no | Requires S-05 |
 | S-07 | view-upcoming-birthdays | Show upcoming birthdays | no | Requires S-02 and a defined birthday window |
 
@@ -229,6 +229,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Native mobile capabilities, voice recognition, and location tracking** — Why parked: the PRD specifies a smartphone-oriented web application instead.
 - **Shared workspaces, team roles, and collaboration** — Why parked: the PRD defines one flat, owner-only user role.
 - **Contact-frequency scoring and neglected-contact recommendations** — Why parked: outside the primary conversation-anchor flow.
+- **Asynchronous, retryable anchor extraction** — Why parked: the owner requested extraction that can finish after the browser closes. It would require a new server-retention and deletion contract; a deleted person must cancel and purge any pending work and must never be recreated by a late result. Revisit only after the owner chooses the retention boundary, retry policy, cancellation behavior, and completion notification experience.
 
 ## Milestone History
 

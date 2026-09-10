@@ -36,6 +36,7 @@ Raw note text may itself contain personal information. The product does not clai
 
 - The relay has no database, storage bucket, KV, Durable Object, cache, queue, background job, server retry queue, or relationship-data binding.
 - Application logs, errors, traces, metrics, and client responses must not include note text, candidate text, provider response bodies, credentials, cookies, authorization headers, or linked relationship metadata. Failures are expressed as neutral public categories only.
+- Temporary local-development diagnostics may log only a random relay request ID, stage name, elapsed time, HTTP status, OpenRouter request ID, and completed response-body byte count. They may add localhost-only OpenRouter attribution headers to make requests visible in the owner's Activity view. They are disabled in production and must never enable OpenRouter Broadcast tracing, which may include request or response content.
 - The request is foreground-only and aborts after 90 seconds. It does not stream, use background/batch processing, cache prompts/responses, or retry automatically.
 - A configuration, network, timeout, rate-limit, provider, or malformed-response failure never changes or removes the original local interaction. S-05 will offer an explicit user-initiated retry.
 - Deleting a person remains immediate. A request already sent to the processor cannot be recalled, but a late response must be discarded if its local source no longer exists; it must not recreate local anchors.
@@ -47,8 +48,10 @@ S-05 owns the manual “Extract anchors” control. Each action initially combin
 ## Verification and operational gate
 
 - Automated tests prove that only a valid note crosses the public boundary, malformed candidate responses are rejected, and protected local modules remain unable to make network calls.
+- Phase 3 synthetic acceptance confirmed the deployed authenticated route returned a schema-valid result while browser-visible requests and application outcomes exposed no secrets, local identifiers, or provider diagnostics. The combined-context budget refused an oversized synthetic history before any request was made.
 - Synthetic text is the only permitted input until a human records the exact pinned OpenRouter provider/model, ZDR evidence, disabled prompt logging, no-fallback configuration, Worker-secret location, and a successful deployed verification. Preview is preferred; production verification requires explicit owner approval and the same synthetic-only guardrails.
 - Real-note use, production promotion, secret rotation, logging/observability changes, or processor changes require human approval and another verification record.
+- On 2026-09-10, the owner approved the temporary local-development diagnostics described above for reliability investigation. Production diagnostics remain disabled.
 
 ## Operational verification record
 
@@ -63,6 +66,7 @@ This record is the source of truth for the provider approval gate. Do not replac
 | ZDR evidence              | Confirmed by owner on 2026-09-09; evidence reference: https://openrouter.ai/docs/guides/features/zdr  |
 | Prompt logging            | Confirmed disabled by the owner on 2026-09-09                                                         |
 | Fallback routing          | Disabled in every application request with one provider; verified by deployed synthetic success       |
+| Reasoning configuration   | Disabled with `reasoning.effort: "none"` after a 2026-09-10 synthetic pinned-route verification      |
 | Deployment environment    | Production Worker verified with explicit owner approval after preview authentication redirect blocked |
 | Worker secret location    | Cloudflare Workers Secrets for `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, and `OPENROUTER_PROVIDER`    |
 | Synthetic deployed result | Authenticated same-origin synthetic request returned HTTP 200 with a schema-valid candidate response  |

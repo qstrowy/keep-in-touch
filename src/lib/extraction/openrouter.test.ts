@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createOpenRouterExtractor, EXTRACTION_TIMEOUT_MS, type ExtractionFetch } from "./openrouter";
+import { createExtractionProviderInput } from "./contract";
+import {
+  createOpenRouterExtractor,
+  EXTRACTION_TIMEOUT_MS,
+  type ExtractionFetch,
+  type OpenRouterExtractionDiagnosticEvent,
+} from "./openrouter";
 
 const configuration = {
   apiKey: "server-only-secret",
@@ -41,8 +47,7 @@ describe("OpenRouter extraction service", () => {
       messages: [
         {
           role: "system",
-          content:
-            "Extract concise conversation anchors from the supplied interaction note. Return only JSON with a candidates array. Each candidate has kind topic, follow_up, or proposed_interaction and a concise text value. Do not invent details not supported by the note.",
+          content: createExtractionProviderInput({ note: "Ask about the recital." }).instruction,
         },
         { role: "user", content: "Ask about the recital." },
       ],
@@ -80,8 +85,62 @@ describe("OpenRouter extraction service", () => {
           },
         },
       },
+      reasoning: { effort: "none" },
       stream: false,
     });
+  });
+
+  it("emits privacy-safe local diagnostics and Activity attribution only when explicitly enabled", async () => {
+    const events: OpenRouterExtractionDiagnosticEvent[] = [];
+    const extractor = createOpenRouterExtractor(configuration, {
+      fetchFn: (_url, init) => {
+        expect(init.headers).toMatchObject({
+          "HTTP-Referer": "http://localhost:4323",
+          "X-OpenRouter-Title": "KeepInTouch local extraction",
+        });
+        return Promise.resolve(
+          new Response(JSON.stringify({ choices: [{ message: { content: '{"candidates":[]}' } }] }), {
+            headers: { "x-request-id": "openrouter-request" },
+          }),
+        );
+      },
+    });
+
+    await expect(
+      extractor.extract(
+        { note: "Private note" },
+        {
+          requestId: "local-request",
+          httpReferer: "http://localhost:4323",
+          report: (event) => events.push(event),
+        },
+      ),
+    ).resolves.toEqual({ ok: true, response: { candidates: [] } });
+
+    expect(events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ requestId: "local-request", stage: "provider_request_started" }),
+        expect.objectContaining({
+          requestId: "local-request",
+          stage: "provider_response_received",
+          status: 200,
+          openRouterRequestId: "openrouter-request",
+        }),
+        expect.objectContaining({
+          requestId: "local-request",
+          stage: "provider_body_read_started",
+          status: 200,
+        }),
+        expect.objectContaining({
+          requestId: "local-request",
+          stage: "provider_body_read_finished",
+          status: 200,
+        }),
+        expect.objectContaining({ requestId: "local-request", stage: "provider_success" }),
+      ]),
+    );
+    expect(events.find((event) => event.stage === "provider_body_read_finished")?.bodyBytes).toBeGreaterThan(0);
+    expect(JSON.stringify(events)).not.toContain("Private note");
   });
 
   it("fails neutrally when configuration, provider response, or content is unavailable", async () => {

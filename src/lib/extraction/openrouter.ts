@@ -49,14 +49,44 @@ export interface OpenRouterExtractorOptions {
 
 export type ExtractionFetch = (url: string, init: RequestInit) => Promise<Response>;
 
+export interface OpenRouterExtractionDiagnostics {
+  requestId: string;
+  httpReferer: string;
+  report(event: OpenRouterExtractionDiagnosticEvent): void;
+}
+
+export interface OpenRouterExtractionDiagnosticEvent {
+  requestId: string;
+  stage:
+    | "provider_request_started"
+    | "provider_response_received"
+    | "provider_body_read_started"
+    | "provider_body_read_finished"
+    | "provider_timeout"
+    | "provider_unavailable"
+    | "provider_invalid_response"
+    | "provider_success";
+  elapsedMs: number;
+  status?: number;
+  openRouterRequestId?: string;
+  bodyBytes?: number;
+}
+
 export type OpenRouterExtractionResult =
   | { ok: true; response: ExtractionCandidateResponse }
   | { ok: false; error: "unavailable" | "timeout" | "invalid_response" };
 
+export interface OpenRouterExtractor {
+  extract(
+    request: ExtractionRequest,
+    diagnostics?: OpenRouterExtractionDiagnostics,
+  ): Promise<OpenRouterExtractionResult>;
+}
+
 export function createOpenRouterExtractor(
   configuration: OpenRouterConfiguration,
   options: OpenRouterExtractorOptions = {},
-): { extract(request: ExtractionRequest): Promise<OpenRouterExtractionResult> } {
+): OpenRouterExtractor {
   const apiKey = configuration.apiKey?.trim();
   const model = configuration.model?.trim();
   const provider = configuration.provider?.trim();
@@ -64,23 +94,38 @@ export function createOpenRouterExtractor(
   const timeoutMs = options.timeoutMs ?? EXTRACTION_TIMEOUT_MS;
 
   return {
-    async extract(request) {
+    async extract(request, diagnostics?: OpenRouterExtractionDiagnostics) {
       if (!apiKey || !model || !provider) {
+        reportDiagnostic(diagnostics, {
+          stage: "provider_unavailable",
+          elapsedMs: 0,
+        });
         return { ok: false, error: "unavailable" };
       }
 
       const controller = new AbortController();
+      const startedAt = Date.now();
       const timeout = setTimeout(() => {
         controller.abort();
       }, timeoutMs);
       const providerInput = createExtractionProviderInput(request);
 
       try {
+        reportDiagnostic(diagnostics, {
+          stage: "provider_request_started",
+          elapsedMs: elapsedMs(startedAt),
+        });
         const response = await fetchFn(OPENROUTER_CHAT_COMPLETIONS_URL, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${apiKey}`,
             "Content-Type": "application/json",
+            ...(diagnostics
+              ? {
+                  "HTTP-Referer": diagnostics.httpReferer,
+                  "X-OpenRouter-Title": "KeepInTouch local extraction",
+                }
+              : {}),
           },
           body: JSON.stringify({
             model,
@@ -96,24 +141,78 @@ export function createOpenRouterExtractor(
               zdr: true,
             },
             response_format: EXTRACTION_RESPONSE_FORMAT,
+            reasoning: { effort: "none" },
             stream: false,
           }),
           signal: controller.signal,
         });
 
+        reportDiagnostic(diagnostics, {
+          stage: "provider_response_received",
+          elapsedMs: elapsedMs(startedAt),
+          status: response.status,
+          openRouterRequestId: response.headers.get("x-request-id") ?? undefined,
+        });
         if (!response.ok) {
+          reportDiagnostic(diagnostics, {
+            stage: "provider_unavailable",
+            elapsedMs: elapsedMs(startedAt),
+            status: response.status,
+            openRouterRequestId: response.headers.get("x-request-id") ?? undefined,
+          });
           return { ok: false, error: "unavailable" };
         }
 
-        const content = await responseContent(response);
+        reportDiagnostic(diagnostics, {
+          stage: "provider_body_read_started",
+          elapsedMs: elapsedMs(startedAt),
+          status: response.status,
+          openRouterRequestId: response.headers.get("x-request-id") ?? undefined,
+        });
+        const responseText = await response.text();
+        reportDiagnostic(diagnostics, {
+          stage: "provider_body_read_finished",
+          elapsedMs: elapsedMs(startedAt),
+          status: response.status,
+          openRouterRequestId: response.headers.get("x-request-id") ?? undefined,
+          bodyBytes: new TextEncoder().encode(responseText).byteLength,
+        });
+        const content = responseContent(responseText);
         if (!content) {
+          reportDiagnostic(diagnostics, {
+            stage: "provider_invalid_response",
+            elapsedMs: elapsedMs(startedAt),
+            status: response.status,
+            openRouterRequestId: response.headers.get("x-request-id") ?? undefined,
+          });
           return { ok: false, error: "invalid_response" };
         }
 
         const candidateResponse = parseExtractionCandidateResponse(parseJson(content));
-        return candidateResponse ? { ok: true, response: candidateResponse } : { ok: false, error: "invalid_response" };
+        if (!candidateResponse) {
+          reportDiagnostic(diagnostics, {
+            stage: "provider_invalid_response",
+            elapsedMs: elapsedMs(startedAt),
+            status: response.status,
+            openRouterRequestId: response.headers.get("x-request-id") ?? undefined,
+          });
+          return { ok: false, error: "invalid_response" };
+        }
+
+        reportDiagnostic(diagnostics, {
+          stage: "provider_success",
+          elapsedMs: elapsedMs(startedAt),
+          status: response.status,
+          openRouterRequestId: response.headers.get("x-request-id") ?? undefined,
+        });
+        return { ok: true, response: candidateResponse };
       } catch (error) {
-        return { ok: false, error: isAbortError(error, controller.signal) ? "timeout" : "unavailable" };
+        const timedOut = isAbortError(error, controller.signal);
+        reportDiagnostic(diagnostics, {
+          stage: timedOut ? "provider_timeout" : "provider_unavailable",
+          elapsedMs: elapsedMs(startedAt),
+        });
+        return { ok: false, error: timedOut ? "timeout" : "unavailable" };
       } finally {
         clearTimeout(timeout);
       }
@@ -121,8 +220,19 @@ export function createOpenRouterExtractor(
   };
 }
 
-async function responseContent(response: Response): Promise<string | null> {
-  const body = parseJson(await response.text());
+function reportDiagnostic(
+  diagnostics: OpenRouterExtractionDiagnostics | undefined,
+  event: Omit<OpenRouterExtractionDiagnosticEvent, "requestId">,
+): void {
+  diagnostics?.report({ requestId: diagnostics.requestId, ...event });
+}
+
+function elapsedMs(startedAt: number): number {
+  return Date.now() - startedAt;
+}
+
+function responseContent(responseText: string): string | null {
+  const body = parseJson(responseText);
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     return null;
   }

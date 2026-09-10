@@ -10,10 +10,10 @@ describe("relationship-data boundary", () => {
 
   it("rejects network calls and remote imports in relationship-data modules", async () => {
     const eslint = new ESLint();
-    const filePath = "src/lib/interactions/interaction.ts";
+    const filePaths = ["src/lib/interactions/interaction.ts", "src/lib/relationship-data/local-vault.ts"];
     const results = await Promise.all([
-      eslint.lintText('void fetch("https://example.invalid");', { filePath }),
-      eslint.lintText('import { createClient } from "@/lib/supabase";', { filePath }),
+      ...filePaths.map((filePath) => eslint.lintText('void fetch("https://example.invalid");', { filePath })),
+      ...filePaths.map((filePath) => eslint.lintText('import { createClient } from "@/lib/supabase";', { filePath })),
     ]);
 
     expect(results.flatMap(([result]) => result.messages.map((message) => message.ruleId))).toEqual(

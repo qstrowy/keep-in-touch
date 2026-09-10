@@ -57,4 +57,12 @@ describe("extraction browser client", () => {
       requestExtraction("note", vi.fn<typeof fetch>().mockResolvedValue(new Response("{}", { status: 200 }))),
     ).resolves.toEqual({ ok: false, error: "invalid_response" });
   });
+
+  it("refuses an oversized serialized request without calling fetch", async () => {
+    const fetchImpl = vi.fn<typeof fetch>();
+    const note = "é".repeat(MAX_COMBINED_EXTRACTION_REQUEST_BYTES);
+
+    await expect(requestExtraction(note, fetchImpl)).resolves.toEqual({ ok: false, error: "too_large" });
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
 });

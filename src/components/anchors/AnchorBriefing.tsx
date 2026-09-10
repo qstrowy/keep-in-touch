@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   ANCHORS_COLLECTION,
@@ -31,9 +31,11 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
   const [anchors, setAnchors] = useState<ConversationAnchor[]>([]);
   const [state, setState] = useState<BriefingState>("loading");
   const [error, setError] = useState<string | null>(null);
+  const extractionGeneration = useRef(0);
 
   useEffect(() => {
     let isActive = true;
+    const generation = ++extractionGeneration.current;
 
     async function loadBriefing() {
       setState("loading");
@@ -60,6 +62,9 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
     void loadBriefing();
     return () => {
       isActive = false;
+      if (extractionGeneration.current === generation) {
+        extractionGeneration.current += 1;
+      }
     };
   }, [ownerId, personId, refreshToken]);
 
@@ -75,8 +80,12 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
 
     setState("running");
     setError(null);
+    const generation = extractionGeneration.current;
 
     const result = await requestExtraction(combined.note);
+    if (generation !== extractionGeneration.current) {
+      return;
+    }
     if (!result.ok) {
       setError(
         result.error === "too_large"
@@ -100,6 +109,10 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
         ANCHORS_COLLECTION,
         replacementRecords,
       );
+
+      if (generation !== extractionGeneration.current) {
+        return;
+      }
 
       if (!replaced) {
         setError("The person or one of these notes changed before extraction finished. Try again.");

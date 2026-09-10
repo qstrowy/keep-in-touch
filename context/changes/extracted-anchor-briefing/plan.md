@@ -218,29 +218,29 @@ No IndexedDB schema migration is required because anchors use the existing gener
 
 #### Manual
 
-- [ ] 1.4 Review local-only provenance and exact note-only browser request shape
+- [x] 1.4 Review local-only provenance and exact note-only browser request shape
 
 ### Phase 2: Add the explicit extraction and briefing interface
 
 #### Automated
 
-- [x] 2.1 Add the person briefing, compact disclosure, and explicit extraction control
-- [x] 2.2 Implement replacement, empty-result, neutral-failure, and retry UI lifecycle
-- [x] 2.3 Pass focused UI/coordinator, full test, lint, and build verification
+- [x] 2.1 Add the person briefing, compact disclosure, and explicit extraction control — d695976
+- [x] 2.2 Implement replacement, empty-result, neutral-failure, and retry UI lifecycle — d695976
+- [x] 2.3 Pass focused UI/coordinator, full test, lint, and build verification — d695976
 
 #### Manual
 
-- [ ] 2.4 Confirm synthetic extraction, grouped briefing, retained history, and retry behavior in an authenticated browser
+- [x] 2.4 Confirm synthetic extraction, grouped briefing, retained history, and retry behavior in an authenticated browser
 
 ### Phase 3: Prove end-to-end safety and prepare real use
 
 #### Automated
 
-- [ ] 3.1 Add end-to-end boundary, delete-wins, and no-request counterexample coverage
-- [ ] 3.2 Record synthetic-only acceptance and preserve the explicit real-note gate
-- [ ] 3.3 Pass full boundary diff, test, lint, and production-build verification
+- [x] 3.1 Add end-to-end boundary, delete-wins, and no-request counterexample coverage
+- [x] 3.2 Record synthetic-only acceptance and preserve the explicit real-note gate
+- [x] 3.3 Pass full boundary diff, test, lint, and production-build verification
 
 #### Manual
 
-- [ ] 3.4 Verify deployed synthetic extraction, privacy visibility, performance, and deletion behavior
-- [ ] 3.5 Confirm or explicitly defer real-note authorization after deployed inspection
+- [x] 3.4 Verify deployed synthetic extraction, privacy visibility, performance, and deletion behavior
+- [x] 3.5 Confirm or explicitly defer real-note authorization after deployed inspection

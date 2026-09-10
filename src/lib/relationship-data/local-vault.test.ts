@@ -191,4 +191,34 @@ describe("relationship local vault", () => {
     await expect(ownerVault.get("anchors", "old-anchor")).resolves.toBeTruthy();
     await expect(ownerVault.get("anchors", "new-anchor")).resolves.toBeNull();
   });
+
+  it("discards a replacement after the selected person was deleted", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const person = { collection: "people", id: "person-1" };
+    const source = { collection: "interactions", id: "interaction-1" };
+
+    await ownerVault.put({ ...person, payload: { displayName: "Marek" } });
+    await ownerVault.put({ ...source, parent: person, payload: { note: "Garden" } });
+    await ownerVault.put({
+      id: "old-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: { kind: "topic", text: "Old", createdAt: 1, sourceInteractionIds: [source.id] },
+    });
+    await ownerVault.deleteCascade(person);
+
+    await expect(
+      ownerVault.replaceChildrenIfSourcesExist(person, [source], "anchors", [
+        {
+          id: "late-anchor",
+          collection: "anchors",
+          parent: person,
+          payload: { kind: "topic", text: "Late", createdAt: 2, sourceInteractionIds: [source.id] },
+        },
+      ]),
+    ).resolves.toBe(false);
+    await expect(ownerVault.get("people", person.id)).resolves.toBeNull();
+    await expect(ownerVault.get("interactions", source.id)).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", "late-anchor")).resolves.toBeNull();
+  });
 });
