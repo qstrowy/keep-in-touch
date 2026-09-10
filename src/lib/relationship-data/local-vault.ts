@@ -62,7 +62,7 @@ export function createRelationshipVault(ownerId: string, options: RelationshipVa
         .getAll([normalizedOwnerId, parent.collection, parent.id]) as IDBRequest<StoredRelationshipRecord[]>;
       return requestResult<StoredRelationshipRecord[]>(request);
     },
-    async replaceChildrenIfSourcesExist(parent, sourceRecords, childCollection, replacementRecords) {
+    async replaceChildrenIfSourcesExist(parent, sourceRecords, childCollection, replacementRecords, options) {
       const db = await database;
       const transaction = db.transaction(RECORDS_STORE, "readwrite");
       const store = transaction.objectStore(RECORDS_STORE);
@@ -107,12 +107,19 @@ export function createRelationshipVault(ownerId: string, options: RelationshipVa
             StoredRelationshipRecord[]
           >,
         );
+        const preservedChildren = existingChildren.filter(
+          (child) => child.collection === childCollection && options?.preserveChild?.(child),
+        );
         for (const child of existingChildren) {
-          if (child.collection === childCollection) {
+          if (child.collection === childCollection && !preservedChildren.includes(child)) {
             store.delete([normalizedOwnerId, child.collection, child.id]);
           }
         }
-        for (const record of replacementRecords) {
+        const recordsToWrite = replacementRecords.filter(
+          (record) =>
+            !preservedChildren.some((preservedChild) => options?.conflictsWithPreservedChild?.(record, preservedChild)),
+        );
+        for (const record of recordsToWrite) {
           store.put({ ...record, ownerId: normalizedOwnerId });
         }
       }

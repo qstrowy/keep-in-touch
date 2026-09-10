@@ -165,6 +165,60 @@ describe("relationship local vault", () => {
     await expect(otherOwnerVault.get("anchors", "other-anchor")).resolves.toMatchObject({ ownerId: "owner-b" });
   });
 
+  it("preserves managed children and suppresses matching replacements atomically", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const person = { collection: "people", id: "person-1" };
+    const source = { collection: "interactions", id: "interaction-1" };
+    const managed = {
+      id: "managed-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: {
+        kind: "topic",
+        text: "Corrected wording",
+        originalKind: "topic",
+        originalText: "Original wording",
+        status: "dismissed",
+        origin: "managed",
+        createdAt: 1,
+        sourceInteractionIds: [source.id],
+      },
+    };
+    await ownerVault.put({ ...person, payload: { displayName: "Marek" } });
+    await ownerVault.put({ ...source, parent: person, payload: { note: "Original wording" } });
+    await ownerVault.put(managed);
+
+    const matching = {
+      id: "matching",
+      collection: "anchors",
+      parent: person,
+      payload: {
+        kind: "topic",
+        text: "Original wording",
+        originalKind: "topic",
+        originalText: "Original wording",
+        status: "open",
+        origin: "generated",
+        createdAt: 2,
+        sourceInteractionIds: [source.id],
+      },
+    };
+    const distinct = { ...matching, id: "distinct", payload: { ...matching.payload, text: "New wording" } };
+
+    await expect(
+      ownerVault.replaceChildrenIfSourcesExist(person, [source], "anchors", [matching, distinct], {
+        preserveChild: (record) => record.payload.origin === "managed",
+        conflictsWithPreservedChild: (replacement, preservedChild) =>
+          replacement.payload.kind === preservedChild.payload.originalKind &&
+          replacement.payload.text === preservedChild.payload.originalText,
+      }),
+    ).resolves.toBe(true);
+
+    await expect(ownerVault.get("anchors", managed.id)).resolves.toMatchObject(managed);
+    await expect(ownerVault.get("anchors", matching.id)).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", distinct.id)).resolves.toMatchObject({ id: "distinct" });
+  });
+
   it("leaves the existing generated set untouched when a source disappeared", async () => {
     const ownerVault = createRelationshipVault("owner-a", { idbFactory });
     const person = { collection: "people", id: "person-1" };
@@ -220,5 +274,32 @@ describe("relationship local vault", () => {
     await expect(ownerVault.get("people", person.id)).resolves.toBeNull();
     await expect(ownerVault.get("interactions", source.id)).resolves.toBeNull();
     await expect(ownerVault.get("anchors", "late-anchor")).resolves.toBeNull();
+  });
+
+  it("cascades owner-managed anchors with their person", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const person = { collection: "people", id: "person-1" };
+
+    await ownerVault.put({ ...person, payload: { displayName: "Marek" } });
+    await ownerVault.put({
+      id: "managed-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: {
+        kind: "topic",
+        text: "Corrected",
+        originalKind: "topic",
+        originalText: "Generated",
+        status: "resolved",
+        origin: "managed",
+        createdAt: 1,
+        sourceInteractionIds: ["interaction-1"],
+      },
+    });
+
+    await ownerVault.deleteCascade(person);
+
+    await expect(ownerVault.get("people", person.id)).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", "managed-anchor")).resolves.toBeNull();
   });
 });

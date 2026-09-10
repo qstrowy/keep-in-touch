@@ -5,6 +5,8 @@ export const ANCHORS_COLLECTION = "anchors";
 export const MAX_ANCHOR_TEXT_LENGTH = 500;
 
 export type AnchorKind = ExtractionCandidateKind;
+export type AnchorLifecycleStatus = "open" | "resolved" | "dismissed";
+export type AnchorOrigin = "generated" | "managed";
 
 export interface ConversationAnchor {
   id: string;
@@ -12,6 +14,10 @@ export interface ConversationAnchor {
   text: string;
   createdAt: number;
   sourceInteractionIds: string[];
+  status: AnchorLifecycleStatus;
+  origin: AnchorOrigin;
+  originalKind: AnchorKind;
+  originalText: string;
 }
 
 export interface CreateConversationAnchorInput {
@@ -45,8 +51,58 @@ export function createAnchorRecord(input: CreateConversationAnchorInput): Relati
       text,
       createdAt: input.createdAt,
       sourceInteractionIds,
+      status: "open",
+      origin: "generated",
+      originalKind: input.candidate.kind,
+      originalText: text,
     },
   };
+}
+
+export function updateAnchorRecord(input: {
+  anchor: ConversationAnchor;
+  personId: string;
+  text?: string;
+  status?: AnchorLifecycleStatus;
+}): RelationshipRecord {
+  const text = normalizeAnchorText(input.text ?? input.anchor.text);
+  if (!text) {
+    throw new Error("An anchor must contain non-empty text.");
+  }
+  if (text.length > MAX_ANCHOR_TEXT_LENGTH) {
+    throw new Error("An anchor must not exceed 500 characters.");
+  }
+
+  return {
+    id: input.anchor.id,
+    collection: ANCHORS_COLLECTION,
+    parent: { collection: "people", id: input.personId },
+    payload: {
+      kind: input.anchor.kind,
+      text,
+      createdAt: input.anchor.createdAt,
+      sourceInteractionIds: [...input.anchor.sourceInteractionIds],
+      status: input.status ?? input.anchor.status,
+      origin: "managed",
+      originalKind: input.anchor.originalKind,
+      originalText: input.anchor.originalText,
+    },
+  };
+}
+
+export function isManagedAnchorRecord(record: RelationshipRecord): boolean {
+  return anchorFromRecord(record)?.origin === "managed";
+}
+
+export function hasSameOriginalCandidate(left: RelationshipRecord, right: RelationshipRecord): boolean {
+  const leftAnchor = anchorFromRecord(left);
+  const rightAnchor = anchorFromRecord(right);
+  return Boolean(
+    leftAnchor?.originalKind &&
+    rightAnchor?.originalKind &&
+    leftAnchor.originalKind === rightAnchor.originalKind &&
+    leftAnchor.originalText === rightAnchor.originalText,
+  );
 }
 
 export function anchorFromRecord(record: RelationshipRecord): ConversationAnchor | null {
@@ -55,10 +111,22 @@ export function anchorFromRecord(record: RelationshipRecord): ConversationAnchor
   }
 
   const payload = record.payload;
-  if (!isExactRecord(payload, ["kind", "text", "createdAt", "sourceInteractionIds"])) {
+  const isLegacyRecord = isExactRecord(payload, ["kind", "text", "createdAt", "sourceInteractionIds"]);
+  const isCurrentRecord = isExactRecord(payload, [
+    "kind",
+    "text",
+    "createdAt",
+    "sourceInteractionIds",
+    "status",
+    "origin",
+    "originalKind",
+    "originalText",
+  ]);
+  if (!isLegacyRecord && !isCurrentRecord) {
     return null;
   }
-  if (!isAnchorKind(payload.kind) || typeof payload.text !== "string" || !Array.isArray(payload.sourceInteractionIds)) {
+  const kind = readAnchorKind(payload.kind);
+  if (!kind || typeof payload.text !== "string" || !Array.isArray(payload.sourceInteractionIds)) {
     return null;
   }
 
@@ -71,12 +139,31 @@ export function anchorFromRecord(record: RelationshipRecord): ConversationAnchor
     return null;
   }
 
+  const status = isLegacyRecord ? "open" : readAnchorLifecycleStatus(payload.status);
+  const origin = isLegacyRecord ? "generated" : readAnchorOrigin(payload.origin);
+  const originalKind = isLegacyRecord ? kind : readAnchorKind(payload.originalKind);
+  const originalText = isLegacyRecord ? text : readAnchorText(payload.originalText);
+  if (
+    !isAnchorLifecycleStatus(status) ||
+    !isAnchorOrigin(origin) ||
+    !isAnchorKind(originalKind) ||
+    !originalText ||
+    !normalizeAnchorText(originalText) ||
+    normalizeAnchorText(originalText).length > MAX_ANCHOR_TEXT_LENGTH
+  ) {
+    return null;
+  }
+
   return {
     id: record.id,
-    kind: payload.kind,
+    kind,
     text,
     createdAt: payload.createdAt,
     sourceInteractionIds,
+    status,
+    origin,
+    originalKind,
+    originalText: normalizeAnchorText(originalText),
   };
 }
 
@@ -129,4 +216,28 @@ function isExactRecord(value: unknown, keys: string[]): value is Record<string, 
 
 function isAnchorKind(value: unknown): value is AnchorKind {
   return value === "topic" || value === "follow_up" || value === "proposed_interaction";
+}
+
+function readAnchorKind(value: unknown): AnchorKind | null {
+  return isAnchorKind(value) ? value : null;
+}
+
+function isAnchorLifecycleStatus(value: unknown): value is AnchorLifecycleStatus {
+  return value === "open" || value === "resolved" || value === "dismissed";
+}
+
+function readAnchorLifecycleStatus(value: unknown): AnchorLifecycleStatus | null {
+  return isAnchorLifecycleStatus(value) ? value : null;
+}
+
+function isAnchorOrigin(value: unknown): value is AnchorOrigin {
+  return value === "generated" || value === "managed";
+}
+
+function readAnchorOrigin(value: unknown): AnchorOrigin | null {
+  return isAnchorOrigin(value) ? value : null;
+}
+
+function readAnchorText(value: unknown): string | null {
+  return typeof value === "string" ? normalizeAnchorText(value) : null;
 }

@@ -22,8 +22,14 @@ export interface RelationshipVault {
     sourceRecords: RelationshipRecordReference[],
     childCollection: string,
     replacementRecords: RelationshipRecord[],
+    options?: ReplaceChildrenOptions,
   ): Promise<boolean>;
   deleteCascade(root: RelationshipRecordReference): Promise<void>;
+}
+
+export interface ReplaceChildrenOptions {
+  preserveChild?: (record: StoredRelationshipRecord) => boolean;
+  conflictsWithPreservedChild?: (replacement: RelationshipRecord, preservedChild: StoredRelationshipRecord) => boolean;
 }
 
 export interface RelationshipVaultOptions {

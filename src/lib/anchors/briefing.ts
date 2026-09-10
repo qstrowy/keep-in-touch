@@ -6,9 +6,10 @@ export function getRecentInteractions(interactions: Interaction[]): Interaction[
 }
 
 export function groupAnchors(anchors: ConversationAnchor[]): Record<AnchorKind, ConversationAnchor[]> {
+  const openAnchors = anchors.filter((anchor) => anchor.status === "open");
   return {
-    topic: anchors.filter((anchor) => anchor.kind === "topic"),
-    follow_up: anchors.filter((anchor) => anchor.kind === "follow_up"),
-    proposed_interaction: anchors.filter((anchor) => anchor.kind === "proposed_interaction"),
+    topic: openAnchors.filter((anchor) => anchor.kind === "topic"),
+    follow_up: openAnchors.filter((anchor) => anchor.kind === "follow_up"),
+    proposed_interaction: openAnchors.filter((anchor) => anchor.kind === "proposed_interaction"),
   };
 }

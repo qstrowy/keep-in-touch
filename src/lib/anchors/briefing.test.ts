@@ -12,14 +12,38 @@ const interactions: Interaction[] = [
 ];
 
 const anchors: ConversationAnchor[] = [
-  { id: "topic", kind: "topic", text: "Garden", createdAt: 1, sourceInteractionIds: ["one"] },
-  { id: "follow-up", kind: "follow_up", text: "Ask later", createdAt: 1, sourceInteractionIds: ["one"] },
+  {
+    id: "topic",
+    kind: "topic",
+    text: "Garden",
+    createdAt: 1,
+    sourceInteractionIds: ["one"],
+    status: "open",
+    origin: "generated",
+    originalKind: "topic",
+    originalText: "Garden",
+  },
+  {
+    id: "follow-up",
+    kind: "follow_up",
+    text: "Ask later",
+    createdAt: 1,
+    sourceInteractionIds: ["one"],
+    status: "open",
+    origin: "generated",
+    originalKind: "follow_up",
+    originalText: "Ask later",
+  },
   {
     id: "suggestion",
     kind: "proposed_interaction",
     text: "Offer help",
     createdAt: 1,
     sourceInteractionIds: ["one"],
+    status: "open",
+    origin: "generated",
+    originalKind: "proposed_interaction",
+    originalText: "Offer help",
   },
 ];
 
@@ -34,5 +58,18 @@ describe("anchor briefing presentation helpers", () => {
       follow_up: [anchors[1]],
       proposed_interaction: [anchors[2]],
     });
+  });
+
+  it("excludes resolved and dismissed anchors from the open briefing", () => {
+    expect(
+      groupAnchors([
+        ...anchors,
+        { ...anchors[0], id: "resolved", status: "resolved" },
+        { ...anchors[1], id: "dismissed", status: "dismissed" },
+      ]).topic,
+    ).toEqual([anchors[0]]);
+    expect(groupAnchors([...anchors, { ...anchors[1], id: "dismissed", status: "dismissed" }]).follow_up).toEqual([
+      anchors[1],
+    ]);
   });
 });

@@ -49,7 +49,7 @@ Here, the north star means the smallest end-to-end result that proves the produc
 | S-03 | maintain-and-delete-person | edit a person or delete them with all associated relationship data | S-02 | FR-002, Non-Functional Requirements | done |
 | S-04 | record-dated-interaction | save a dated free-text interaction for a person | F-01, F-02, S-02 | US-01, FR-003 | done |
 | S-05 | extracted-anchor-briefing | see an extracted open topic or follow-up in the person's later briefing | F-01, F-02, F-03, S-04 | US-01, FR-004, FR-007 | done |
-| S-06 | manage-conversation-anchors | correct, dismiss, or resolve an extracted conversation anchor | S-05 | US-01, FR-005, FR-006 | proposed |
+| S-06 | manage-conversation-anchors | correct, dismiss, or resolve an extracted conversation anchor | S-05 | US-01, FR-005, FR-006 | done |
 | S-07 | view-upcoming-birthdays | see upcoming birthdays from saved people | S-02 | FR-008 | blocked |
 
 ## Streams
@@ -186,7 +186,7 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Extraction without immediate user control makes errors durable and erodes trust, so the correction and resolution loop follows directly after the first generated anchor.
-- **Status:** proposed
+- **Status:** done
 
 ### S-07: See upcoming birthdays
 
