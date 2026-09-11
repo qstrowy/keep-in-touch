@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 
-import { ANCHORS_COLLECTION, coreTopicFromRecord, createCoreTopicRecords, type CoreTopic } from "@/lib/anchors/anchor";
 import {
+  ANCHORS_COLLECTION,
+  coreTopicFromRecord,
+  createCoreTopicRecords,
+  createEditedCoreTopicRecord,
+  type CoreTopic,
+} from "@/lib/anchors/anchor";
+import {
+  canStartCoreTopicExtraction,
   getRecentInteractions,
   isExtractionSnapshotCurrent,
   orderCoreTopics,
@@ -10,6 +17,7 @@ import {
 import { buildCombinedExtractionRequest, requestExtraction } from "@/lib/extraction/client";
 import { interactionFromRecord, sortInteractionsNewestFirst, type Interaction } from "@/lib/interactions/interaction";
 import { createRelationshipVault } from "@/lib/relationship-data/local-vault";
+import type { RelationshipRecord } from "@/lib/relationship-data/types";
 
 interface AnchorBriefingProps {
   ownerId: string;
@@ -24,11 +32,17 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
   const [topics, setTopics] = useState<CoreTopic[]>([]);
   const [state, setState] = useState<BriefingState>("loading");
   const [error, setError] = useState<string | null>(null);
+  const [editingTopicId, setEditingTopicId] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
+  const [mutationTopicId, setMutationTopicId] = useState<string | null>(null);
   const extractionGeneration = useRef(0);
   const loadGeneration = useRef(0);
 
   useEffect(() => {
     extractionGeneration.current += 1;
+    setEditingTopicId(null);
+    setEditText("");
+    setMutationTopicId(null);
     return () => {
       extractionGeneration.current += 1;
     };
@@ -64,7 +78,7 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
   }, [ownerId, personId, refreshToken]);
 
   async function handleExtract() {
-    if (state === "running" || interactions.length === 0) return;
+    if (state === "running" || interactions.length === 0 || editingTopicId !== null || mutationTopicId !== null) return;
     const combined = buildCombinedExtractionRequest(interactions);
     if (!combined) {
       setError("These notes are too large to process together. No note was sent.");
@@ -117,8 +131,109 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
     }
   }
 
+  function topicRecord(topic: CoreTopic): RelationshipRecord {
+    return {
+      id: topic.id,
+      collection: ANCHORS_COLLECTION,
+      parent: { collection: "people", id: personId },
+      payload: {
+        text: topic.text,
+        questions: topic.questions,
+        position: topic.position,
+        createdAt: topic.createdAt,
+        sourceInteractionIds: topic.sourceInteractionIds,
+      },
+    };
+  }
+
+  function startEditing(topic: CoreTopic) {
+    if (state === "running" || editingTopicId !== null || mutationTopicId !== null) return;
+    setError(null);
+    setEditingTopicId(topic.id);
+    setEditText(topic.text);
+  }
+
+  function cancelEditing() {
+    if (mutationTopicId !== null) return;
+    setEditingTopicId(null);
+    setEditText("");
+  }
+
+  async function handleSaveEdit(topic: CoreTopic) {
+    if (state === "running" || mutationTopicId !== null || editingTopicId !== topic.id) return;
+    const replacementRecord = createEditedCoreTopicRecord(topicRecord(topic), personId, editText);
+    if (!replacementRecord) {
+      setError("Enter a Core Topic between 1 and 500 characters.");
+      return;
+    }
+
+    const snapshot = { personId, generation: extractionGeneration.current };
+    setMutationTopicId(topic.id);
+    setError(null);
+    try {
+      const vault = createRelationshipVault(ownerId);
+      const replaced = await vault.replaceChildIfParentExists(
+        { collection: "people", id: personId },
+        { collection: ANCHORS_COLLECTION, id: topic.id },
+        replacementRecord,
+      );
+      if (!isExtractionSnapshotCurrent(snapshot, { personId, generation: extractionGeneration.current })) return;
+      if (!replaced) {
+        setError("We could not update this Core Topic. Your current briefing is unchanged. Try again.");
+        return;
+      }
+      const updatedTopic = coreTopicFromRecord(replacementRecord);
+      if (!updatedTopic) {
+        setError("We could not update this Core Topic. Your current briefing is unchanged. Try again.");
+        return;
+      }
+      setTopics((current) => orderCoreTopics(current.map((item) => (item.id === topic.id ? updatedTopic : item))));
+      setEditingTopicId(null);
+      setEditText("");
+    } catch {
+      if (isExtractionSnapshotCurrent(snapshot, { personId, generation: extractionGeneration.current })) {
+        setError("We could not update this Core Topic. Your current briefing is unchanged. Try again.");
+      }
+    } finally {
+      if (isExtractionSnapshotCurrent(snapshot, { personId, generation: extractionGeneration.current })) {
+        setMutationTopicId(null);
+      }
+    }
+  }
+
+  async function handleHideTopic(topic: CoreTopic) {
+    if (state === "running" || editingTopicId !== null || mutationTopicId !== null) return;
+
+    const snapshot = { personId, generation: extractionGeneration.current };
+    setMutationTopicId(topic.id);
+    setError(null);
+    try {
+      const vault = createRelationshipVault(ownerId);
+      const removed = await vault.removeChildIfParentExists(
+        { collection: "people", id: personId },
+        { collection: ANCHORS_COLLECTION, id: topic.id },
+      );
+      if (!isExtractionSnapshotCurrent(snapshot, { personId, generation: extractionGeneration.current })) return;
+      if (!removed) {
+        setError("We could not hide this Core Topic. Your current briefing is unchanged. Try again.");
+        return;
+      }
+      setTopics((current) => current.filter((item) => item.id !== topic.id));
+    } catch {
+      if (isExtractionSnapshotCurrent(snapshot, { personId, generation: extractionGeneration.current })) {
+        setError("We could not hide this Core Topic. Your current briefing is unchanged. Try again.");
+      }
+    } finally {
+      if (isExtractionSnapshotCurrent(snapshot, { personId, generation: extractionGeneration.current })) {
+        setMutationTopicId(null);
+      }
+    }
+  }
+
   const isLoading = state === "loading";
   const isRunning = state === "running";
+  const canGenerate = canStartCoreTopicExtraction(state, interactions.length, editingTopicId, mutationTopicId);
+  const topicControlsDisabled = isLoading || isRunning || editingTopicId !== null || mutationTopicId !== null;
   const recentInteractions = getRecentInteractions(interactions);
 
   return (
@@ -142,7 +257,7 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
           </div>
           <button
             className="shrink-0 rounded-lg bg-blue-200 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
-            disabled={isLoading || isRunning || interactions.length === 0}
+            disabled={!canGenerate}
             onClick={() => {
               void handleExtract();
             }}
@@ -154,7 +269,7 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
         {error && (
           <div className="rounded-lg border border-red-200/40 bg-red-950/30 p-3 text-sm text-red-100" role="alert">
             <p>{error}</p>
-            {interactions.length > 0 && !isRunning && (
+            {interactions.length > 0 && canGenerate && (
               <button
                 className="mt-2 font-semibold underline underline-offset-2"
                 onClick={() => {
@@ -194,6 +309,69 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
               <ol className="space-y-3">
                 {topics.map((topic) => (
                   <li className="rounded-lg border border-white/10 bg-white/5 p-4" key={topic.id}>
+                    <div className="mb-3 flex flex-wrap items-center gap-2" aria-label={`Actions for ${topic.text}`}>
+                      {editingTopicId === topic.id ? (
+                        <form
+                          className="flex w-full flex-col gap-2 sm:flex-row sm:items-end"
+                          onSubmit={(event) => {
+                            event.preventDefault();
+                            void handleSaveEdit(topic);
+                          }}
+                        >
+                          <label
+                            className="flex-1 text-sm font-medium text-blue-100"
+                            htmlFor={`edit-topic-${topic.id}`}
+                          >
+                            Edit Core Topic
+                            <input
+                              className="mt-1 w-full rounded-lg border border-white/20 bg-slate-950/60 px-3 py-2 font-normal text-white outline-none focus:border-blue-200"
+                              id={`edit-topic-${topic.id}`}
+                              maxLength={500}
+                              onChange={(event) => setEditText(event.target.value)}
+                              value={editText}
+                            />
+                          </label>
+                          <div className="flex gap-2">
+                            <button
+                              className="rounded-lg bg-blue-200 px-3 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+                              disabled={mutationTopicId !== null}
+                              type="submit"
+                            >
+                              Save
+                            </button>
+                            <button
+                              className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                              disabled={mutationTopicId !== null}
+                              onClick={cancelEditing}
+                              type="button"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      ) : (
+                        <>
+                          <button
+                            className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                            disabled={topicControlsDisabled}
+                            onClick={() => startEditing(topic)}
+                            type="button"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                            disabled={topicControlsDisabled}
+                            onClick={() => {
+                              void handleHideTopic(topic);
+                            }}
+                            type="button"
+                          >
+                            Not now
+                          </button>
+                        </>
+                      )}
+                    </div>
                     <details>
                       <summary className="cursor-pointer font-semibold">{topic.text}</summary>
                       {topic.questions.length > 0 && (

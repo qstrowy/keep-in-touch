@@ -15,6 +15,15 @@ export interface ExtractionSnapshot {
   sourceInteractionIds: string[];
 }
 
+export function canStartCoreTopicExtraction(
+  state: "loading" | "ready" | "running" | "error",
+  interactionCount: number,
+  editingTopicId: string | null,
+  mutationTopicId: string | null,
+): boolean {
+  return state !== "loading" && state !== "running" && interactionCount > 0 && !editingTopicId && !mutationTopicId;
+}
+
 export function isExtractionSnapshotCurrent(
   snapshot: Pick<ExtractionSnapshot, "personId" | "generation">,
   current: Pick<ExtractionSnapshot, "personId" | "generation">,

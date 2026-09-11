@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import type { Interaction } from "../interactions/interaction";
 import type { CoreTopic } from "./anchor";
-import { getRecentInteractions, isExtractionSnapshotCurrent, orderCoreTopics } from "./briefing";
+import {
+  canStartCoreTopicExtraction,
+  getRecentInteractions,
+  isExtractionSnapshotCurrent,
+  orderCoreTopics,
+} from "./briefing";
 
 const interactions: Interaction[] = [
   { id: "one", occurredOn: "2026-09-09", note: "One", createdAt: 3 },
@@ -46,5 +51,15 @@ describe("Core Topics briefing helpers", () => {
     expect(
       isExtractionSnapshotCurrent({ personId: "person-1", generation: 4 }, { personId: "person-2", generation: 5 }),
     ).toBe(false);
+  });
+
+  it("blocks extraction while loading, running, or managing a topic", () => {
+    expect(canStartCoreTopicExtraction("ready", 1, null, null)).toBe(true);
+    expect(canStartCoreTopicExtraction("error", 1, null, null)).toBe(true);
+    expect(canStartCoreTopicExtraction("loading", 1, null, null)).toBe(false);
+    expect(canStartCoreTopicExtraction("running", 1, null, null)).toBe(false);
+    expect(canStartCoreTopicExtraction("ready", 0, null, null)).toBe(false);
+    expect(canStartCoreTopicExtraction("ready", 1, "topic-1", null)).toBe(false);
+    expect(canStartCoreTopicExtraction("ready", 1, null, "topic-1")).toBe(false);
   });
 });

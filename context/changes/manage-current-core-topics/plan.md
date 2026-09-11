@@ -239,26 +239,26 @@ the intentional reset and rollback point.
 
 #### Automated
 
-- [x] 1.1 Prove edited topic records preserve immutable topic fields and reject invalid text
-- [x] 1.2 Prove owner-scoped topic update and **Not now** removal only affect the selected child
-- [x] 1.3 Prove late parent/child deletion and owner mismatch do not persist or resurrect a topic
-- [x] 1.4 Prove valid replacement resets current edits/hides while failed replacement preserves them
-- [x] 1.5 Pass focused Core Topic, vault, and protected-boundary tests
+- [x] 1.1 Prove edited topic records preserve immutable topic fields and reject invalid text — 3cdb441
+- [x] 1.2 Prove owner-scoped topic update and **Not now** removal only affect the selected child — 3cdb441
+- [x] 1.3 Prove late parent/child deletion and owner mismatch do not persist or resurrect a topic — 3cdb441
+- [x] 1.4 Prove valid replacement resets current edits/hides while failed replacement preserves them — 3cdb441
+- [x] 1.5 Pass focused Core Topic, vault, and protected-boundary tests — 3cdb441
 
 #### Manual
 
-- [ ] 1.6 Confirm browser-local topic mutations leave interactions unchanged
+- [x] 1.6 Confirm browser-local topic mutations leave interactions unchanged
 
 ### Phase 2: Deliver inline controls and regression proof
 
 #### Automated
 
-- [ ] 2.1 Prove control and extraction guards preserve the current snapshot semantics
-- [ ] 2.2 Prove persistence, reset, owner isolation, and failed-extraction behavior across the complete suite
-- [ ] 2.3 Pass full test, lint, build, whitespace, and scoped-boundary verification
+- [x] 2.1 Prove control and extraction guards preserve the current snapshot semantics
+- [x] 2.2 Prove persistence, reset, owner isolation, and failed-extraction behavior across the complete suite
+- [x] 2.3 Pass full test, lint, build, whitespace, and scoped-boundary verification
 
 #### Manual
 
-- [ ] 2.4 Confirm inline edit, cancel, reload persistence, and read-only questions
-- [ ] 2.5 Confirm **Not now** stays hidden until valid successful extraction and has no exclusion behavior
-- [ ] 2.6 Confirm narrow-screen accessibility, action locking, and preserved people/interaction workflow
+- [x] 2.4 Confirm inline edit, cancel, reload persistence, and read-only questions
+- [x] 2.5 Confirm **Not now** stays hidden until valid successful extraction and has no exclusion behavior
+- [x] 2.6 Confirm narrow-screen accessibility, action locking, and preserved people/interaction workflow
