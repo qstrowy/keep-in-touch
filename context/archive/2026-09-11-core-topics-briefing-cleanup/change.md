@@ -1,10 +1,10 @@
 ---
 change_id: core-topics-briefing-cleanup
 title: Core Topics briefing cleanup
-status: implemented
+status: archived
 created: 2026-09-11
 updated: 2026-09-11
-archived_at: null
+archived_at: 2026-09-11T14:13:59Z
 ---
 
 ## Notes
