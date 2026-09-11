@@ -1,10 +1,10 @@
 ---
 change_id: testing-authenticated-ownership-smoke
 title: Prove authenticated ownership and local data isolation
-status: impl_reviewed
+status: archived
 created: 2026-09-11
 updated: 2026-09-12
-archived_at: null
+archived_at: 2026-09-11T22:43:44Z
 ---
 
 ## Notes
