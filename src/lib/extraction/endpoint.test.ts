@@ -16,7 +16,7 @@ function request(body: string, options: { origin?: string; contentType?: string;
 function dependencies() {
   const extract = vi.fn().mockResolvedValue({
     ok: true as const,
-    response: { candidates: [{ kind: "topic" as const, text: "Recital" }] },
+    response: { topics: [{ text: "Recital", questions: [] }] },
   });
   return {
     extract,
@@ -35,7 +35,7 @@ describe("extraction endpoint", () => {
     const response = await handleExtractionRequest(request('{"note":"Ask about the recital."}'), handlerDependencies);
 
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({ candidates: [{ kind: "topic", text: "Recital" }] });
+    await expect(response.json()).resolves.toEqual({ topics: [{ text: "Recital", questions: [] }] });
     expect(response.headers.get("Cache-Control")).toBe("no-store");
     expect(extract).toHaveBeenCalledWith({ note: "Ask about the recital." });
   });

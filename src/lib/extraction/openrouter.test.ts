@@ -21,7 +21,7 @@ describe("OpenRouter extraction service", () => {
       captured.current = { url, init };
       return Promise.resolve(
         new Response(
-          JSON.stringify({ choices: [{ message: { content: '{"candidates":[{"kind":"topic","text":"Recital"}]}' } }] }),
+          JSON.stringify({ choices: [{ message: { content: '{"topics":[{"text":"Recital","questions":[]}]}' } }] }),
         ),
       );
     };
@@ -29,7 +29,7 @@ describe("OpenRouter extraction service", () => {
 
     await expect(extractor.extract({ note: "Ask about the recital." })).resolves.toEqual({
       ok: true,
-      response: { candidates: [{ kind: "topic", text: "Recital" }] },
+      response: { topics: [{ text: "Recital", questions: [] }] },
     });
 
     const capturedRequest = captured.current;
@@ -61,27 +61,31 @@ describe("OpenRouter extraction service", () => {
       response_format: {
         type: "json_schema",
         json_schema: {
-          name: "extraction_candidates",
+          name: "core_topics",
           strict: true,
           schema: {
             type: "object",
             additionalProperties: false,
             properties: {
-              candidates: {
+              topics: {
                 type: "array",
-                maxItems: 12,
+                maxItems: 7,
                 items: {
                   type: "object",
                   additionalProperties: false,
                   properties: {
-                    kind: { type: "string", enum: ["topic", "follow_up", "proposed_interaction"] },
                     text: { type: "string", minLength: 1, maxLength: 500 },
+                    questions: {
+                      type: "array",
+                      maxItems: 3,
+                      items: { type: "string", minLength: 1, maxLength: 500 },
+                    },
                   },
-                  required: ["kind", "text"],
+                  required: ["text", "questions"],
                 },
               },
             },
-            required: ["candidates"],
+            required: ["topics"],
           },
         },
       },
@@ -99,7 +103,7 @@ describe("OpenRouter extraction service", () => {
           "X-OpenRouter-Title": "KeepInTouch local extraction",
         });
         return Promise.resolve(
-          new Response(JSON.stringify({ choices: [{ message: { content: '{"candidates":[]}' } }] }), {
+          new Response(JSON.stringify({ choices: [{ message: { content: '{"topics":[]}' } }] }), {
             headers: { "x-request-id": "openrouter-request" },
           }),
         );
@@ -115,7 +119,7 @@ describe("OpenRouter extraction service", () => {
           report: (event) => events.push(event),
         },
       ),
-    ).resolves.toEqual({ ok: true, response: { candidates: [] } });
+    ).resolves.toEqual({ ok: true, response: { topics: [] } });
 
     expect(events).toEqual(
       expect.arrayContaining([

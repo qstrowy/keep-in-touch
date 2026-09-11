@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import type { ConversationAnchor } from "./anchor";
 import type { Interaction } from "../interactions/interaction";
-import { getRecentInteractions, groupAnchors } from "./briefing";
+import type { CoreTopic } from "./anchor";
+import { getRecentInteractions, orderCoreTopics } from "./briefing";
 
 const interactions: Interaction[] = [
   { id: "one", occurredOn: "2026-09-09", note: "One", createdAt: 3 },
@@ -11,65 +11,22 @@ const interactions: Interaction[] = [
   { id: "four", occurredOn: "2026-09-06", note: "Four", createdAt: 0 },
 ];
 
-const anchors: ConversationAnchor[] = [
-  {
-    id: "topic",
-    kind: "topic",
-    text: "Garden",
-    createdAt: 1,
-    sourceInteractionIds: ["one"],
-    status: "open",
-    origin: "generated",
-    originalKind: "topic",
-    originalText: "Garden",
-  },
-  {
-    id: "follow-up",
-    kind: "follow_up",
-    text: "Ask later",
-    createdAt: 1,
-    sourceInteractionIds: ["one"],
-    status: "open",
-    origin: "generated",
-    originalKind: "follow_up",
-    originalText: "Ask later",
-  },
-  {
-    id: "suggestion",
-    kind: "proposed_interaction",
-    text: "Offer help",
-    createdAt: 1,
-    sourceInteractionIds: ["one"],
-    status: "open",
-    origin: "generated",
-    originalKind: "proposed_interaction",
-    originalText: "Offer help",
-  },
-];
+const topic = (id: string, position: number): CoreTopic => ({
+  id,
+  text: id,
+  questions: [],
+  position,
+  createdAt: 1,
+  sourceInteractionIds: ["one"],
+});
 
-describe("anchor briefing presentation helpers", () => {
+describe("Core Topics briefing helpers", () => {
   it("keeps the three newest interactions for recent context", () => {
     expect(getRecentInteractions(interactions).map((interaction) => interaction.id)).toEqual(["one", "two", "three"]);
   });
 
-  it("groups each anchor kind independently", () => {
-    expect(groupAnchors(anchors)).toEqual({
-      topic: [anchors[0]],
-      follow_up: [anchors[1]],
-      proposed_interaction: [anchors[2]],
-    });
-  });
-
-  it("excludes resolved and dismissed anchors from the open briefing", () => {
-    expect(
-      groupAnchors([
-        ...anchors,
-        { ...anchors[0], id: "resolved", status: "resolved" },
-        { ...anchors[1], id: "dismissed", status: "dismissed" },
-      ]).topic,
-    ).toEqual([anchors[0]]);
-    expect(groupAnchors([...anchors, { ...anchors[1], id: "dismissed", status: "dismissed" }]).follow_up).toEqual([
-      anchors[1],
-    ]);
+  it("orders topics by explicit provider position without deduplication", () => {
+    const topics = [topic("second", 1), topic("first", 0), topic("also-first", 0)];
+    expect(orderCoreTopics(topics).map((item) => item.id)).toEqual(["first", "also-first", "second"]);
   });
 });

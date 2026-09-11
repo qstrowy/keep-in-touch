@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import {
   EXTRACTION_PROMPT_VERSION,
-  MAX_EXTRACTION_CANDIDATES,
   MAX_EXTRACTION_CANDIDATE_TEXT_LENGTH,
+  MAX_EXTRACTION_QUESTIONS_PER_TOPIC,
+  MAX_EXTRACTION_TOPICS,
   createExtractionProviderInput,
   parseExtractionCandidateResponse,
   parseExtractionRequest,
@@ -13,17 +14,20 @@ import {
 describe("extraction request contract", () => {
   it("accepts only one trimmed note and produces a fixed provider input", () => {
     const request = parseExtractionRequest({ note: "  Ask about the recital next week.  " });
-
     expect(request).toEqual({ note: "Ask about the recital next week." });
     if (!request) throw new Error("Expected a valid extraction request.");
-
     const providerInput = createExtractionProviderInput(request);
     expect(providerInput.promptVersion).toBe(EXTRACTION_PROMPT_VERSION);
-    expect(providerInput.instruction).toContain("Extract useful conversation anchors");
-    expect(providerInput.instruction).toContain("specific detail-seeking questions");
+    expect(providerInput.instruction).toContain("Rank topics by expected usefulness");
+    expect(providerInput.instruction).toContain("one dominant language");
+    expect(providerInput.instruction).toContain("most recent note");
+    expect(providerInput.instruction).toContain("broaden perspective without restating");
+    expect(providerInput.instruction).toContain("direct, natural conversation starter");
+    expect(providerInput.instruction).toContain("owner can ask the selected person");
+    expect(providerInput.instruction).toContain("Do not ask the owner to reconstruct, verify, or infer");
+    expect(providerInput.instruction).toContain("fewer topics or questions instead of filler");
+    expect(providerInput.instruction).toContain("Do not invent details");
     expect(providerInput.instruction).toContain("generic facts, stereotypes");
-    expect(providerInput.instruction).toContain("same language as the supplied note");
-    expect(providerInput.note).toBe("Ask about the recital next week.");
   });
 
   it("rejects missing, blank, oversized, and extra public request fields", () => {
@@ -36,10 +40,9 @@ describe("extraction request contract", () => {
 });
 
 describe("late extraction result handling", () => {
-  it("discards a candidate response when its local source was deleted", async () => {
+  it("discards a topic response when its local source was deleted", async () => {
     const persisted: string[] = [];
-    const response = { candidates: [{ kind: "topic" as const, text: "Recital" }] };
-
+    const response = { topics: [{ text: "Recital", questions: [] }] };
     await expect(
       persistCandidateResponseIfSourceExists(
         () => Promise.resolve(false),
@@ -51,39 +54,41 @@ describe("late extraction result handling", () => {
   });
 });
 
-describe("extraction candidate response contract", () => {
-  it("defensively decodes supported candidate kinds and normalized text", () => {
+describe("Core Topics response contract", () => {
+  it("defensively decodes nested topics, normalizes text, and preserves order", () => {
     expect(
-      parseExtractionCandidateResponse({
-        candidates: [
-          { kind: "topic", text: "  Violin recital  " },
-          { kind: "follow_up", text: "Ask how it went" },
-          { kind: "proposed_interaction", text: "Check in next week" },
-        ],
-      }),
-    ).toEqual({
-      candidates: [
-        { kind: "topic", text: "Violin recital" },
-        { kind: "follow_up", text: "Ask how it went" },
-        { kind: "proposed_interaction", text: "Check in next week" },
-      ],
-    });
+      parseExtractionCandidateResponse({ topics: [{ text: "  Violin recital  ", questions: [" Ask how it went "] }] }),
+    ).toEqual({ topics: [{ text: "Violin recital", questions: ["Ask how it went"] }] });
+    expect(parseExtractionCandidateResponse({ topics: [] })).toEqual({ topics: [] });
   });
 
-  it("rejects malformed, unexpected, excessive, or unsafe candidate responses", () => {
+  it("rejects malformed, detached, excessive, unexpected, and unsafe topic responses", () => {
     expect(parseExtractionCandidateResponse(null)).toBeNull();
-    expect(parseExtractionCandidateResponse({ candidates: "not-an-array" })).toBeNull();
-    expect(parseExtractionCandidateResponse({ candidates: [{ kind: "topic", text: "Valid", id: "leak" }] })).toBeNull();
-    expect(parseExtractionCandidateResponse({ candidates: [{ kind: "unknown", text: "Valid" }] })).toBeNull();
-    expect(parseExtractionCandidateResponse({ candidates: [{ kind: "topic", text: "   " }] })).toBeNull();
+    expect(parseExtractionCandidateResponse({ topics: "not-an-array" })).toBeNull();
+    expect(parseExtractionCandidateResponse({ topics: [{ text: "Valid", questions: [], id: "leak" }] })).toBeNull();
+    expect(parseExtractionCandidateResponse({ topics: [{ text: "   ", questions: [] }] })).toBeNull();
+    expect(parseExtractionCandidateResponse({ topics: [{ text: "Valid", questions: ["   "] }] })).toBeNull();
+    expect(
+      parseExtractionCandidateResponse({ topics: [{ text: "Valid", questions: "detached question" }] }),
+    ).toBeNull();
     expect(
       parseExtractionCandidateResponse({
-        candidates: [{ kind: "topic", text: "a".repeat(MAX_EXTRACTION_CANDIDATE_TEXT_LENGTH + 1) }],
+        topics: [{ text: "a".repeat(MAX_EXTRACTION_CANDIDATE_TEXT_LENGTH + 1), questions: [] }],
       }),
     ).toBeNull();
     expect(
       parseExtractionCandidateResponse({
-        candidates: Array.from({ length: MAX_EXTRACTION_CANDIDATES + 1 }, () => ({ kind: "topic", text: "Valid" })),
+        topics: [{ text: "Valid", questions: ["a".repeat(MAX_EXTRACTION_CANDIDATE_TEXT_LENGTH + 1)] }],
+      }),
+    ).toBeNull();
+    expect(
+      parseExtractionCandidateResponse({
+        topics: [{ text: "Valid", questions: Array(MAX_EXTRACTION_QUESTIONS_PER_TOPIC + 1).fill("Question") }],
+      }),
+    ).toBeNull();
+    expect(
+      parseExtractionCandidateResponse({
+        topics: Array.from({ length: MAX_EXTRACTION_TOPICS + 1 }, () => ({ text: "Valid", questions: [] })),
       }),
     ).toBeNull();
   });

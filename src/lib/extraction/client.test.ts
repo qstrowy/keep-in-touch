@@ -25,16 +25,16 @@ describe("combined extraction request", () => {
 });
 
 describe("extraction browser client", () => {
-  it("sends exactly the note-only request and decodes candidates", async () => {
-    const fetchImpl = vi
-      .fn<typeof fetch>()
-      .mockResolvedValue(
-        new Response(JSON.stringify({ candidates: [{ kind: "topic", text: "Garden" }] }), { status: 200 }),
-      );
+  it("sends exactly the note-only request and decodes Core Topics", async () => {
+    const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(JSON.stringify({ topics: [{ text: "Garden", questions: ["Ask about timing"] }] }), {
+        status: 200,
+      }),
+    );
 
     await expect(requestExtraction("Older context\n\nNew update", fetchImpl)).resolves.toEqual({
       ok: true,
-      response: { candidates: [{ kind: "topic", text: "Garden" }] },
+      response: { topics: [{ text: "Garden", questions: ["Ask about timing"] }] },
     });
     expect(fetchImpl).toHaveBeenCalledWith("/api/extractions/anchors", {
       method: "POST",

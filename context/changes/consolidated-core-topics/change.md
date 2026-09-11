@@ -1,0 +1,15 @@
+---
+change_id: consolidated-core-topics
+title: Consolidated core topics
+status: implementing
+created: 2026-09-11
+updated: 2026-09-11
+archived_at: null
+---
+
+## Notes
+
+<!-- Free-form notes for this change: links, ad-hoc context, decisions that don't belong in research/frame/plan. -->
+
+- 2026-09-11: Questions are direct future conversation starters for the owner to ask the selected person; they do not ask
+  the owner to reconstruct or verify reported events.

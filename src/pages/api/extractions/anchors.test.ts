@@ -18,7 +18,7 @@ describe("anchor extraction route boundary", () => {
   it("forwards only the exact note body to the extraction dependency", async () => {
     const extract = vi.fn().mockResolvedValue({
       ok: true,
-      response: { candidates: [{ kind: "topic", text: "Synthetic topic" }] },
+      response: { topics: [{ text: "Synthetic topic", questions: [] }] },
     });
 
     const response = await handleExtractionRequest(

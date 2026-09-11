@@ -11,27 +11,31 @@ export const EXTRACTION_TIMEOUT_MS = 90_000;
 const EXTRACTION_RESPONSE_FORMAT = {
   type: "json_schema",
   json_schema: {
-    name: "extraction_candidates",
+    name: "core_topics",
     strict: true,
     schema: {
       type: "object",
       additionalProperties: false,
       properties: {
-        candidates: {
+        topics: {
           type: "array",
-          maxItems: 12,
+          maxItems: 7,
           items: {
             type: "object",
             additionalProperties: false,
             properties: {
-              kind: { type: "string", enum: ["topic", "follow_up", "proposed_interaction"] },
               text: { type: "string", minLength: 1, maxLength: 500 },
+              questions: {
+                type: "array",
+                maxItems: 3,
+                items: { type: "string", minLength: 1, maxLength: 500 },
+              },
             },
-            required: ["kind", "text"],
+            required: ["text", "questions"],
           },
         },
       },
-      required: ["candidates"],
+      required: ["topics"],
     },
   },
 } as const;

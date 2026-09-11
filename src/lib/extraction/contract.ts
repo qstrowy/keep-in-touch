@@ -1,24 +1,24 @@
 import { MAX_INTERACTION_NOTE_LENGTH } from "../interactions/interaction";
 
-export const EXTRACTION_PROMPT_VERSION = "2026-09-09";
-export const MAX_EXTRACTION_CANDIDATES = 12;
+export const EXTRACTION_PROMPT_VERSION = "2026-09-11.1";
+export const MAX_EXTRACTION_TOPICS = 7;
+export const MAX_EXTRACTION_QUESTIONS_PER_TOPIC = 3;
 export const MAX_EXTRACTION_CANDIDATE_TEXT_LENGTH = 500;
 export const MAX_COMBINED_EXTRACTION_NOTE_LENGTH = 20_000;
 
 const EXTRACTION_PROMPT = [
-  "Extract useful conversation anchors from the supplied interaction note.",
-  "Return only JSON with a candidates array.",
-  "Use topic for a concrete subject or situation worth remembering.",
-  "Use follow_up for an unresolved detail or a concise question that would deepen understanding of the topic.",
-  "Use proposed_interaction for a practical, grounded way to reconnect or offer help based on the note.",
-  "Prefer specific detail-seeking questions when the note leaves an important detail open.",
-  "Do not invent details not supported by the note.",
+  "Extract useful Core Topics from the supplied interaction notes.",
+  "Return only JSON with a topics array.",
+  "Rank topics by expected usefulness for a future conversation.",
+  "Write the entire response in one dominant language from the supplied notes; when no language clearly dominates, use the language of the most recent note.",
+  "For each topic, include zero to three concise, grounded questions that broaden perspective without restating the topic.",
+  "Write every question as a direct, natural conversation starter the owner can ask the selected person in a future conversation.",
+  "Do not ask the owner to reconstruct, verify, or infer what the selected person or third parties said, did, recommended, or experienced.",
+  "Prefer fewer topics or questions instead of filler.",
+  "Do not invent details not supported by the notes.",
   "Do not add generic facts, stereotypes, or unrelated advice about a named person, product, place, or brand.",
-  "It is valid to return no candidates when the note contains no useful anchor.",
-  "Write every candidate in the same language as the supplied note; do not translate it.",
+  "It is valid to return no topics when the notes contain no useful topic.",
 ].join(" ");
-
-export type ExtractionCandidateKind = "topic" | "follow_up" | "proposed_interaction";
 
 export interface ExtractionRequest {
   note: string;
@@ -30,13 +30,13 @@ export interface ExtractionProviderInput {
   note: string;
 }
 
-export interface ExtractionCandidate {
-  kind: ExtractionCandidateKind;
+export interface CoreTopicCandidate {
   text: string;
+  questions: string[];
 }
 
 export interface ExtractionCandidateResponse {
-  candidates: ExtractionCandidate[];
+  topics: CoreTopicCandidate[];
 }
 
 export type ExtractionPublicError = "invalid_request" | "unavailable" | "timeout" | "invalid_response";
@@ -46,10 +46,7 @@ export async function persistCandidateResponseIfSourceExists(
   persist: (response: ExtractionCandidateResponse) => Promise<void>,
   response: ExtractionCandidateResponse,
 ): Promise<boolean> {
-  if (!(await sourceExists())) {
-    return false;
-  }
-
+  if (!(await sourceExists())) return false;
   await persist(response);
   return true;
 }
@@ -58,58 +55,55 @@ export function parseExtractionRequest(
   value: unknown,
   maxNoteLength = MAX_INTERACTION_NOTE_LENGTH,
 ): ExtractionRequest | null {
-  if (!isExactRecord(value, ["note"]) || typeof value.note !== "string") {
-    return null;
-  }
-
+  if (!isExactRecord(value, ["note"]) || typeof value.note !== "string") return null;
   const note = value.note.trim();
-  if (!note || note.length > maxNoteLength) {
-    return null;
-  }
-
-  return { note };
+  return !note || note.length > maxNoteLength ? null : { note };
 }
 
 export function createExtractionProviderInput(request: ExtractionRequest): ExtractionProviderInput {
-  return {
-    promptVersion: EXTRACTION_PROMPT_VERSION,
-    instruction: EXTRACTION_PROMPT,
-    note: request.note,
-  };
+  return { promptVersion: EXTRACTION_PROMPT_VERSION, instruction: EXTRACTION_PROMPT, note: request.note };
 }
 
 export function parseExtractionCandidateResponse(value: unknown): ExtractionCandidateResponse | null {
-  if (!isExactRecord(value, ["candidates"]) || !Array.isArray(value.candidates)) {
+  if (
+    !isExactRecord(value, ["topics"]) ||
+    !Array.isArray(value.topics) ||
+    value.topics.length > MAX_EXTRACTION_TOPICS
+  ) {
     return null;
   }
-  if (value.candidates.length > MAX_EXTRACTION_CANDIDATES) {
-    return null;
-  }
 
-  const candidates: ExtractionCandidate[] = [];
-  for (const item of value.candidates) {
-    if (!isExactRecord(item, ["kind", "text"]) || !isCandidateKind(item.kind) || typeof item.text !== "string") {
+  const topics: CoreTopicCandidate[] = [];
+  for (const item of value.topics) {
+    if (
+      !isExactRecord(item, ["text", "questions"]) ||
+      typeof item.text !== "string" ||
+      !Array.isArray(item.questions)
+    ) {
       return null;
     }
+    const text = normalizeCandidateText(item.text);
+    if (!text || item.questions.length > MAX_EXTRACTION_QUESTIONS_PER_TOPIC) return null;
 
-    const text = item.text.trim();
-    if (!text || text.length > MAX_EXTRACTION_CANDIDATE_TEXT_LENGTH) {
-      return null;
+    const questions: string[] = [];
+    for (const question of item.questions) {
+      if (typeof question !== "string") return null;
+      const normalizedQuestion = normalizeCandidateText(question);
+      if (!normalizedQuestion) return null;
+      questions.push(normalizedQuestion);
     }
-    candidates.push({ kind: item.kind, text });
+    topics.push({ text, questions });
   }
+  return { topics };
+}
 
-  return { candidates };
+function normalizeCandidateText(value: string): string | null {
+  const text = value.trim();
+  return !text || text.length > MAX_EXTRACTION_CANDIDATE_TEXT_LENGTH ? null : text;
 }
 
 function isExactRecord(value: unknown, keys: string[]): value is Record<string, unknown> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return false;
-  }
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const actualKeys = Object.keys(value);
   return actualKeys.length === keys.length && actualKeys.every((key) => keys.includes(key));
-}
-
-function isCandidateKind(value: unknown): value is ExtractionCandidateKind {
-  return value === "topic" || value === "follow_up" || value === "proposed_interaction";
 }
