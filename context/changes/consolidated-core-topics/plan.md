@@ -435,19 +435,19 @@ collection-level operation.
 
 #### Manual
 
-- [x] 2.6 Confirm Core Topics terminology, UI states, retry, and unchanged full interaction history
-- [x] 2.7 Confirm collapsed disclosures, multiple open topics, read-only questions, order, and reload persistence
-- [x] 2.8 Confirm an in-flight snapshot can land and a newly saved note participates in the next extraction
+- [x] 2.6 Confirm Core Topics terminology, UI states, retry, and unchanged full interaction history — 6a652ac
+- [x] 2.7 Confirm collapsed disclosures, multiple open topics, read-only questions, order, and reload persistence — 6a652ac
+- [x] 2.8 Confirm an in-flight snapshot can land and a newly saved note participates in the next extraction — 6a652ac
 
 ### Phase 3: Prove privacy, compatibility, and live provider behavior
 
 #### Automated
 
-- [x] 3.1 Pass the complete test suite
-- [x] 3.2 Pass lint verification
-- [x] 3.3 Complete the production build with only documented nonfatal diagnostics
-- [x] 3.4 Pass whitespace verification
-- [x] 3.5 Confirm the scoped diff adds no persistence, background processing, profile metadata, or exclusions
+- [x] 3.1 Pass the complete test suite — 6a652ac
+- [x] 3.2 Pass lint verification — 6a652ac
+- [x] 3.3 Complete the production build with only documented nonfatal diagnostics — 6a652ac
+- [x] 3.4 Pass whitespace verification — 6a652ac
+- [x] 3.5 Confirm the scoped diff adds no persistence, background processing, profile metadata, or exclusions — 6a652ac
 
 #### Manual
 
