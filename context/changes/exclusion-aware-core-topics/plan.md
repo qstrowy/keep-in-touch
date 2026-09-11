@@ -366,41 +366,41 @@ this change. Malformed marked exclusions are preserved and fail closed rather th
 
 #### Automated
 
-- [x] 1.1 Prove strict exclusion classification, normalization, limits, and metadata omission
-- [x] 1.2 Prove atomic topic conversion and normalized exact duplicate handling
-- [x] 1.3 Prove owner/person isolation and stale or deleted record safety
-- [x] 1.4 Prove successful replacement preserves marked exclusions while failures preserve all state
-- [x] 1.5 Pass focused domain, vault, cascade, and protected-boundary tests
+- [x] 1.1 Prove strict exclusion classification, normalization, limits, and metadata omission — 6f8bcad
+- [x] 1.2 Prove atomic topic conversion and normalized exact duplicate handling — 6f8bcad
+- [x] 1.3 Prove owner/person isolation and stale or deleted record safety — 6f8bcad
+- [x] 1.4 Prove successful replacement preserves marked exclusions while failures preserve all state — 6f8bcad
+- [x] 1.5 Pass focused domain, vault, cascade, and protected-boundary tests — 6f8bcad
 
 #### Manual
 
-- [x] 1.6 Confirm the synthetic browser-local exclusion record is hidden, minimal, and person scoped
+- [x] 1.6 Confirm the synthetic browser-local exclusion record is hidden, minimal, and person scoped — 6f8bcad
 
 ### Phase 2: Expand the private extraction boundary
 
 #### Automated
 
-- [x] 2.1 Prove the exact note-plus-exclusions request contract and 20 KB UTF-8 preflight
-- [x] 2.2 Prove strict endpoint rejection and metadata-free forwarding
-- [x] 2.3 Prove versioned exclusion prompting for topics/questions with no response post-filtering
-- [x] 2.4 Prove ZDR, pinned routing, no fallback, timeout, schema, and diagnostics remain unchanged
-- [x] 2.5 Pass focused contract, client, endpoint, route, provider, and documentation checks
+- [x] 2.1 Prove the exact note-plus-exclusions request contract and 20 KB UTF-8 preflight — 6f8bcad
+- [x] 2.2 Prove strict endpoint rejection and metadata-free forwarding — 6f8bcad
+- [x] 2.3 Prove versioned exclusion prompting for topics/questions with no response post-filtering — 6f8bcad
+- [x] 2.4 Prove ZDR, pinned routing, no fallback, timeout, schema, and diagnostics remain unchanged — 6f8bcad
+- [x] 2.5 Pass focused contract, client, endpoint, route, provider, and documentation checks — 6f8bcad
 
 #### Manual
 
-- [x] 2.6 Confirm a synthetic request exposes only note text and exclusion subjects through the verified ZDR route
+- [x] 2.6 Confirm a synthetic request exposes only note text and exclusion subjects through the verified ZDR route — 6f8bcad
 
 ### Phase 3: Deliver confirmation UX and end-to-end behavior
 
 #### Automated
 
-- [x] 3.1 Prove malformed and oversized exclusion context fails locally without changing the briefing
-- [x] 3.2 Prove confirmation, mutation, extraction, and stale-snapshot guards
-- [x] 3.3 Prove valid successes preserve exclusions and all failures preserve the existing briefing
-- [x] 3.4 Pass full test, lint, build, whitespace, and scoped-boundary verification
+- [x] 3.1 Prove malformed and oversized exclusion context fails locally without changing the briefing — 6f8bcad
+- [x] 3.2 Prove confirmation, mutation, extraction, and stale-snapshot guards — 6f8bcad
+- [x] 3.3 Prove valid successes preserve exclusions and all failures preserve the existing briefing — 6f8bcad
+- [x] 3.4 Pass full test, lint, build, whitespace, and scoped-boundary verification — 6f8bcad
 
 #### Manual
 
-- [x] 3.5 Confirm inline **Don't suggest**, Cancel, best-effort copy, reload durability, and narrow-screen accessibility
-- [x] 3.6 Confirm edited-text exclusion, duplicate handling, and the distinct temporary **Not now** behavior
-- [x] 3.7 Confirm synthetic regeneration, provider noncompliance behavior, failure safety, and preserved people/interaction workflows
+- [x] 3.5 Confirm inline **Don't suggest**, Cancel, best-effort copy, reload durability, and narrow-screen accessibility — 6f8bcad
+- [x] 3.6 Confirm edited-text exclusion, duplicate handling, and the distinct temporary **Not now** behavior — 6f8bcad
+- [x] 3.7 Confirm synthetic regeneration, provider noncompliance behavior, failure safety, and preserved people/interaction workflows — 6f8bcad

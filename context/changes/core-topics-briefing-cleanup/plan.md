@@ -159,11 +159,11 @@ component/helper deletion restores the prior presentation without requiring data
 
 #### Automated
 
-- [x] 1.1 Remove the Recent context component path and its obsolete helper/test without changing Core Topics behavior
-- [x] 1.2 Pass focused and complete test suites
-- [x] 1.3 Pass lint and production build
-- [x] 1.4 Pass whitespace and stale-reference verification
+- [x] 1.1 Remove the Recent context component path and its obsolete helper/test without changing Core Topics behavior — 6f8bcad
+- [x] 1.2 Pass focused and complete test suites — 6f8bcad
+- [x] 1.3 Pass lint and production build — 6f8bcad
+- [x] 1.4 Pass whitespace and stale-reference verification — 6f8bcad
 
 #### Manual
 
-- [x] 1.5 Confirm Recent context is absent and the existing Core Topics snapshot remains unchanged
+- [x] 1.5 Confirm Recent context is absent and the existing Core Topics snapshot remains unchanged — 6f8bcad
