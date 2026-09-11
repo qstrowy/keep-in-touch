@@ -15,18 +15,21 @@ function request(body: string, headers: Record<string, string> = {}) {
 }
 
 describe("anchor extraction route boundary", () => {
-  it("forwards only the exact note body to the extraction dependency", async () => {
+  it("forwards only the exact note-plus-exclusions body to the extraction dependency", async () => {
     const extract = vi.fn().mockResolvedValue({
       ok: true,
       response: { topics: [{ text: "Synthetic topic", questions: [] }] },
     });
 
     const response = await handleExtractionRequest(
-      request(JSON.stringify({ note: "Synthetic note for acceptance" }), {
-        Authorization: "Bearer browser-token",
-        Cookie: "sb-auth=browser-cookie",
-        "X-Person-Id": "person-1",
-      }),
+      request(
+        JSON.stringify({ note: "Synthetic note for acceptance", excludedTopics: ["Synthetic excluded subject"] }),
+        {
+          Authorization: "Bearer browser-token",
+          Cookie: "sb-auth=browser-cookie",
+          "X-Person-Id": "person-1",
+        },
+      ),
       {
         origin: "https://keep.example.test",
         authenticate: vi.fn().mockResolvedValue(true),
@@ -36,7 +39,10 @@ describe("anchor extraction route boundary", () => {
 
     expect(response.status).toBe(200);
     expect(extract).toHaveBeenCalledOnce();
-    expect(extract).toHaveBeenCalledWith({ note: "Synthetic note for acceptance" });
+    expect(extract).toHaveBeenCalledWith({
+      note: "Synthetic note for acceptance",
+      excludedTopics: ["Synthetic excluded subject"],
+    });
     expect(extract.mock.calls[0]?.[0]).not.toHaveProperty("personId");
     expect(extract.mock.calls[0]?.[0]).not.toHaveProperty("interactionId");
   });
@@ -45,7 +51,7 @@ describe("anchor extraction route boundary", () => {
     const extract = vi.fn();
 
     await expect(
-      handleExtractionRequest(request(JSON.stringify({ note: "Synthetic note" })), {
+      handleExtractionRequest(request(JSON.stringify({ note: "Synthetic note", excludedTopics: [] })), {
         origin: "https://keep.example.test",
         authenticate: vi.fn().mockResolvedValue(false),
         extract,

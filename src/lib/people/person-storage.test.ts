@@ -92,12 +92,19 @@ describe("person storage", () => {
       parent: { collection: PEOPLE_COLLECTION, id: "person-1" },
       payload: { body: "Ask about the new role" },
     });
+    await ownerVault.put({
+      collection: "anchors",
+      id: "excluded-anchor",
+      parent: { collection: PEOPLE_COLLECTION, id: "person-1" },
+      payload: { kind: "excluded-topic", text: "The new role" },
+    });
     await otherOwnerVault.put(createPersonRecord(validation.person, "person-1"));
 
     await ownerVault.deleteCascade({ collection: PEOPLE_COLLECTION, id: "person-1" });
 
     await expect(ownerVault.listByCollection(PEOPLE_COLLECTION)).resolves.toEqual([]);
     await expect(ownerVault.listByCollection("interactions")).resolves.toEqual([]);
+    await expect(ownerVault.listByCollection("anchors")).resolves.toEqual([]);
     await expect(otherOwnerVault.listByCollection(PEOPLE_COLLECTION)).resolves.toEqual([
       expect.objectContaining({ id: "person-1", ownerId: "owner-b" }),
     ]);

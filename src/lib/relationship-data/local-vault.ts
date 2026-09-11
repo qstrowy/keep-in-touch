@@ -62,7 +62,7 @@ export function createRelationshipVault(ownerId: string, options: RelationshipVa
         .getAll([normalizedOwnerId, parent.collection, parent.id]) as IDBRequest<StoredRelationshipRecord[]>;
       return requestResult<StoredRelationshipRecord[]>(request);
     },
-    async replaceChildIfParentExists(parent, child, replacementRecord) {
+    async replaceChildIfParentExists(parent, child, replacementRecord, options) {
       const db = await database;
       const transaction = db.transaction(RECORDS_STORE, "readwrite");
       const store = transaction.objectStore(RECORDS_STORE);
@@ -82,7 +82,21 @@ export function createRelationshipVault(ownerId: string, options: RelationshipVa
         replacementRecord.id === child.id &&
         sameReference(replacementRecord.parent, parent);
       if (valid) {
-        store.put({ ...replacementRecord, ownerId: normalizedOwnerId });
+        const siblings = options?.conflictsWithSibling
+          ? await requestResult<StoredRelationshipRecord[]>(
+              store.index(OWNER_PARENT_INDEX).getAll([normalizedOwnerId, parent.collection, parent.id]) as IDBRequest<
+                StoredRelationshipRecord[]
+              >,
+            )
+          : [];
+        const matchingSibling = siblings.find(
+          (sibling) => !sameReference(sibling, child) && options?.conflictsWithSibling?.(replacementRecord, sibling),
+        );
+        if (matchingSibling) {
+          store.delete([normalizedOwnerId, child.collection, child.id]);
+        } else {
+          store.put({ ...replacementRecord, ownerId: normalizedOwnerId });
+        }
       }
       await transactionComplete(transaction);
       return valid;

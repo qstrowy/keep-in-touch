@@ -12,9 +12,12 @@ import {
 } from "./contract";
 
 describe("extraction request contract", () => {
-  it("accepts only one trimmed note and produces a fixed provider input", () => {
-    const request = parseExtractionRequest({ note: "  Ask about the recital next week.  " });
-    expect(request).toEqual({ note: "Ask about the recital next week." });
+  it("accepts a trimmed note and normalized exclusion list", () => {
+    const request = parseExtractionRequest({
+      note: "  Ask about the recital next week.  ",
+      excludedTopics: ["  Garden   project  "],
+    });
+    expect(request).toEqual({ note: "Ask about the recital next week.", excludedTopics: ["Garden project"] });
     if (!request) throw new Error("Expected a valid extraction request.");
     const providerInput = createExtractionProviderInput(request);
     expect(providerInput.promptVersion).toBe(EXTRACTION_PROMPT_VERSION);
@@ -28,14 +31,22 @@ describe("extraction request contract", () => {
     expect(providerInput.instruction).toContain("fewer topics or questions instead of filler");
     expect(providerInput.instruction).toContain("Do not invent details");
     expect(providerInput.instruction).toContain("generic facts, stereotypes");
+    expect(providerInput.instruction).toContain("Avoid excluded subjects in both topic text and follow-up questions");
+    expect(providerInput.excludedTopics).toEqual(["Garden project"]);
   });
 
-  it("rejects missing, blank, oversized, and extra public request fields", () => {
+  it("rejects missing, blank, oversized, malformed, duplicate, and extra public request fields", () => {
     expect(parseExtractionRequest(null)).toBeNull();
     expect(parseExtractionRequest({})).toBeNull();
-    expect(parseExtractionRequest({ note: "   " })).toBeNull();
-    expect(parseExtractionRequest({ note: "a".repeat(5_001) })).toBeNull();
-    expect(parseExtractionRequest({ note: "Call next week", personId: "private-person-id" })).toBeNull();
+    expect(parseExtractionRequest({ note: "   ", excludedTopics: [] })).toBeNull();
+    expect(parseExtractionRequest({ note: "a".repeat(5_001), excludedTopics: [] })).toBeNull();
+    expect(
+      parseExtractionRequest({ note: "Call next week", excludedTopics: [], personId: "private-person-id" }),
+    ).toBeNull();
+    expect(parseExtractionRequest({ note: "Call next week", excludedTopics: "Garden" })).toBeNull();
+    expect(parseExtractionRequest({ note: "Call next week", excludedTopics: ["  "] })).toBeNull();
+    expect(parseExtractionRequest({ note: "Call next week", excludedTopics: ["Garden", " garden "] })).toBeNull();
+    expect(parseExtractionRequest({ note: "Call next week", excludedTopics: ["x".repeat(501)] })).toBeNull();
   });
 });
 

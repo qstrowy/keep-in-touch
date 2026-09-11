@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { coreTopicFromRecord, createCoreTopicRecords, createEditedCoreTopicRecord } from "./anchor";
+import {
+  EXCLUSION_RECORD_KIND,
+  classifyAnchorRecord,
+  coreTopicFromRecord,
+  createCoreTopicRecords,
+  createEditedCoreTopicRecord,
+  createTopicExclusionRecord,
+  exclusionIdentityKey,
+  topicExclusionFromRecord,
+} from "./anchor";
 
 describe("Core Topic record contract", () => {
   const records = createCoreTopicRecords(
@@ -75,5 +84,68 @@ describe("Core Topic record contract", () => {
     expect(
       createEditedCoreTopicRecord({ ...record, parent: { collection: "people", id: "person-2" } }, "person-1", "New"),
     ).toBeNull();
+  });
+
+  it("classifies valid, malformed, and unrelated anchor records", () => {
+    const exclusion = createTopicExclusionRecord(record, "person-1");
+    if (!exclusion) throw new Error("Expected a valid exclusion record.");
+
+    const topicClassification = classifyAnchorRecord(record);
+    expect(topicClassification.kind).toBe("core-topic");
+    if (topicClassification.kind === "core-topic") {
+      expect(topicClassification.topic.text).toBe("Garden project");
+    }
+
+    const exclusionClassification = classifyAnchorRecord(exclusion);
+    expect(exclusionClassification).toEqual({
+      kind: "exclusion",
+      exclusion: { id: record.id, text: "Garden project" },
+    });
+
+    const malformedClassification = classifyAnchorRecord({
+      ...exclusion,
+      payload: { kind: EXCLUSION_RECORD_KIND, text: " " },
+    });
+    expect(malformedClassification.kind).toBe("malformed-exclusion");
+
+    const unrelatedClassification = classifyAnchorRecord({
+      ...record,
+      payload: { kind: "legacy-topic", text: "Garden project" },
+    });
+    expect(unrelatedClassification.kind).toBe("unrelated");
+  });
+
+  it("enforces the exclusion text boundary and exact normalized identity", () => {
+    const maximum = createCoreTopicRecords(
+      "person-1",
+      ["interaction-1"],
+      [{ text: "x".repeat(500), questions: [] }],
+      2,
+    )[0];
+    const exclusion = createTopicExclusionRecord(maximum, "person-1");
+    if (!exclusion) throw new Error("Expected a valid exclusion at the text boundary.");
+
+    expect(exclusion).toMatchObject({ payload: { kind: EXCLUSION_RECORD_KIND, text: "x".repeat(500) } });
+    expect(topicExclusionFromRecord(exclusion)).toEqual({ id: maximum.id, text: "x".repeat(500) });
+    expect(
+      createTopicExclusionRecord({ ...maximum, payload: { ...maximum.payload, text: "x".repeat(501) } }, "person-1"),
+    ).toBeNull();
+    expect(exclusionIdentityKey("  Garden   Project ")).toBe(exclusionIdentityKey("garden project"));
+    expect(exclusionIdentityKey("garden project")).not.toBe(exclusionIdentityKey("garden projects"));
+  });
+
+  it("converts the current displayed topic without copying topic metadata", () => {
+    const edited = createEditedCoreTopicRecord(record, "person-1", "  Updated   garden project ");
+    if (!edited) throw new Error("Expected an edited topic.");
+    const exclusion = createTopicExclusionRecord(edited, "person-1");
+    if (!exclusion) throw new Error("Expected an exclusion from the edited topic.");
+
+    expect(exclusion).toEqual({
+      id: record.id,
+      collection: "anchors",
+      parent: { collection: "people", id: "person-1" },
+      payload: { kind: EXCLUSION_RECORD_KIND, text: "Updated garden project" },
+    });
+    expect(Object.keys(exclusion.payload).sort()).toEqual(["kind", "text"]);
   });
 });

@@ -21,6 +21,7 @@ export interface RelationshipVault {
     parent: RelationshipRecordReference,
     child: RelationshipRecordReference,
     replacementRecord: RelationshipRecord,
+    options?: ReplaceChildOptions,
   ): Promise<boolean>;
   removeChildIfParentExists(parent: RelationshipRecordReference, child: RelationshipRecordReference): Promise<boolean>;
   replaceChildrenIfSourcesExist(
@@ -36,6 +37,10 @@ export interface RelationshipVault {
 export interface ReplaceChildrenOptions {
   preserveChild?: (record: StoredRelationshipRecord) => boolean;
   conflictsWithPreservedChild?: (replacement: RelationshipRecord, preservedChild: StoredRelationshipRecord) => boolean;
+}
+
+export interface ReplaceChildOptions {
+  conflictsWithSibling?: (replacement: RelationshipRecord, sibling: StoredRelationshipRecord) => boolean;
 }
 
 export interface RelationshipVaultOptions {

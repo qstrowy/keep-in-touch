@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { createRelationshipVault } from "./local-vault";
 import { MissingRelationshipOwnerError, RelationshipRecordNotFoundError, type RelationshipRecord } from "./types";
+import { createTopicExclusionRecord, exclusionIdentityKey, topicExclusionFromRecord } from "../anchors/anchor";
 
 const contactRecord: RelationshipRecord = {
   id: "contact-1",
@@ -162,6 +163,79 @@ describe("relationship local vault", () => {
     await expect(ownerVault.replaceChildIfParentExists(person, topic, replacement)).resolves.toBe(false);
     await expect(ownerVault.removeChildIfParentExists(person, topic)).resolves.toBe(false);
     await expect(ownerVault.get("people", person.id)).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", topic.id)).resolves.toBeNull();
+  });
+
+  it("atomically converts a topic and removes only a normalized duplicate target", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const otherOwnerVault = createRelationshipVault("owner-b", { idbFactory });
+    const person = { collection: "people", id: "person-1" };
+    const topic = {
+      id: "anchor-1",
+      collection: "anchors",
+      parent: person,
+      payload: {
+        text: "Garden project",
+        questions: ["Ask"],
+        position: 0,
+        createdAt: 1,
+        sourceInteractionIds: ["note-1"],
+      },
+    } satisfies RelationshipRecord;
+    const duplicate = {
+      id: "excluded-1",
+      collection: "anchors",
+      parent: person,
+      payload: { kind: "excluded-topic", text: "  garden   PROJECT " },
+    } satisfies RelationshipRecord;
+    const replacement = createTopicExclusionRecord(topic, "person-1");
+    if (!replacement) throw new Error("Expected a valid exclusion replacement.");
+
+    await ownerVault.put({ ...person, payload: { displayName: "Marek" } });
+    await ownerVault.put(topic);
+    await ownerVault.put(duplicate);
+    await otherOwnerVault.put({ ...person, payload: { displayName: "Other" } });
+    await otherOwnerVault.put({ ...topic, payload: { ...topic.payload, text: "Private" } });
+
+    const conflictsWithSibling = (candidate: RelationshipRecord, sibling: RelationshipRecord) => {
+      const candidateText = topicExclusionFromRecord(candidate)?.text;
+      const siblingText = topicExclusionFromRecord(sibling)?.text;
+      return Boolean(
+        candidateText && siblingText && exclusionIdentityKey(candidateText) === exclusionIdentityKey(siblingText),
+      );
+    };
+
+    await expect(
+      ownerVault.replaceChildIfParentExists(person, topic, replacement, { conflictsWithSibling }),
+    ).resolves.toBe(true);
+    await expect(ownerVault.get("anchors", topic.id)).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", duplicate.id)).resolves.toMatchObject(duplicate);
+    await expect(otherOwnerVault.get("anchors", topic.id)).resolves.toMatchObject({ payload: { text: "Private" } });
+  });
+
+  it("does not convert a stale child, mismatched person, or deleted parent", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const person = { collection: "people", id: "person-1" };
+    const otherPerson = { collection: "people", id: "person-2" };
+    const topic = {
+      id: "anchor-1",
+      collection: "anchors",
+      parent: person,
+      payload: { text: "Garden", questions: [], position: 0, createdAt: 1, sourceInteractionIds: ["note-1"] },
+    } satisfies RelationshipRecord;
+    const replacement = createTopicExclusionRecord(topic, "person-1");
+    if (!replacement) throw new Error("Expected a valid exclusion replacement.");
+
+    await ownerVault.put({ ...person, payload: { displayName: "Marek" } });
+    await ownerVault.put(topic);
+    await expect(ownerVault.replaceChildIfParentExists(otherPerson, topic, replacement)).resolves.toBe(false);
+    await expect(
+      ownerVault.replaceChildIfParentExists(person, { collection: "anchors", id: "missing" }, replacement),
+    ).resolves.toBe(false);
+    await expect(ownerVault.get("anchors", topic.id)).resolves.toMatchObject(topic);
+
+    await ownerVault.deleteCascade(person);
+    await expect(ownerVault.replaceChildIfParentExists(person, topic, replacement)).resolves.toBe(false);
     await expect(ownerVault.get("anchors", topic.id)).resolves.toBeNull();
   });
 
@@ -384,6 +458,74 @@ describe("relationship local vault", () => {
     await expect(ownerVault.get("anchors", managed.id)).resolves.toMatchObject(managed);
     await expect(ownerVault.get("anchors", matching.id)).resolves.toBeNull();
     await expect(ownerVault.get("anchors", distinct.id)).resolves.toMatchObject({ id: "distinct" });
+  });
+
+  it("preserves valid and malformed marked exclusions through empty and non-empty replacements", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const person = { collection: "people", id: "person-1" };
+    const source = { collection: "interactions", id: "interaction-1" };
+    const exclusion = {
+      id: "excluded-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: { kind: "excluded-topic", text: "Garden" },
+    } satisfies RelationshipRecord;
+    const malformedExclusion = {
+      id: "malformed-excluded-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: { kind: "excluded-topic", text: " " },
+    } satisfies RelationshipRecord;
+    const oldTopic = {
+      id: "old-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: { text: "Old", questions: [], position: 0, createdAt: 1, sourceInteractionIds: [source.id] },
+    } satisfies RelationshipRecord;
+    const freshTopic = {
+      id: "fresh-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: { text: "Fresh", questions: [], position: 0, createdAt: 2, sourceInteractionIds: [source.id] },
+    } satisfies RelationshipRecord;
+    const preserveExclusions = (child: RelationshipRecord) => child.payload.kind === "excluded-topic";
+
+    await ownerVault.put({ ...person, payload: { displayName: "Marek" } });
+    await ownerVault.put({ ...source, parent: person, payload: { note: "Garden" } });
+    await ownerVault.put(oldTopic);
+    await ownerVault.put(exclusion);
+    await ownerVault.put(malformedExclusion);
+
+    await expect(
+      ownerVault.replaceChildrenIfSourcesExist(person, [source], "anchors", [freshTopic], {
+        preserveChild: preserveExclusions,
+      }),
+    ).resolves.toBe(true);
+    await expect(ownerVault.get("anchors", oldTopic.id)).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", freshTopic.id)).resolves.toMatchObject(freshTopic);
+    await expect(ownerVault.get("anchors", exclusion.id)).resolves.toMatchObject(exclusion);
+    await expect(ownerVault.get("anchors", malformedExclusion.id)).resolves.toMatchObject(malformedExclusion);
+
+    await expect(
+      ownerVault.replaceChildrenIfSourcesExist(person, [source], "anchors", [], {
+        preserveChild: preserveExclusions,
+      }),
+    ).resolves.toBe(true);
+    await expect(ownerVault.get("anchors", freshTopic.id)).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", exclusion.id)).resolves.toMatchObject(exclusion);
+    await expect(ownerVault.get("anchors", malformedExclusion.id)).resolves.toMatchObject(malformedExclusion);
+
+    await expect(
+      ownerVault.replaceChildrenIfSourcesExist(
+        person,
+        [{ collection: "interactions", id: "missing" }],
+        "anchors",
+        [freshTopic],
+        { preserveChild: preserveExclusions },
+      ),
+    ).resolves.toBe(false);
+    await expect(ownerVault.get("anchors", exclusion.id)).resolves.toMatchObject(exclusion);
+    await expect(ownerVault.get("anchors", malformedExclusion.id)).resolves.toMatchObject(malformedExclusion);
   });
 
   it("leaves the existing generated set untouched when a source disappeared", async () => {

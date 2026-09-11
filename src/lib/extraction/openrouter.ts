@@ -135,7 +135,10 @@ export function createOpenRouterExtractor(
             model,
             messages: [
               { role: "system", content: providerInput.instruction },
-              { role: "user", content: providerInput.note },
+              {
+                role: "user",
+                content: JSON.stringify({ note: providerInput.note, excludedTopics: providerInput.excludedTopics }),
+              },
             ],
             provider: {
               only: [provider],

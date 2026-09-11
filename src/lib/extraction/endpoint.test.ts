@@ -29,15 +29,18 @@ function dependencies() {
 }
 
 describe("extraction endpoint", () => {
-  it("accepts an authenticated same-origin exact note request", async () => {
+  it("accepts an authenticated same-origin exact note-plus-exclusions request", async () => {
     const { dependencies: handlerDependencies, extract } = dependencies();
 
-    const response = await handleExtractionRequest(request('{"note":"Ask about the recital."}'), handlerDependencies);
+    const response = await handleExtractionRequest(
+      request('{"note":"Ask about the recital.","excludedTopics":["Garden project"]}'),
+      handlerDependencies,
+    );
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ topics: [{ text: "Recital", questions: [] }] });
     expect(response.headers.get("Cache-Control")).toBe("no-store");
-    expect(extract).toHaveBeenCalledWith({ note: "Ask about the recital." });
+    expect(extract).toHaveBeenCalledWith({ note: "Ask about the recital.", excludedTopics: ["Garden project"] });
   });
 
   it("rejects cross-origin, unauthenticated, malformed, unexpected, and oversized requests before extraction", async () => {
@@ -45,25 +48,38 @@ describe("extraction endpoint", () => {
 
     await expect(
       handleExtractionRequest(
-        request('{"note":"Private"}', { origin: "https://other.example.test" }),
+        request('{"note":"Private","excludedTopics":[]}', { origin: "https://other.example.test" }),
         handlerDependencies,
       ),
     ).resolves.toHaveProperty("status", 403);
     await expect(
-      handleExtractionRequest(request('{"note":"Private","personId":"do-not-send"}'), handlerDependencies),
+      handleExtractionRequest(
+        request('{"note":"Private","excludedTopics":[],"personId":"do-not-send"}'),
+        handlerDependencies,
+      ),
     ).resolves.toHaveProperty("status", 400);
     await expect(handleExtractionRequest(request("not-json"), handlerDependencies)).resolves.toHaveProperty(
       "status",
       400,
     );
+    await expect(handleExtractionRequest(request('{"note":"Private"}'), handlerDependencies)).resolves.toHaveProperty(
+      "status",
+      400,
+    );
     await expect(
       handleExtractionRequest(
-        request('{"note":"Private"}'.padEnd(MAX_EXTRACTION_REQUEST_BYTES + 1, " ")),
+        request('{"note":"Private","excludedTopics":["Garden"," garden "]}'),
+        handlerDependencies,
+      ),
+    ).resolves.toHaveProperty("status", 400);
+    await expect(
+      handleExtractionRequest(
+        request('{"note":"Private","excludedTopics":[]}'.padEnd(MAX_EXTRACTION_REQUEST_BYTES + 1, " ")),
         handlerDependencies,
       ),
     ).resolves.toHaveProperty("status", 413);
     await expect(
-      handleExtractionRequest(request('{"note":"Private"}'), {
+      handleExtractionRequest(request('{"note":"Private","excludedTopics":[]}'), {
         ...handlerDependencies,
         authenticate: vi.fn().mockResolvedValue(false),
       }),
@@ -74,11 +90,11 @@ describe("extraction endpoint", () => {
   it("maps provider failures to neutral status-only errors", async () => {
     const { dependencies: handlerDependencies } = dependencies();
 
-    const timeoutResponse = await handleExtractionRequest(request('{"note":"Private"}'), {
+    const timeoutResponse = await handleExtractionRequest(request('{"note":"Private","excludedTopics":[]}'), {
       ...handlerDependencies,
       extract: vi.fn().mockResolvedValue({ ok: false, error: "timeout" }),
     });
-    const invalidResponse = await handleExtractionRequest(request('{"note":"Private"}'), {
+    const invalidResponse = await handleExtractionRequest(request('{"note":"Private","excludedTopics":[]}'), {
       ...handlerDependencies,
       extract: vi.fn().mockResolvedValue({ ok: false, error: "invalid_response" }),
     });

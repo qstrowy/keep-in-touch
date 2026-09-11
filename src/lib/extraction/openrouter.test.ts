@@ -15,7 +15,7 @@ const configuration = {
 };
 
 describe("OpenRouter extraction service", () => {
-  it("sends only the fixed prompt and note through a pinned ZDR no-fallback route", async () => {
+  it("sends the fixed prompt and note-plus-exclusions through a pinned ZDR no-fallback route", async () => {
     const captured = { current: null as { url: string; init: RequestInit } | null };
     const fetchFn: ExtractionFetch = (url, init) => {
       captured.current = { url, init };
@@ -27,7 +27,8 @@ describe("OpenRouter extraction service", () => {
     };
     const extractor = createOpenRouterExtractor(configuration, { fetchFn });
 
-    await expect(extractor.extract({ note: "Ask about the recital." })).resolves.toEqual({
+    const request = { note: "Ask about the recital.", excludedTopics: ["Garden project"] };
+    await expect(extractor.extract(request)).resolves.toEqual({
       ok: true,
       response: { topics: [{ text: "Recital", questions: [] }] },
     });
@@ -47,9 +48,12 @@ describe("OpenRouter extraction service", () => {
       messages: [
         {
           role: "system",
-          content: createExtractionProviderInput({ note: "Ask about the recital." }).instruction,
+          content: createExtractionProviderInput(request).instruction,
         },
-        { role: "user", content: "Ask about the recital." },
+        {
+          role: "user",
+          content: JSON.stringify({ note: "Ask about the recital.", excludedTopics: ["Garden project"] }),
+        },
       ],
       provider: {
         only: ["example-provider"],
@@ -94,6 +98,26 @@ describe("OpenRouter extraction service", () => {
     });
   });
 
+  it("does not post-filter a provider response that conflicts with an exclusion", async () => {
+    const extractor = createOpenRouterExtractor(configuration, {
+      fetchFn: () =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({
+              choices: [{ message: { content: '{"topics":[{"text":"Garden project","questions":[]}]}' } }],
+            }),
+          ),
+        ),
+    });
+
+    await expect(
+      extractor.extract({ note: "We discussed gardening.", excludedTopics: ["Garden project"] }),
+    ).resolves.toEqual({
+      ok: true,
+      response: { topics: [{ text: "Garden project", questions: [] }] },
+    });
+  });
+
   it("emits privacy-safe local diagnostics and Activity attribution only when explicitly enabled", async () => {
     const events: OpenRouterExtractionDiagnosticEvent[] = [];
     const extractor = createOpenRouterExtractor(configuration, {
@@ -112,7 +136,7 @@ describe("OpenRouter extraction service", () => {
 
     await expect(
       extractor.extract(
-        { note: "Private note" },
+        { note: "Private note", excludedTopics: [] },
         {
           requestId: "local-request",
           httpReferer: "http://localhost:4323",
@@ -148,19 +172,19 @@ describe("OpenRouter extraction service", () => {
   });
 
   it("fails neutrally when configuration, provider response, or content is unavailable", async () => {
-    await expect(createOpenRouterExtractor({}).extract({ note: "Private note" })).resolves.toEqual({
+    await expect(createOpenRouterExtractor({}).extract({ note: "Private note", excludedTopics: [] })).resolves.toEqual({
       ok: false,
       error: "unavailable",
     });
     await expect(
       createOpenRouterExtractor(configuration, {
         fetchFn: vi.fn<ExtractionFetch>(() => Promise.resolve(new Response("", { status: 429 }))),
-      }).extract({ note: "Private note" }),
+      }).extract({ note: "Private note", excludedTopics: [] }),
     ).resolves.toEqual({ ok: false, error: "unavailable" });
     await expect(
       createOpenRouterExtractor(configuration, {
         fetchFn: vi.fn<ExtractionFetch>(() => Promise.resolve(new Response(JSON.stringify({ choices: [] })))),
-      }).extract({ note: "Private note" }),
+      }).extract({ note: "Private note", excludedTopics: [] }),
     ).resolves.toEqual({ ok: false, error: "invalid_response" });
   });
 
@@ -175,7 +199,10 @@ describe("OpenRouter extraction service", () => {
     );
     const extractor = createOpenRouterExtractor(configuration, { fetchFn, timeoutMs: 1 });
 
-    await expect(extractor.extract({ note: "Private note" })).resolves.toEqual({ ok: false, error: "timeout" });
+    await expect(extractor.extract({ note: "Private note", excludedTopics: [] })).resolves.toEqual({
+      ok: false,
+      error: "timeout",
+    });
     expect(EXTRACTION_TIMEOUT_MS).toBe(90_000);
   });
 });

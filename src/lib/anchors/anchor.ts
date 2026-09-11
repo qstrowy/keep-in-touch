@@ -3,6 +3,7 @@ import type { RelationshipRecord, RelationshipRecordReference } from "../relatio
 
 export const ANCHORS_COLLECTION = "anchors";
 export const MAX_ANCHOR_TEXT_LENGTH = 500;
+export const EXCLUSION_RECORD_KIND = "excluded-topic";
 
 export interface CoreTopic {
   id: string;
@@ -12,6 +13,17 @@ export interface CoreTopic {
   createdAt: number;
   sourceInteractionIds: string[];
 }
+
+export interface TopicExclusion {
+  id: string;
+  text: string;
+}
+
+export type AnchorRecordClassification =
+  | { kind: "core-topic"; topic: CoreTopic }
+  | { kind: "exclusion"; exclusion: TopicExclusion }
+  | { kind: "malformed-exclusion"; record: RelationshipRecord }
+  | { kind: "unrelated"; record: RelationshipRecord };
 
 export function coreTopicFromRecord(record: RelationshipRecord): CoreTopic | null {
   if (record.collection !== ANCHORS_COLLECTION || !isPersonReference(record.parent)) return null;
@@ -47,6 +59,55 @@ export function coreTopicFromRecord(record: RelationshipRecord): CoreTopic | nul
     createdAt: payload.createdAt,
     sourceInteractionIds,
   };
+}
+
+export function topicExclusionFromRecord(record: RelationshipRecord): TopicExclusion | null {
+  if (
+    record.collection !== ANCHORS_COLLECTION ||
+    !isPersonReference(record.parent) ||
+    !isMarkedExclusionRecord(record)
+  ) {
+    return null;
+  }
+
+  const payload = record.payload;
+  if (!isExactRecord(payload, ["kind", "text"])) return null;
+  const text = normalizeText(payload.text);
+  return text ? { id: record.id, text } : null;
+}
+
+export function isMarkedExclusionRecord(record: RelationshipRecord): boolean {
+  return isRecord(record.payload) && record.payload.kind === EXCLUSION_RECORD_KIND;
+}
+
+export function classifyAnchorRecord(record: RelationshipRecord): AnchorRecordClassification {
+  const topic = coreTopicFromRecord(record);
+  if (topic) return { kind: "core-topic", topic };
+
+  if (isMarkedExclusionRecord(record)) {
+    const exclusion = topicExclusionFromRecord(record);
+    return exclusion ? { kind: "exclusion", exclusion } : { kind: "malformed-exclusion", record };
+  }
+
+  return { kind: "unrelated", record };
+}
+
+export function createTopicExclusionRecord(record: RelationshipRecord, personId: string): RelationshipRecord | null {
+  const normalizedPersonId = personId.trim();
+  const topic = coreTopicFromRecord(record);
+  if (!topic || !normalizedPersonId || !samePersonParent(record.parent, normalizedPersonId)) return null;
+
+  return {
+    id: record.id,
+    collection: ANCHORS_COLLECTION,
+    parent: { collection: "people", id: normalizedPersonId },
+    payload: { kind: EXCLUSION_RECORD_KIND, text: topic.text },
+  };
+}
+
+export function exclusionIdentityKey(text: string): string | null {
+  const normalizedText = normalizeText(text);
+  return normalizedText ? normalizedText.toLocaleLowerCase() : null;
 }
 
 export function createCoreTopicRecords(
@@ -104,6 +165,10 @@ function normalizeText(value: unknown): string | null {
   return !text || text.length > MAX_ANCHOR_TEXT_LENGTH ? null : text;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
 function normalizeTextList(value: unknown[], maxLength: number): string[] | null {
   if (value.length > maxLength) return null;
   const result: string[] = [];
@@ -130,7 +195,7 @@ function isPersonReference(value: RelationshipRecordReference | undefined): valu
 }
 
 function samePersonParent(value: RelationshipRecordReference | undefined, personId: string): boolean {
-  return Boolean(value?.collection === "people" && value.id === personId);
+  return value?.collection === "people" && value.id === personId;
 }
 
 function isExactRecord(value: unknown, keys: string[]): value is Record<string, unknown> {

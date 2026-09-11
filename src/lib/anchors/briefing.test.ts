@@ -4,9 +4,10 @@ import type { Interaction } from "../interactions/interaction";
 import type { CoreTopic } from "./anchor";
 import {
   canStartCoreTopicExtraction,
-  getRecentInteractions,
+  classifyBriefingRecords,
   isExtractionSnapshotCurrent,
   orderCoreTopics,
+  prepareCoreTopicExtraction,
 } from "./briefing";
 
 const interactions: Interaction[] = [
@@ -26,10 +27,6 @@ const topic = (id: string, position: number): CoreTopic => ({
 });
 
 describe("Core Topics briefing helpers", () => {
-  it("keeps the three newest interactions for recent context", () => {
-    expect(getRecentInteractions(interactions).map((interaction) => interaction.id)).toEqual(["one", "two", "three"]);
-  });
-
   it("orders topics by explicit provider position without deduplication", () => {
     const topics = [topic("second", 1), topic("first", 0), topic("also-first", 0)];
     expect(orderCoreTopics(topics).map((item) => item.id)).toEqual(["first", "also-first", "second"]);
@@ -61,5 +58,50 @@ describe("Core Topics briefing helpers", () => {
     expect(canStartCoreTopicExtraction("ready", 0, null, null)).toBe(false);
     expect(canStartCoreTopicExtraction("ready", 1, "topic-1", null)).toBe(false);
     expect(canStartCoreTopicExtraction("ready", 1, null, "topic-1")).toBe(false);
+    expect(canStartCoreTopicExtraction("ready", 1, null, null, "topic-1")).toBe(false);
+  });
+
+  it("classifies visible topics, valid exclusions, malformed exclusions, and unrelated records", () => {
+    const records = [
+      {
+        id: "topic-1",
+        collection: "anchors",
+        parent: { collection: "people", id: "person-1" },
+        payload: { text: "Garden", questions: [], position: 0, createdAt: 1, sourceInteractionIds: ["one"] },
+      },
+      {
+        id: "excluded-1",
+        collection: "anchors",
+        parent: { collection: "people", id: "person-1" },
+        payload: { kind: "excluded-topic", text: "Travel" },
+      },
+      {
+        id: "malformed-1",
+        collection: "anchors",
+        parent: { collection: "people", id: "person-1" },
+        payload: { kind: "excluded-topic", text: " " },
+      },
+      { id: "legacy-1", collection: "anchors", payload: { kind: "legacy-topic", text: "Legacy" } },
+    ];
+
+    expect(classifyBriefingRecords(records)).toEqual({
+      topics: [{ ...topic("topic-1", 0), text: "Garden" }],
+      excludedTopics: ["Travel"],
+      hasMalformedExclusion: true,
+    });
+  });
+
+  it("fails locally before request creation for malformed or oversized exclusion context", () => {
+    expect(prepareCoreTopicExtraction(interactions.slice(0, 1), ["Travel"], true)).toEqual({
+      ok: false,
+      error: "malformed_exclusion",
+    });
+    expect(
+      prepareCoreTopicExtraction(
+        [{ id: "large", occurredOn: "2026-09-09", note: "é".repeat(20_000), createdAt: 1 }],
+        ["Travel"],
+        false,
+      ),
+    ).toEqual({ ok: false, error: "too_large" });
   });
 });

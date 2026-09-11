@@ -2,6 +2,7 @@ import { sortInteractionsNewestFirst, type Interaction } from "../interactions/i
 import {
   MAX_COMBINED_EXTRACTION_NOTE_LENGTH,
   parseExtractionCandidateResponse,
+  parseExtractionRequest,
   type ExtractionCandidateResponse,
 } from "./contract";
 
@@ -10,6 +11,7 @@ export const MAX_COMBINED_EXTRACTION_REQUEST_BYTES = 20_000;
 
 export interface CombinedExtractionRequest {
   note: string;
+  excludedTopics: string[];
   sourceInteractionIds: string[];
 }
 
@@ -19,7 +21,10 @@ export type ExtractionClientResult =
   | { ok: true; response: ExtractionCandidateResponse }
   | { ok: false; error: ExtractionClientError };
 
-export function buildCombinedExtractionRequest(interactions: Interaction[]): CombinedExtractionRequest | null {
+export function buildCombinedExtractionRequest(
+  interactions: Interaction[],
+  excludedTopics: string[] = [],
+): CombinedExtractionRequest | null {
   if (!interactions.length) {
     return null;
   }
@@ -30,22 +35,26 @@ export function buildCombinedExtractionRequest(interactions: Interaction[]): Com
     return null;
   }
 
-  const requestBody = JSON.stringify({ note });
+  const request = parseExtractionRequest({ note, excludedTopics }, MAX_COMBINED_EXTRACTION_NOTE_LENGTH);
+  if (!request) return null;
+  const requestBody = JSON.stringify(request);
   if (serializedByteLength(requestBody) > MAX_COMBINED_EXTRACTION_REQUEST_BYTES) {
     return null;
   }
 
   return {
-    note,
+    note: request.note,
+    excludedTopics: request.excludedTopics,
     sourceInteractionIds: chronological.map((interaction) => interaction.id),
   };
 }
 
 export async function requestExtraction(
   note: string,
+  excludedTopics: string[] = [],
   fetchImpl: typeof fetch = globalThis.fetch,
 ): Promise<ExtractionClientResult> {
-  const body = JSON.stringify({ note });
+  const body = JSON.stringify({ note, excludedTopics });
   if (serializedByteLength(body) > MAX_COMBINED_EXTRACTION_REQUEST_BYTES) {
     return { ok: false, error: "too_large" };
   }

@@ -3,7 +3,7 @@ project: KeepInTouch
 version: 1
 status: draft
 created: 2026-09-07
-updated: 2026-09-10
+updated: 2026-09-11
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -16,220 +16,117 @@ milestone_status: open
 
 > Derived from `context/foundation/prd.md` (v1), `context/foundation/tech-stack.md`, and the auto-researched codebase baseline.
 > Edit in place; archive when superseded.
-> Items below are listed in dependency order. The At a glance table is the index.
+> Slices below are listed in dependency order. The At a glance table is the index.
 
 ## Milestone
 
 **M-01: First conversation anchor** — Status: open
 
-- **Intent:** Deliver the shortest private flow in which the owner records an interaction and later sees a useful, unresolved conversation anchor. Include the minimum surrounding capabilities needed to use and trust that flow.
+- **Intent:** Replace the overlapping conversation-anchor categories with a concise Core Topics briefing that the owner can understand, adjust, and steer away from unwanted subjects. Preserve the trusted people, interaction, privacy, and manual-extraction behavior around that briefing.
 - **Source materials:** `context/foundation/prd.md` (v1), supplemented by `context/foundation/tech-stack.md` and the confirmed codebase baseline.
-- **Done when:** every F-NN and S-NN below is `done`, and the owner can complete the primary flow while all relationship data remains owner-only.
-- **Scope anchors:** US-01, FR-001–FR-008, Non-Functional Requirements, Access Control.
+- **Done when:** every S-NN below is `done`, and the owner can manually produce and manage the Core Topics briefing without regressing the preserved relationship workflow.
+- **Scope anchors:** US-01, FR-001–FR-017, Constraints & Compatibility, Access Control Changes.
 
 ## Vision recap
 
-KeepInTouch helps its owner preserve meaningful details about friends and professional contacts when memories fade between infrequent conversations. It should provide a natural anchor for reconnecting while remaining a private memory aid rather than making relationships feel monitored or catalogued.
+KeepInTouch is a private relationship memory aid for capturing imperfect interaction notes and returning to concise context before a later conversation. This milestone simplifies the person screen around one chronological source history and one prominent Core Topics briefing, with optional questions supporting each topic rather than competing as separate categories.
 
 ## North star
 
-Here, the north star means the smallest end-to-end result that proves the product's central claim.
+Here, the north star means the smallest end-to-end result that proves the changed product behavior is useful.
 
-**S-05: See an extracted conversation anchor in a briefing** — It directly proves the PRD's primary success criterion and is placed as early as its privacy and interaction prerequisites allow.
+**S-01: See consolidated Core Topics with useful questions** — It directly proves the primary success criterion through the shortest manual extraction-to-briefing flow and is ready to plan against the existing product baseline.
 
 ## At a glance
 
-| ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
-| --- | --- | --- | --- | --- | --- |
-| F-01 | restore-validation-gates | (foundation) repository validation is trustworthy before feature work begins | — | `tech-stack.md` §Why this stack | done |
-| F-02 | local-data-privacy-contract | (foundation) the local relationship-data boundary and privacy checks are explicit | — | Non-Functional Requirements, Access Control | done |
-| F-03 | private-extraction-contract | (foundation) an extraction service boundary is approved against the note-processing guardrails | F-02 | Non-Functional Requirements, FR-004 | done |
-| S-01 | passwordless-private-access | sign in by passwordless email and reach the private application | F-01 | FR-001 | done |
-| S-02 | create-first-person | create and view a person with a relationship circle and birthday | F-01, F-02, S-01 | FR-002 | done |
-| S-03 | maintain-and-delete-person | edit a person or delete them with all associated relationship data | S-02 | FR-002, Non-Functional Requirements | done |
-| S-04 | record-dated-interaction | save a dated free-text interaction for a person | F-01, F-02, S-02 | US-01, FR-003 | done |
-| S-05 | extracted-anchor-briefing | see an extracted open topic or follow-up in the person's later briefing | F-01, F-02, F-03, S-04 | US-01, FR-004, FR-007 | done |
-| S-06 | manage-conversation-anchors | correct, dismiss, or resolve an extracted conversation anchor | S-05 | US-01, FR-005, FR-006 | done |
-| S-07 | view-upcoming-birthdays | see upcoming birthdays from saved people | S-02 | FR-008 | blocked |
+| ID   | Change ID                   | Outcome (user can …)                                                                     | Prerequisites | PRD refs                              | Status      |
+| ---- | --------------------------- | ---------------------------------------------------------------------------------------- | ------------- | ------------------------------------- | ----------- |
+| S-01 | consolidated-core-topics    | manually generate one concise Core Topics list and expand grounded follow-up questions   | —             | US-01, FR-002, FR-003, FR-010, FR-011 | done        |
+| S-02 | manage-current-core-topics  | edit a Core Topic or hide it from the current briefing with **Not now**                  | S-01          | US-01, FR-004, FR-005, FR-009         | in-progress |
+| S-03 | exclusion-aware-core-topics | confirm **Don't suggest** and regenerate Core Topics with all current exclusions applied | S-01          | US-01, FR-006, FR-008, FR-011         | in-progress |
 
 ## Streams
 
-Navigation aid — groups items that share a prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
+Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme | Chain | Note |
-| --- | --- | --- | --- |
-| A | Access and people | `F-01` → `S-01` → `S-02` → `S-03` → `S-07` | Restores a safe delivery path, then establishes the people the core flow needs. |
-| B | Private interactions | `F-02` → `S-04` → `S-05` → `S-06` | Carries the shortest route from a saved note to a trustworthy reusable anchor. |
-| C | External extraction boundary | `F-03` | Joins Stream B at `S-05` now that the provider route is verified. |
+| Stream | Theme                      | Chain           | Note                                                                 |
+| ------ | -------------------------- | --------------- | -------------------------------------------------------------------- |
+| A      | Core briefing              | `S-01` → `S-02` | Validates the new briefing first, then adds immediate owner control. |
+| B      | Exclusion-aware extraction | `S-03`          | Joins Stream A after `S-01` and can proceed alongside `S-02`.        |
 
 ## Baseline
 
-What's already in place in the codebase as of `2026-09-07` (auto-researched and user-confirmed). Foundations below assume present capabilities are not re-scaffolded.
+What's already in place in the codebase as of `2026-09-10` (auto-researched and user-confirmed). No new Foundation is needed for the Core Topics slices.
 
-- **Frontend:** partial — starter landing and auth screens plus a placeholder dashboard are wired (`src/pages/index.astro`, `src/pages/dashboard.astro`).
-- **Backend / API:** partial — authentication handlers and protected-route middleware exist, but there are no product APIs (`src/pages/api/auth/`, `src/middleware.ts`).
-- **Data:** partial — the data service and local tooling are configured, but no application schema, migrations, or seed data exist (`supabase/config.toml`).
-- **Auth:** partial — provider sessions and middleware exist, but the current forms use passwords rather than the required passwordless flow (`src/pages/api/auth/`).
-- **Deploy / infra:** present — the Cloudflare deployment, protected production and preview routes, and validation CI are established (`wrangler.jsonc`, `.github/workflows/ci.yml`).
-- **Observability:** partial — platform observability is enabled, but application-level error and behavior signals are absent (`wrangler.jsonc`).
+- **Frontend:** present — the declared application frontend and routed person interface are already in place (`context/foundation/tech-stack.md`, `src/pages/dashboard.astro`).
+- **Backend / API:** present — authenticated request handling and the manual extraction endpoint are already in place (`src/pages/api/auth/`, `src/pages/api/extractions/anchors.ts`).
+- **Data:** partial — owner-local IndexedDB stores people, interactions, and anchors with isolation and cascade tests; no SQL schema or seeded data exists or is required for this owner-local change (`src/lib/relationship-data/local-vault.ts`).
+- **Auth:** present — passwordless authentication and protected-route middleware already preserve owner access (`context/foundation/tech-stack.md`, `src/middleware.ts`).
+- **Deploy / infra:** present — the declared Cloudflare deployment and GitHub Actions validation path are established (`context/foundation/tech-stack.md`, `.github/workflows/ci.yml`).
+- **Observability:** partial — platform observability and development extraction diagnostics exist, without application error tracking, metrics, or analytics (`wrangler.jsonc`, `src/pages/api/extractions/anchors.ts`).
 
 ## Foundations
 
-### F-01: Restore trustworthy validation
-
-- **Outcome:** (foundation) the repository's required lint and production-build checks pass again and can verify every downstream slice.
-- **Change ID:** restore-validation-gates
-- **PRD refs:** `tech-stack.md` §Why this stack
-- **Unlocks:** S-01, S-02, S-04, S-05, and the required verification path for every later slice.
-- **Prerequisites:** —
-- **Parallel with:** F-02, F-03
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** Building features on failing checks would hide regressions and slow every later integration, so the smallest repair comes first.
-- **Status:** done
-
-### F-02: Establish the local data privacy contract
-
-- **Outcome:** (foundation) the owner-only local relationship-data boundary, deletion guarantee, and verification rules are explicit before personal data is persisted.
-- **Change ID:** local-data-privacy-contract
-- **PRD refs:** Non-Functional Requirements, Access Control
-- **Unlocks:** S-02, S-03, S-04, S-05, S-06, S-07, and their privacy verification paths.
-- **Prerequisites:** —
-- **Parallel with:** F-01, S-01
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** The current cloud-oriented scaffold does not itself satisfy the local-storage and provider-unreadability promises, so this boundary must be fixed before relationship records are designed.
-- **Status:** done
-
-### F-03: Approve a private extraction boundary
-
-- **Outcome:** (foundation) the external extraction boundary has evidence-backed rules for data minimization, retention, training use, and failure handling.
-- **Change ID:** private-extraction-contract
-- **PRD refs:** Non-Functional Requirements, FR-004
-- **Unlocks:** S-05 and the privacy verification path for sending note text outside the application.
-- **Prerequisites:** F-02
-- **Parallel with:** S-01, S-02, S-03, S-04, S-07
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** Choosing a processor during implementation without prior evidence could invalidate the privacy promise at the exact point the central product flow is introduced.
-- **Status:** done
+No new Foundation items are justified. The existing product already provides the authenticated manual-extraction path, owner-local relationship storage, privacy boundary, and verification infrastructure required by S-01.
 
 ## Slices
 
-### S-01: Enter the private application without a password
+### S-01: See consolidated Core Topics with useful questions
 
-- **Outcome:** the user can sign in by passwordless email and reach the private application while unauthenticated visitors remain excluded.
-- **Change ID:** passwordless-private-access
-- **PRD refs:** FR-001
-- **Prerequisites:** F-01
-- **Parallel with:** F-02, F-03
+- **Outcome:** the user can manually generate one concise list of no more than seven Core Topics and expand each topic to see up to three grounded, non-editable follow-up questions.
+- **Change ID:** consolidated-core-topics
+- **PRD refs:** US-01, FR-002, FR-003, FR-010, FR-011
+- **Prerequisites:** —
+- **Parallel with:** —
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Reusing the existing password flow would contradict the product contract; adapting the smallest access path first avoids carrying that mismatch into every screen.
+- **Risk:** This slice replaces the current three-category contract while preserving manual extraction, interaction history, owner isolation, and unchanged-briefing failure behavior; validating that coherent end-to-end replacement first gives the fastest product signal.
 - **Status:** done
 
-### S-02: Create the first person
+### S-02: Manage topics in the current briefing
 
-- **Outcome:** the user can create and view a person with a relationship circle and birthday inside the private application.
-- **Change ID:** create-first-person
-- **PRD refs:** FR-002
-- **Prerequisites:** F-01, F-02, S-01
-- **Parallel with:** F-03
+- **Outcome:** the user can edit a Core Topic's displayed text or choose **Not now** to remove it from the current view without preventing a later extraction from suggesting it again.
+- **Change ID:** manage-current-core-topics
+- **PRD refs:** US-01, FR-004, FR-005, FR-009
+- **Prerequisites:** S-01
+- **Parallel with:** S-03
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** The person record anchors every interaction and briefing, so introducing only the fields required by the PRD keeps later slices connected without broad contact-management scope.
-- **Status:** done
+- **Risk:** Editing and temporary hiding have intentionally session-scoped meaning; keeping them separate from durable exclusion avoids accidentally making owner wording permanent or turning **Not now** into a hidden exclusion.
+- **Status:** in-progress
 
-### S-03: Maintain or remove a person
+### S-03: Exclude subjects from later Core Topics
 
-- **Outcome:** the user can edit a person's details or delete the person and all associated relationship data immediately.
-- **Change ID:** maintain-and-delete-person
-- **PRD refs:** FR-002, Non-Functional Requirements
-- **Prerequisites:** S-02
-- **Parallel with:** F-03, S-04, S-07
+- **Outcome:** the user can confirm **Don't suggest**, remove that subject from the briefing, and manually regenerate Core Topics with the complete current exclusion context applied on a best-effort basis.
+- **Change ID:** exclusion-aware-core-topics
+- **PRD refs:** US-01, FR-006, FR-008, FR-011
+- **Prerequisites:** S-01
+- **Parallel with:** S-02
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Deletion is a privacy guarantee rather than ordinary polish, so it follows the first persisted person before interactions multiply the associated data.
-- **Status:** done
-
-### S-04: Preserve a dated interaction
-
-- **Outcome:** the user can save a dated free-text interaction for a person and see that the original note was preserved.
-- **Change ID:** record-dated-interaction
-- **PRD refs:** US-01, FR-003
-- **Prerequisites:** F-01, F-02, S-02
-- **Parallel with:** F-03, S-03, S-07
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** Separating reliable note preservation from extraction makes the original user-authored record available even when external processing fails.
-- **Status:** done
-
-### S-05: See an extracted conversation anchor in a briefing
-
-- **Outcome:** after saving an interaction, the user can see a relevant open topic or potential follow-up in that person's later briefing alongside recent context.
-- **Change ID:** extracted-anchor-briefing
-- **PRD refs:** US-01, FR-004, FR-007
-- **Prerequisites:** F-01, F-02, F-03, S-04
-- **Parallel with:** S-03, S-07
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** This is the first slice that proves the product is more useful than a manual journal, but shipping it before the privacy boundary is approved would undermine trust.
-- **Status:** done
-
-### S-06: Correct and close conversation anchors
-
-- **Outcome:** the user can correct or dismiss an inaccurate extracted item and mark an open topic or follow-up as resolved.
-- **Change ID:** manage-conversation-anchors
-- **PRD refs:** US-01, FR-005, FR-006
-- **Prerequisites:** S-05
-- **Parallel with:** S-03, S-07
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** Extraction without immediate user control makes errors durable and erodes trust, so the correction and resolution loop follows directly after the first generated anchor.
-- **Status:** done
-
-### S-07: See upcoming birthdays
-
-- **Outcome:** the user can see which saved people have upcoming birthdays.
-- **Change ID:** view-upcoming-birthdays
-- **PRD refs:** FR-008
-- **Prerequisites:** S-02
-- **Parallel with:** F-03, S-03, S-04, S-05, S-06
-- **Blockers:** —
-- **Unknowns:**
-  - What future window counts as "upcoming" for the MVP birthday view? — Owner: user. Block: yes.
-- **Risk:** Birthday visibility is required but independent of the main interaction loop; leaving the window undefined would produce arbitrary reminder behavior.
-- **Status:** blocked
+- **Risk:** Semantic exclusions cannot be deterministic, so the product must preserve the privacy boundary, set the right expectation, and keep the existing briefing unchanged when regeneration fails.
+- **Status:** in-progress
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
-| --- | --- | --- | --- | --- |
-| F-01 | restore-validation-gates | Restore trustworthy lint and build validation | no | Archived; no further planning required |
-| F-02 | local-data-privacy-contract | Establish the local relationship-data privacy contract | no | Archived; no further planning required |
-| F-03 | private-extraction-contract | Approve a privacy-qualified extraction boundary | no | Archived; provider route and synthetic deployment verification complete |
-| S-01 | passwordless-private-access | Let the owner enter the private app without a password | no | Archived; no further planning required |
-| S-02 | create-first-person | Let the owner create the first person | no | Archived; no further planning required |
-| S-03 | maintain-and-delete-person | Let the owner maintain or remove a person | no | Archived; no further planning required |
-| S-04 | record-dated-interaction | Let the owner preserve a dated interaction | no | Archived; no further planning required |
-| S-05 | extracted-anchor-briefing | Show an extracted conversation anchor in the briefing | no | Planning is in progress; implementation follows plan approval |
-| S-06 | manage-conversation-anchors | Let the owner correct and close conversation anchors | no | Requires S-05 |
-| S-07 | view-upcoming-birthdays | Show upcoming birthdays | no | Requires S-02 and a defined birthday window |
+| Roadmap ID | Change ID                   | Suggested issue title                                            | Ready for `/10x-plan` | Notes                                    |
+| ---------- | --------------------------- | ---------------------------------------------------------------- | --------------------- | ---------------------------------------- |
+| S-01       | consolidated-core-topics    | Show one consolidated Core Topics briefing with useful questions | yes                   | Run `/10x-plan consolidated-core-topics` |
+| S-02       | manage-current-core-topics  | Let the owner edit or temporarily hide a Core Topic              | no                    | Requires S-01                            |
+| S-03       | exclusion-aware-core-topics | Keep excluded subjects out of later Core Topics requests         | no                    | Requires S-01                            |
 
 ## Open Roadmap Questions
 
-1. **What future window counts as "upcoming" for the MVP birthday view?** — Owner: user. Block: S-07.
+None. The PRD records no question that blocks the Core Topics milestone.
 
 ## Parked
 
-- **Gift suggestions (FR-009)** — Why parked: nice-to-have in the PRD and not required to prove the first conversation-anchor outcome.
-- **Encrypted synchronization** — Why parked: the PRD makes synchronized storage optional; this milestone keeps relationship data local and offers no unprotected synchronization.
-- **External messaging, professional-network, contact-book, and social-media integrations** — Why parked: explicitly excluded by the PRD's Non-Goals.
-- **Automatic messages and advanced relationship coaching** — Why parked: explicitly excluded so the product supports rather than replaces the user's judgment.
-- **Native mobile capabilities, voice recognition, and location tracking** — Why parked: the PRD specifies a smartphone-oriented web application instead.
-- **Shared workspaces, team roles, and collaboration** — Why parked: the PRD defines one flat, owner-only user role.
-- **Contact-frequency scoring and neglected-contact recommendations** — Why parked: outside the primary conversation-anchor flow.
-- **Asynchronous, retryable anchor extraction** — Why parked: the owner requested extraction that can finish after the browser closes. It would require a new server-retention and deletion contract; a deleted person must cancel and purge any pending work and must never be recreated by a late result. Revisit only after the owner chooses the retention boundary, retry policy, cancellation behavior, and completion notification experience.
+- **Single chronological interaction history (FR-001)** — Why parked: it is explicitly optional under the hard delivery target and does not block the Core Topics proof.
+- **Excluded Topics management, interaction deletion, permanent edited wording, and advanced snooze timing (FR-007, FR-016, FR-017)** — Why parked: the PRD defers these lifecycle refinements beyond the first Core Topics implementation.
+- **Person Details and optional birth-year enrichment (FR-012)** — Why parked: the PRD assigns profile context to a later product slice with its own grounding and correction decisions.
+- **Recommendations and passive recommendation interactions (FR-013, FR-014)** — Why parked: they form a separate product axis and are not required to validate the briefing.
+- **Voice capture and transcription (FR-015)** — Why parked: the workflow and owner-review boundary must be reshaped before implementation.
+- **Automatic extraction and deterministic semantic exclusion** — Why parked: the PRD preserves deliberate manual extraction and explicitly treats exclusion compliance as best-effort.
 
 ## Milestone History
 
@@ -245,3 +142,4 @@ What's already in place in the codebase as of `2026-09-07` (auto-researched and 
 - **S-04: the user can save a dated free-text interaction for a person and see that the original note was preserved.** — Archived 2026-09-09 → `context/archive/2026-09-09-record-dated-interaction/`. Lesson: —.
 - **F-03: (foundation) the external extraction boundary has evidence-backed rules for data minimization, retention, training use, and failure handling.** — Archived 2026-09-09 → `context/archive/2026-09-09-private-extraction-contract/`. Lesson: —.
 - **S-05: after saving an interaction, the user can see a relevant open topic or potential follow-up in that person's later briefing alongside recent context.** — Archived 2026-09-10 → `context/archive/2026-09-09-extracted-anchor-briefing/`. Lesson: —.
+- **S-01: the user can manually generate one concise list of no more than seven Core Topics and expand each topic to see up to three grounded, non-editable follow-up questions.** — Archived 2026-09-11 → `context/archive/2026-09-11-consolidated-core-topics/`. Lesson: —.
