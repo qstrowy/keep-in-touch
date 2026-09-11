@@ -427,11 +427,11 @@ collection-level operation.
 
 #### Automated
 
-- [ ] 2.1 Prove briefing helpers retain stable usefulness-position ordering without local deduplication
-- [ ] 2.2 Prove successful extraction replaces all old anchors without crossing owner or collection boundaries
-- [ ] 2.3 Prove empty success clears the briefing while captured-source deletion preserves the old set
-- [ ] 2.4 Prove added interactions preserve an in-flight snapshot while person changes invalidate it
-- [ ] 2.5 Pass full test, lint, build, and whitespace verification
+- [x] 2.1 Prove briefing helpers retain stable usefulness-position ordering without local deduplication
+- [x] 2.2 Prove successful extraction replaces all old anchors without crossing owner or collection boundaries
+- [x] 2.3 Prove empty success clears the briefing while captured-source deletion preserves the old set
+- [x] 2.4 Prove added interactions preserve an in-flight snapshot while person changes invalidate it
+- [x] 2.5 Pass full test, lint, build, and whitespace verification
 
 #### Manual
 

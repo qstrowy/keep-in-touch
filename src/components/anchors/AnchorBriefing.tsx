@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
 import { ANCHORS_COLLECTION, coreTopicFromRecord, createCoreTopicRecords, type CoreTopic } from "@/lib/anchors/anchor";
-import { getRecentInteractions, orderCoreTopics } from "@/lib/anchors/briefing";
+import {
+  getRecentInteractions,
+  isExtractionSnapshotCurrent,
+  orderCoreTopics,
+  type ExtractionSnapshot,
+} from "@/lib/anchors/briefing";
 import { buildCombinedExtractionRequest, requestExtraction } from "@/lib/extraction/client";
 import { interactionFromRecord, sortInteractionsNewestFirst, type Interaction } from "@/lib/interactions/interaction";
 import { createRelationshipVault } from "@/lib/relationship-data/local-vault";
@@ -20,17 +25,25 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
   const [state, setState] = useState<BriefingState>("loading");
   const [error, setError] = useState<string | null>(null);
   const extractionGeneration = useRef(0);
+  const loadGeneration = useRef(0);
+
+  useEffect(() => {
+    extractionGeneration.current += 1;
+    return () => {
+      extractionGeneration.current += 1;
+    };
+  }, [ownerId, personId]);
 
   useEffect(() => {
     let isActive = true;
-    const generation = ++extractionGeneration.current;
+    const currentLoadGeneration = ++loadGeneration.current;
     async function loadBriefing() {
       setState("loading");
       setError(null);
       try {
         const vault = createRelationshipVault(ownerId);
         const records = await vault.listByParent({ collection: "people", id: personId });
-        if (!isActive) return;
+        if (!isActive || loadGeneration.current !== currentLoadGeneration) return;
         setInteractions(
           sortInteractionsNewestFirst(
             records.map(interactionFromRecord).filter((item): item is Interaction => item !== null),
@@ -47,7 +60,6 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
     void loadBriefing();
     return () => {
       isActive = false;
-      if (extractionGeneration.current === generation) extractionGeneration.current += 1;
     };
   }, [ownerId, personId, refreshToken]);
 
@@ -61,9 +73,13 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
     }
     setState("running");
     setError(null);
-    const generation = extractionGeneration.current;
+    const snapshot: ExtractionSnapshot = {
+      personId,
+      generation: extractionGeneration.current,
+      sourceInteractionIds: combined.sourceInteractionIds,
+    };
     const result = await requestExtraction(combined.note);
-    if (generation !== extractionGeneration.current) return;
+    if (!isExtractionSnapshotCurrent(snapshot, { personId, generation: extractionGeneration.current })) return;
     if (!result.ok) {
       setError(
         result.error === "too_large"
@@ -86,7 +102,7 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
         ANCHORS_COLLECTION,
         replacementRecords,
       );
-      if (generation !== extractionGeneration.current) return;
+      if (!isExtractionSnapshotCurrent(snapshot, { personId, generation: extractionGeneration.current })) return;
       if (!replaced) {
         setError("The person or one of these notes changed before extraction finished. Try again.");
         setState("error");
