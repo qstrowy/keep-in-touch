@@ -62,6 +62,50 @@ export function createRelationshipVault(ownerId: string, options: RelationshipVa
         .getAll([normalizedOwnerId, parent.collection, parent.id]) as IDBRequest<StoredRelationshipRecord[]>;
       return requestResult<StoredRelationshipRecord[]>(request);
     },
+    async replaceChildIfParentExists(parent, child, replacementRecord) {
+      const db = await database;
+      const transaction = db.transaction(RECORDS_STORE, "readwrite");
+      const store = transaction.objectStore(RECORDS_STORE);
+      const parentRecord = await requestResult<StoredRelationshipRecord | undefined>(
+        store.get([normalizedOwnerId, parent.collection, parent.id]) as IDBRequest<
+          StoredRelationshipRecord | undefined
+        >,
+      );
+      const childRecord = await requestResult<StoredRelationshipRecord | undefined>(
+        store.get([normalizedOwnerId, child.collection, child.id]) as IDBRequest<StoredRelationshipRecord | undefined>,
+      );
+      const valid =
+        Boolean(parentRecord) &&
+        Boolean(childRecord) &&
+        sameReference(childRecord?.parent, parent) &&
+        replacementRecord.collection === child.collection &&
+        replacementRecord.id === child.id &&
+        sameReference(replacementRecord.parent, parent);
+      if (valid) {
+        store.put({ ...replacementRecord, ownerId: normalizedOwnerId });
+      }
+      await transactionComplete(transaction);
+      return valid;
+    },
+    async removeChildIfParentExists(parent, child) {
+      const db = await database;
+      const transaction = db.transaction(RECORDS_STORE, "readwrite");
+      const store = transaction.objectStore(RECORDS_STORE);
+      const parentRecord = await requestResult<StoredRelationshipRecord | undefined>(
+        store.get([normalizedOwnerId, parent.collection, parent.id]) as IDBRequest<
+          StoredRelationshipRecord | undefined
+        >,
+      );
+      const childRecord = await requestResult<StoredRelationshipRecord | undefined>(
+        store.get([normalizedOwnerId, child.collection, child.id]) as IDBRequest<StoredRelationshipRecord | undefined>,
+      );
+      const valid = Boolean(parentRecord) && Boolean(childRecord) && sameReference(childRecord?.parent, parent);
+      if (valid) {
+        store.delete([normalizedOwnerId, child.collection, child.id]);
+      }
+      await transactionComplete(transaction);
+      return valid;
+    },
     async replaceChildrenIfSourcesExist(parent, sourceRecords, childCollection, replacementRecords, options) {
       const db = await database;
       const transaction = db.transaction(RECORDS_STORE, "readwrite");

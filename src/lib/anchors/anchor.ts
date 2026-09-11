@@ -72,6 +72,32 @@ export function createCoreTopicRecords(
   });
 }
 
+export function createEditedCoreTopicRecord(
+  record: RelationshipRecord,
+  personId: string,
+  text: string,
+): RelationshipRecord | null {
+  const normalizedPersonId = personId.trim();
+  const topic = coreTopicFromRecord(record);
+  const normalizedText = normalizeText(text);
+  if (!topic || !normalizedPersonId || !samePersonParent(record.parent, normalizedPersonId) || !normalizedText) {
+    return null;
+  }
+
+  return {
+    id: record.id,
+    collection: ANCHORS_COLLECTION,
+    parent: { collection: "people", id: normalizedPersonId },
+    payload: {
+      text: normalizedText,
+      questions: [...topic.questions],
+      position: topic.position,
+      createdAt: topic.createdAt,
+      sourceInteractionIds: [...topic.sourceInteractionIds],
+    },
+  };
+}
+
 function normalizeText(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const text = value.trim().replace(/\s+/g, " ");
@@ -101,6 +127,10 @@ function normalizeSourceInteractionIds(value: unknown): string[] {
 
 function isPersonReference(value: RelationshipRecordReference | undefined): value is RelationshipRecordReference {
   return Boolean(value?.collection === "people" && value.id.trim());
+}
+
+function samePersonParent(value: RelationshipRecordReference | undefined, personId: string): boolean {
+  return Boolean(value?.collection === "people" && value.id === personId);
 }
 
 function isExactRecord(value: unknown, keys: string[]): value is Record<string, unknown> {

@@ -17,6 +17,12 @@ export interface RelationshipVault {
   get(collection: string, id: string): Promise<StoredRelationshipRecord | null>;
   listByCollection(collection: string): Promise<StoredRelationshipRecord[]>;
   listByParent(parent: RelationshipRecordReference): Promise<StoredRelationshipRecord[]>;
+  replaceChildIfParentExists(
+    parent: RelationshipRecordReference,
+    child: RelationshipRecordReference,
+    replacementRecord: RelationshipRecord,
+  ): Promise<boolean>;
+  removeChildIfParentExists(parent: RelationshipRecordReference, child: RelationshipRecordReference): Promise<boolean>;
   replaceChildrenIfSourcesExist(
     parent: RelationshipRecordReference,
     sourceRecords: RelationshipRecordReference[],

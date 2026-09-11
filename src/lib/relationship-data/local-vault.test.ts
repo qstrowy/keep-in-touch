@@ -82,6 +82,89 @@ describe("relationship local vault", () => {
     ]);
   });
 
+  it("updates or removes only the selected child beneath its verified parent", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const otherOwnerVault = createRelationshipVault("owner-b", { idbFactory });
+    const person = { collection: "people", id: "person-1" };
+    const firstTopic = {
+      id: "anchor-1",
+      collection: "anchors",
+      parent: person,
+      payload: { text: "Garden", questions: ["Ask"], position: 0, createdAt: 1, sourceInteractionIds: ["note-1"] },
+    } satisfies RelationshipRecord;
+    const secondTopic = {
+      id: "anchor-2",
+      collection: "anchors",
+      parent: person,
+      payload: { text: "Travel", questions: [], position: 1, createdAt: 1, sourceInteractionIds: ["note-1"] },
+    } satisfies RelationshipRecord;
+
+    await ownerVault.put({ ...person, payload: { displayName: "Marek" } });
+    await ownerVault.put(firstTopic);
+    await ownerVault.put(secondTopic);
+    await ownerVault.put({
+      id: "unrelated-child",
+      collection: "notes",
+      parent: person,
+      payload: { body: "Keep this" },
+    });
+    await otherOwnerVault.put({ ...person, payload: { displayName: "Other" } });
+    await otherOwnerVault.put({ ...firstTopic, payload: { ...firstTopic.payload, text: "Private" } });
+
+    await expect(
+      ownerVault.replaceChildIfParentExists(person, firstTopic, {
+        ...firstTopic,
+        payload: { ...firstTopic.payload, text: "Updated" },
+      }),
+    ).resolves.toBe(true);
+    await expect(ownerVault.get("anchors", firstTopic.id)).resolves.toMatchObject({
+      payload: { text: "Updated" },
+    });
+    await expect(ownerVault.get("anchors", secondTopic.id)).resolves.toMatchObject(secondTopic);
+    await expect(ownerVault.get("notes", "unrelated-child")).resolves.toBeTruthy();
+    await expect(otherOwnerVault.get("anchors", firstTopic.id)).resolves.toMatchObject({
+      payload: { text: "Private" },
+    });
+
+    await expect(ownerVault.removeChildIfParentExists(person, secondTopic)).resolves.toBe(true);
+    await expect(ownerVault.get("anchors", secondTopic.id)).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", firstTopic.id)).resolves.toBeTruthy();
+  });
+
+  it("refuses missing, mismatched, or deleted parent-child mutations without resurrection", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const otherOwnerVault = createRelationshipVault("owner-b", { idbFactory });
+    const person = { collection: "people", id: "person-1" };
+    const otherPerson = { collection: "people", id: "person-2" };
+    const topic = {
+      id: "anchor-1",
+      collection: "anchors",
+      parent: person,
+      payload: { text: "Garden", questions: [], position: 0, createdAt: 1, sourceInteractionIds: ["note-1"] },
+    } satisfies RelationshipRecord;
+    const replacement = { ...topic, payload: { ...topic.payload, text: "Updated" } };
+
+    await ownerVault.put({ ...person, payload: { displayName: "Marek" } });
+    await ownerVault.put({ ...otherPerson, payload: { displayName: "Zofia" } });
+    await ownerVault.put(topic);
+    await otherOwnerVault.put({ ...person, payload: { displayName: "Other" } });
+    await otherOwnerVault.put({ ...topic, payload: { ...topic.payload, text: "Private" } });
+
+    await expect(
+      ownerVault.replaceChildIfParentExists(person, { collection: "anchors", id: "missing" }, replacement),
+    ).resolves.toBe(false);
+    await expect(ownerVault.removeChildIfParentExists(otherPerson, topic)).resolves.toBe(false);
+    await expect(otherOwnerVault.replaceChildIfParentExists(person, topic, replacement)).resolves.toBe(true);
+    await expect(otherOwnerVault.get("anchors", topic.id)).resolves.toMatchObject({ payload: { text: "Updated" } });
+    await expect(ownerVault.get("anchors", topic.id)).resolves.toMatchObject({ payload: { text: "Garden" } });
+
+    await ownerVault.deleteCascade(person);
+    await expect(ownerVault.replaceChildIfParentExists(person, topic, replacement)).resolves.toBe(false);
+    await expect(ownerVault.removeChildIfParentExists(person, topic)).resolves.toBe(false);
+    await expect(ownerVault.get("people", person.id)).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", topic.id)).resolves.toBeNull();
+  });
+
   it("atomically removes a root record and all of its descendants", async () => {
     const ownerVault = createRelationshipVault("owner-a", { idbFactory });
     const otherOwnerVault = createRelationshipVault("owner-b", { idbFactory });
@@ -196,6 +279,57 @@ describe("relationship local vault", () => {
 
     await expect(ownerVault.get("anchors", "old-anchor")).resolves.toBeNull();
     await expect(ownerVault.get("other", "unrelated-child")).resolves.toBeTruthy();
+  });
+
+  it("preserves current edits and hides on failed replacement, then resets them on valid replacement", async () => {
+    const ownerVault = createRelationshipVault("owner-a", { idbFactory });
+    const person = { collection: "people", id: "person-1" };
+    const source = { collection: "interactions", id: "interaction-1" };
+    const currentTopic = {
+      id: "current-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: {
+        text: "Edited garden",
+        questions: ["Ask"],
+        position: 0,
+        createdAt: 1,
+        sourceInteractionIds: [source.id],
+      },
+    } satisfies RelationshipRecord;
+    const hiddenTopic = {
+      id: "hidden-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: { text: "Hidden travel", questions: [], position: 1, createdAt: 1, sourceInteractionIds: [source.id] },
+    } satisfies RelationshipRecord;
+    const freshTopic = {
+      id: "fresh-anchor",
+      collection: "anchors",
+      parent: person,
+      payload: { text: "Fresh topic", questions: [], position: 0, createdAt: 2, sourceInteractionIds: [source.id] },
+    } satisfies RelationshipRecord;
+
+    await ownerVault.put({ ...person, payload: { displayName: "Marek" } });
+    await ownerVault.put({ ...source, parent: person, payload: { note: "Garden" } });
+    await ownerVault.put(currentTopic);
+    await ownerVault.put(hiddenTopic);
+    await ownerVault.removeChildIfParentExists(person, hiddenTopic);
+
+    await expect(
+      ownerVault.replaceChildrenIfSourcesExist(person, [{ collection: "interactions", id: "missing" }], "anchors", [
+        freshTopic,
+      ]),
+    ).resolves.toBe(false);
+    await expect(ownerVault.get("anchors", currentTopic.id)).resolves.toMatchObject(currentTopic);
+    await expect(ownerVault.get("anchors", hiddenTopic.id)).resolves.toBeNull();
+
+    await expect(ownerVault.replaceChildrenIfSourcesExist(person, [source], "anchors", [freshTopic])).resolves.toBe(
+      true,
+    );
+    await expect(ownerVault.get("anchors", currentTopic.id)).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", hiddenTopic.id)).resolves.toBeNull();
+    await expect(ownerVault.get("anchors", freshTopic.id)).resolves.toMatchObject(freshTopic);
   });
 
   it("preserves managed children and suppresses matching replacements atomically", async () => {
