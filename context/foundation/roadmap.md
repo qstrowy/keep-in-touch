@@ -43,7 +43,7 @@ Here, the north star means the smallest end-to-end result that proves the change
 | ---- | --------------------------- | ---------------------------------------------------------------------------------------- | ------------- | ------------------------------------- | ----------- |
 | S-01 | consolidated-core-topics    | manually generate one concise Core Topics list and expand grounded follow-up questions   | —             | US-01, FR-002, FR-003, FR-010, FR-011 | done        |
 | S-02 | manage-current-core-topics  | edit a Core Topic or hide it from the current briefing with **Not now**                  | S-01          | US-01, FR-004, FR-005, FR-009         | done        |
-| S-03 | exclusion-aware-core-topics | confirm **Don't suggest** and regenerate Core Topics with all current exclusions applied | S-01          | US-01, FR-006, FR-008, FR-011         | in-progress |
+| S-03 | exclusion-aware-core-topics | confirm **Don't suggest** and regenerate Core Topics with all current exclusions applied | S-01          | US-01, FR-006, FR-008, FR-011         | done        |
 
 ## Streams
 
@@ -105,7 +105,7 @@ No new Foundation items are justified. The existing product already provides the
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Semantic exclusions cannot be deterministic, so the product must preserve the privacy boundary, set the right expectation, and keep the existing briefing unchanged when regeneration fails.
-- **Status:** in-progress
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -144,3 +144,4 @@ None. The PRD records no question that blocks the Core Topics milestone.
 - **S-05: after saving an interaction, the user can see a relevant open topic or potential follow-up in that person's later briefing alongside recent context.** — Archived 2026-09-10 → `context/archive/2026-09-09-extracted-anchor-briefing/`. Lesson: —.
 - **S-01: the user can manually generate one concise list of no more than seven Core Topics and expand each topic to see up to three grounded, non-editable follow-up questions.** — Archived 2026-09-11 → `context/archive/2026-09-11-consolidated-core-topics/`. Lesson: —.
 - **S-02: the user can edit a Core Topic's displayed text or choose Not now to remove it from the current view without preventing a later extraction from suggesting it again.** — Archived 2026-09-11 → `context/archive/2026-09-11-manage-current-core-topics/`. Lesson: —.
+- **S-03: the user can confirm Don't suggest, remove that subject from the briefing, and manually regenerate Core Topics with the complete current exclusion context applied on a best-effort basis.** — Archived 2026-09-11 → `context/archive/2026-09-11-exclusion-aware-core-topics/`. Lesson: —.
