@@ -1,8 +1,7 @@
 import { defineMiddleware } from "astro:middleware";
 import { createClient } from "@/lib/supabase";
 import { getE2ETestUser } from "@/lib/auth/e2e-session";
-
-const PROTECTED_ROUTES = ["/dashboard"];
+import { shouldRedirectUnauthenticated } from "@/lib/auth/route-access";
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const e2eTestUser = getE2ETestUser(context.request);
@@ -21,10 +20,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
   }
 
-  if (PROTECTED_ROUTES.some((route) => context.url.pathname.startsWith(route))) {
-    if (!context.locals.user) {
-      return context.redirect("/auth/signin");
-    }
+  if (shouldRedirectUnauthenticated(context.url.pathname, context.locals.user)) {
+    return context.redirect("/auth/signin");
   }
 
   return next();

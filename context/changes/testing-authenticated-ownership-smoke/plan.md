@@ -332,25 +332,25 @@ unchanged.
 
 #### Automated
 
-- [x] 1.1 Add the minimal browser runner, local test-server lifecycle, and explicit e2e command.
-- [x] 1.2 Add the guarded deterministic owner-A/owner-B and signed-out session fixture.
-- [x] 1.3 Run the existing Vitest, lint, and build checks with the harness present.
+- [x] 1.1 Add the minimal browser runner, local test-server lifecycle, and explicit e2e command. — 813fbbf
+- [x] 1.2 Add the guarded deterministic owner-A/owner-B and signed-out session fixture. — 813fbbf
+- [x] 1.3 Run the existing Vitest, lint, and build checks with the harness present. — 813fbbf
 
 #### Manual
 
-- [x] 1.4 Confirm the synthetic session path is unavailable in normal production configuration.
+- [x] 1.4 Confirm the synthetic session path is unavailable in normal production configuration. — 813fbbf
 
 ### Phase 2: Add application-owned ownership integration coverage
 
 #### Automated
 
-- [ ] 2.1 Add only the missing real IndexedDB owner-separation, reopen, and cascade scenarios.
-- [ ] 2.2 Add normal signed-out denial and authenticated owner-ID propagation coverage at the application boundary.
-- [ ] 2.3 Run focused and full Vitest plus lint verification.
+- [x] 2.1 Add only the missing real IndexedDB owner-separation, reopen, and cascade scenarios.
+- [x] 2.2 Add normal signed-out denial and authenticated owner-ID propagation coverage at the application boundary.
+- [x] 2.3 Run focused and full Vitest plus lint verification.
 
 #### Manual
 
-- [ ] 2.4 Review integration-test oracles for contract-based expectations and no deferred late-write claim.
+- [x] 2.4 Review integration-test oracles for contract-based expectations and no deferred late-write claim.
 
 ### Phase 3: Add the targeted A/B browser smoke
 
