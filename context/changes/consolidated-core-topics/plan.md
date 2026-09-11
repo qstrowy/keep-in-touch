@@ -410,18 +410,18 @@ collection-level operation.
 
 #### Automated
 
-- [x] 1.1 Accept valid nested and empty responses and reject every structural and count-limit counterexample
-- [x] 1.2 Prove the prompt carries dominant-language, usefulness, concision, grounding, and no-filler rules
-- [x] 1.3 Prove the provider schema retains routing, privacy, diagnostic, failure, and timeout safeguards
-- [x] 1.4 Prove nested responses do not change the exact note-only browser and endpoint request
-- [x] 1.5 Prove ordered Core Topic records validate nested questions and local source provenance
-- [x] 1.6 Pass focused extraction, provider, client, endpoint, route, and Core Topic tests
-- [x] 1.7 Pass lint and whitespace verification
-- [x] 1.9 Prove questions are direct owner-to-person future conversation starters
+- [x] 1.1 Accept valid nested and empty responses and reject every structural and count-limit counterexample — d9706eb
+- [x] 1.2 Prove the prompt carries dominant-language, usefulness, concision, grounding, and no-filler rules — d9706eb
+- [x] 1.3 Prove the provider schema retains routing, privacy, diagnostic, failure, and timeout safeguards — d9706eb
+- [x] 1.4 Prove nested responses do not change the exact note-only browser and endpoint request — d9706eb
+- [x] 1.5 Prove ordered Core Topic records validate nested questions and local source provenance — d9706eb
+- [x] 1.6 Pass focused extraction, provider, client, endpoint, route, and Core Topic tests — d9706eb
+- [x] 1.7 Pass lint and whitespace verification — d9706eb
+- [x] 1.9 Prove questions are direct owner-to-person future conversation starters — d9706eb
 
 #### Manual
 
-- [x] 1.8 Confirm topic/question association and the exact note-only external boundary
+- [x] 1.8 Confirm topic/question association and the exact note-only external boundary — d9706eb
 
 ### Phase 2: Deliver the consolidated Core Topics briefing
 
