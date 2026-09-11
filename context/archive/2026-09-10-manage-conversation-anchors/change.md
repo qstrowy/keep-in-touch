@@ -1,10 +1,10 @@
 ---
 change_id: manage-conversation-anchors
 title: Manage conversation anchors
-status: implemented
+status: archived
 created: 2026-09-10
-updated: 2026-09-10
-archived_at: null
+updated: 2026-09-11
+archived_at: 2026-09-11T14:13:59Z
 ---
 
 ## Notes
