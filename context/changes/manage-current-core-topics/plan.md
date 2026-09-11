@@ -247,18 +247,18 @@ the intentional reset and rollback point.
 
 #### Manual
 
-- [x] 1.6 Confirm browser-local topic mutations leave interactions unchanged
+- [x] 1.6 Confirm browser-local topic mutations leave interactions unchanged — 779f00d
 
 ### Phase 2: Deliver inline controls and regression proof
 
 #### Automated
 
-- [x] 2.1 Prove control and extraction guards preserve the current snapshot semantics
-- [x] 2.2 Prove persistence, reset, owner isolation, and failed-extraction behavior across the complete suite
-- [x] 2.3 Pass full test, lint, build, whitespace, and scoped-boundary verification
+- [x] 2.1 Prove control and extraction guards preserve the current snapshot semantics — 779f00d
+- [x] 2.2 Prove persistence, reset, owner isolation, and failed-extraction behavior across the complete suite — 779f00d
+- [x] 2.3 Pass full test, lint, build, whitespace, and scoped-boundary verification — 779f00d
 
 #### Manual
 
-- [x] 2.4 Confirm inline edit, cancel, reload persistence, and read-only questions
-- [x] 2.5 Confirm **Not now** stays hidden until valid successful extraction and has no exclusion behavior
-- [x] 2.6 Confirm narrow-screen accessibility, action locking, and preserved people/interaction workflow
+- [x] 2.4 Confirm inline edit, cancel, reload persistence, and read-only questions — 779f00d
+- [x] 2.5 Confirm **Not now** stays hidden until valid successful extraction and has no exclusion behavior — 779f00d
+- [x] 2.6 Confirm narrow-screen accessibility, action locking, and preserved people/interaction workflow — 779f00d
