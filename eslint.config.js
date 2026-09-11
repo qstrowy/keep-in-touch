@@ -125,6 +125,22 @@ const relationshipDataConfig = tseslint.config({
   },
 });
 
+const nodeScriptConfig = tseslint.config({
+  files: ["scripts/**/*.mjs"],
+  languageOptions: {
+    globals: {
+      console: "readonly",
+      fetch: "readonly",
+      process: "readonly",
+      setInterval: "readonly",
+      setTimeout: "readonly",
+    },
+  },
+  rules: {
+    "no-console": "off",
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
@@ -133,5 +149,6 @@ export default tseslint.config(
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
   relationshipDataConfig,
+  nodeScriptConfig,
   eslintPluginPrettier,
 );
