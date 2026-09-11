@@ -427,27 +427,27 @@ collection-level operation.
 
 #### Automated
 
-- [x] 2.1 Prove briefing helpers retain stable usefulness-position ordering without local deduplication
-- [x] 2.2 Prove successful extraction replaces all old anchors without crossing owner or collection boundaries
-- [x] 2.3 Prove empty success clears the briefing while captured-source deletion preserves the old set
-- [x] 2.4 Prove added interactions preserve an in-flight snapshot while person changes invalidate it
-- [x] 2.5 Pass full test, lint, build, and whitespace verification
+- [x] 2.1 Prove briefing helpers retain stable usefulness-position ordering without local deduplication — 2609de2
+- [x] 2.2 Prove successful extraction replaces all old anchors without crossing owner or collection boundaries — 2609de2
+- [x] 2.3 Prove empty success clears the briefing while captured-source deletion preserves the old set — 2609de2
+- [x] 2.4 Prove added interactions preserve an in-flight snapshot while person changes invalidate it — 2609de2
+- [x] 2.5 Pass full test, lint, build, and whitespace verification — 2609de2
 
 #### Manual
 
-- [ ] 2.6 Confirm Core Topics terminology, UI states, retry, and unchanged full interaction history
-- [ ] 2.7 Confirm collapsed disclosures, multiple open topics, read-only questions, order, and reload persistence
-- [ ] 2.8 Confirm an in-flight snapshot can land and a newly saved note participates in the next extraction
+- [x] 2.6 Confirm Core Topics terminology, UI states, retry, and unchanged full interaction history
+- [x] 2.7 Confirm collapsed disclosures, multiple open topics, read-only questions, order, and reload persistence
+- [x] 2.8 Confirm an in-flight snapshot can land and a newly saved note participates in the next extraction
 
 ### Phase 3: Prove privacy, compatibility, and live provider behavior
 
 #### Automated
 
-- [ ] 3.1 Pass the complete test suite
-- [ ] 3.2 Pass lint verification
-- [ ] 3.3 Complete the production build with only documented nonfatal diagnostics
-- [ ] 3.4 Pass whitespace verification
-- [ ] 3.5 Confirm the scoped diff adds no persistence, background processing, profile metadata, or exclusions
+- [x] 3.1 Pass the complete test suite
+- [x] 3.2 Pass lint verification
+- [x] 3.3 Complete the production build with only documented nonfatal diagnostics
+- [x] 3.4 Pass whitespace verification
+- [x] 3.5 Confirm the scoped diff adds no persistence, background processing, profile metadata, or exclusions
 
 #### Manual
 
