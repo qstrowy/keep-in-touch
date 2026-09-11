@@ -15,8 +15,12 @@ const TEST_USERS = {
 
 type TestOwner = keyof typeof TEST_USERS;
 
+export function isE2ETestModeEnabled(): boolean {
+  return import.meta.env.MODE !== "production" && import.meta.env.KEEP_IN_TOUCH_E2E === "1";
+}
+
 export function getE2ETestUser(request: Request): User | null {
-  if (import.meta.env.MODE === "production" || import.meta.env.KEEP_IN_TOUCH_E2E !== "1") {
+  if (!isE2ETestModeEnabled()) {
     return null;
   }
 

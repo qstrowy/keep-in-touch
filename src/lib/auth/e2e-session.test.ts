@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { E2E_TEST_OWNER_HEADER, getE2ETestUser } from "./e2e-session";
+import { E2E_TEST_OWNER_HEADER, getE2ETestUser, isE2ETestModeEnabled } from "./e2e-session";
 
 describe("e2e session seam", () => {
   afterEach(() => {
@@ -10,6 +10,7 @@ describe("e2e session seam", () => {
   it("fails closed unless the explicit test-server condition is enabled", () => {
     vi.stubEnv("KEEP_IN_TOUCH_E2E", "0");
 
+    expect(isE2ETestModeEnabled()).toBe(false);
     expect(getE2ETestUser(new Request("http://localhost/dashboard"))).toBeNull();
   });
 

@@ -344,23 +344,23 @@ unchanged.
 
 #### Automated
 
-- [x] 2.1 Add only the missing real IndexedDB owner-separation, reopen, and cascade scenarios.
-- [x] 2.2 Add normal signed-out denial and authenticated owner-ID propagation coverage at the application boundary.
-- [x] 2.3 Run focused and full Vitest plus lint verification.
+- [x] 2.1 Add only the missing real IndexedDB owner-separation, reopen, and cascade scenarios. — 85bcd30
+- [x] 2.2 Add normal signed-out denial and authenticated owner-ID propagation coverage at the application boundary. — 85bcd30
+- [x] 2.3 Run focused and full Vitest plus lint verification. — 85bcd30
 
 #### Manual
 
-- [x] 2.4 Review integration-test oracles for contract-based expectations and no deferred late-write claim.
+- [x] 2.4 Review integration-test oracles for contract-based expectations and no deferred late-write claim. — 85bcd30
 
 ### Phase 3: Add the targeted A/B browser smoke
 
 #### Automated
 
-- [ ] 3.1 Add the single-profile signed-out → owner A → reload → owner B → owner A smoke scenario.
-- [ ] 3.2 Add the reproducible local command and test-data/profile reset instructions.
-- [ ] 3.3 Run e2e, Vitest, lint, and build verification locally.
+- [x] 3.1 Add the single-profile signed-out → owner A → reload → owner B → owner A smoke scenario.
+- [x] 3.2 Add the reproducible local command and test-data/profile reset instructions.
+- [x] 3.3 Run e2e, Vitest, lint, and build verification locally.
 
 #### Manual
 
-- [ ] 3.4 Run the smoke from a clean profile and confirm visible owner isolation across document navigation.
-- [ ] 3.5 Confirm the smoke does not claim in-place switching, late-write safety, or provider-infrastructure coverage.
+- [x] 3.4 Run the smoke from a clean profile and confirm visible owner isolation across document navigation.
+- [x] 3.5 Confirm the smoke does not claim in-place switching, late-write safety, or provider-infrastructure coverage.

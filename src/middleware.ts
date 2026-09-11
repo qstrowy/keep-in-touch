@@ -1,12 +1,11 @@
 import { defineMiddleware } from "astro:middleware";
 import { createClient } from "@/lib/supabase";
-import { getE2ETestUser } from "@/lib/auth/e2e-session";
+import { getE2ETestUser, isE2ETestModeEnabled } from "@/lib/auth/e2e-session";
 import { shouldRedirectUnauthenticated } from "@/lib/auth/route-access";
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const e2eTestUser = getE2ETestUser(context.request);
-  if (e2eTestUser) {
-    context.locals.user = e2eTestUser;
+  if (isE2ETestModeEnabled()) {
+    context.locals.user = getE2ETestUser(context.request);
   } else {
     const supabase = createClient(context.request.headers, context.cookies);
 
