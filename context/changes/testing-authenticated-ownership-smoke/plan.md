@@ -356,11 +356,11 @@ unchanged.
 
 #### Automated
 
-- [x] 3.1 Add the single-profile signed-out → owner A → reload → owner B → owner A smoke scenario.
-- [x] 3.2 Add the reproducible local command and test-data/profile reset instructions.
-- [x] 3.3 Run e2e, Vitest, lint, and build verification locally.
+- [x] 3.1 Add the single-profile signed-out → owner A → reload → owner B → owner A smoke scenario. — a54a735
+- [x] 3.2 Add the reproducible local command and test-data/profile reset instructions. — a54a735
+- [x] 3.3 Run e2e, Vitest, lint, and build verification locally. — a54a735
 
 #### Manual
 
-- [x] 3.4 Run the smoke from a clean profile and confirm visible owner isolation across document navigation.
-- [x] 3.5 Confirm the smoke does not claim in-place switching, late-write safety, or provider-infrastructure coverage.
+- [x] 3.4 Run the smoke from a clean profile and confirm visible owner isolation across document navigation. — a54a735
+- [x] 3.5 Confirm the smoke does not claim in-place switching, late-write safety, or provider-infrastructure coverage. — a54a735
