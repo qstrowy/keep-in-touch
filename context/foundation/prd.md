@@ -2,124 +2,160 @@
 project: KeepInTouch
 version: 1
 status: draft
-created: 2026-08-21
-context_type: greenfield
+created: 2026-09-10
+context_type: brownfield
 product_type: web-app
 target_scale:
   users: small
   qps: low
   data_volume: small
 timeline_budget:
-  mvp_weeks: 3
-  hard_deadline: null
-  after_hours_only: true
+  delivery_weeks: 1
+  hard_deadline: 2026-09-12
+  after_hours_only: false
 ---
 
-## Vision & Problem Statement
+## Current System Overview
 
-The first user wants to remember meaningful details about friends and professional contacts but often retains only fragments from previous conversations. This is especially difficult with people met infrequently: after a long gap, there may be no natural anchor for restarting the discussion, even though remembering the person and their context matters.
+KeepInTouch is an existing smartphone-oriented web application that acts as a private relationship memory aid. Its current MVP lets an owner add and store people, record dated free-text interactions, reject future interaction dates, browse interaction history, and manually request generated conversation anchors.
 
-KeepInTouch is a private memory aid and personal relationship manager. It preserves useful conversation context and supports genuine attentiveness without making friendships feel monitored or turning people into records to be catalogued.
+The existing application uses Astro, React, strict TypeScript, Supabase authentication, Cloudflare Workers, and owner-local relationship storage. The infrastructure, people-storage flow, dated-interaction input, chronological timestamps, and on-demand model invocation are preserved by this change. The current user base is the creator or a small handful of owners.
+
+The current person screen duplicates interaction history by showing the five most recent interactions near the top and the complete history farther down. Generated future-conversation context is also divided into three categories whose actions and meanings substantially overlap.
+
+## Problem Statement & Motivation
+
+The person screen should have two clear axes: one chronological stream of dated interaction notes as its input, and a prominent set of consolidated Core Topics as context for a future conversation. Optional generated follow-up questions should support a Core Topic without competing with it as a separate primary category.
+
+The duplicated recent-interaction section should be removed because the owner can reach recent notes at the top of the single scrollable history and continue scrolling for older notes. People management, relationship storage, dated interaction behavior, existing infrastructure, and deliberate on-demand model calls should remain unchanged.
+
+Person Details and Recommendations belong to the broader product direction and should be captured as later roadmap slices rather than included in the first Core Topics implementation. Voice-note transcription is also deferred. The privacy boundary may later expand to support an optional year of birth so an approximate age can be available.
+
+The change is needed now because the implemented anchor-management flow exposed that three overlapping categories and exact-text lifecycle matching do not provide reliable future-conversation context. The current workaround is to interpret the categories manually and repeatedly manage rephrased suggestions, which adds friction and weakens trust in the briefing.
 
 ## User & Persona
 
-The primary persona is the creator of KeepInTouch, using the MVP personally to manage a larger private and professional network. They reach for the product after an interaction to preserve important context and before a later interaction—particularly after a long gap—to find a natural conversational anchor.
+The primary persona remains the creator of KeepInTouch, using it as a private second brain for personal and professional relationships. They add an imperfect note whenever something worth remembering comes to mind and later return to a person's profile for concise context before another conversation.
 
 ## Success Criteria
 
 ### Primary
 
-- Within the end-to-end flow, a note containing a meaningful topic or follow-up is classified, and the resulting open item appears as an anchor in that person's later briefing.
+- Manual extraction produces one concise Core Topics list instead of three overlapping primary categories.
+- The owner can expand a topic to see non-editable follow-up questions, edit the topic text, hide it temporarily with **Not now**, or exclude it from future suggestions with a confirmed **Don't suggest** action.
+- Later manual extractions receive the current exclusion list and are instructed to avoid those topics on a best-effort basis.
 
 ### Secondary
 
-- The MVP shows upcoming birthdays.
-- Gift suggestions based on recorded interests and conversations may be included if time remains, but they are not required for MVP success.
-- A working prototype is targeted for 2026-09-01; the complete MVP retains its three-week after-hours budget.
+- If time remains, the person screen can remove the duplicated five-recent-interactions section and retain only the complete chronological history.
+- Later product slices can add Excluded Topics management, individual interaction deletion, background extraction, Person Details, Recommendations, optional age enrichment from year of birth, and voice-note transcription. None is required to ship the Core Topics change.
 
 ### Guardrails
 
-- Relationship data remains private to its owner.
-- Users can correct or dismiss inaccurate extracted topics and follow-ups.
+- Existing people creation, editing, deletion, and owner-local relationship storage continue to work unchanged.
+- Dated interaction capture, chronological history, timestamps, and rejection of future dates continue to work unchanged.
+- Authentication and owner isolation remain unchanged, and model extraction runs only after an explicit owner request.
 
 ## User Stories
 
-### US-01: Preserve a conversation anchor
+### US-01: Prepare for a future conversation
 
-- **Given** I am signed in and have created a person such as Marek
-- **When** I save an interaction note containing a meaningful future topic
-- **Then** KeepInTouch classifies the topic or follow-up and shows the unresolved item in Marek's later briefing
+- **Given** the owner has an existing person with dated interaction notes and may have previously excluded some subjects
+- **When** the owner manually requests a new extraction
+- **Then** they see one consolidated list of no more than seven useful Core Topics that respects their current Excluded Topics
+
+Before this change, the owner receives three overlapping categories and must manually interpret and manage rephrased suggestions.
 
 #### Acceptance Criteria
 
-- The original interaction note and date are saved.
-- A relevant topic or potential follow-up is extracted.
-- The open item appears as a conversation anchor in the person's briefing.
-- I can correct, dismiss, or resolve the extracted item.
+- Expanding a Core Topic shows no more than three grounded, non-editable follow-up questions.
+- Editing changes the Core Topic text shown to the owner.
+- **Not now** removes the topic from the current view while permitting a later extraction to suggest it again.
+- After confirmation, **Don't suggest** removes the topic, adds it to the stored exclusion context, and ensures later extraction requests instruct the model not to return that subject as a Core Topic or follow-up question.
+- Extraction does not modify or delete the original interaction history.
 
-## Functional Requirements
+## Scope of Change
 
-### Authentication and privacy
+### Core Topics
 
-- FR-001: A user can sign in through passwordless email. Priority: must-have
-  > Socrates: Counter-arguments considered: a local single-user MVP may not need authentication, and email login adds an external dependency. Resolution: kept as written.
+- [modified] FR-001: An owner can view one chronological dated interaction history without a separate duplicate of the five most recent entries. Priority: nice-to-have
+  > Socrates: Counter-arguments considered: removing the separate recent section might make the newest context less glanceable, and the cleanup is not required for Core Topics. Resolution: retained as a small if-time-allows cleanup; the same newest entries remain at the top of the complete history, but its omission does not block the MVP.
+- [modified] FR-002: An owner can manually generate one consolidated list of no more than seven useful Core Topics from a person's interaction history. Priority: must-have
+  > Socrates: Counter-argument considered: one list may blur subjects and concrete follow-up actions. Resolution: kept without visible subtypes; actionable matters can be Core Topics, and the owner can understand them without another classification layer.
+- [new] FR-003: An owner can expand a Core Topic to view no more than three grounded, non-editable follow-up questions that offer useful alternative angles rather than restating the topic. Priority: must-have
+  > Socrates: Counter-argument considered: generated questions may be generic, repetitive, or less useful than the Core Topic. Resolution: kept as a secondary expandable feature; extraction should seek unusual but context-grounded angles that help the owner view the topic from another perspective.
+- [modified] FR-004: An owner can edit the Core Topic text shown in their current private briefing. Priority: must-have
+  > Socrates: Counter-argument considered: a later extraction may overwrite the owner's edited wording and make Edit feel unreliable. Resolution: keep current-session topic editing in the MVP; durable owner-authoritative wording across later extractions is deferred as FR-016.
+- [modified] FR-005: An owner can choose **Not now** to hide a Core Topic from the current view while allowing the next or any later manual extraction to suggest it again. Priority: must-have
+  > Socrates: Counter-argument considered: a topic returning on the next extraction may make Not now ineffective for people contacted frequently. Resolution: kept for the MVP because extraction is expected primarily before a later meeting; duration- or event-based snoozing remains a future consideration.
+- [modified] FR-006: An owner can confirm **Don't suggest** to hide a Core Topic and add its subject to the best-effort exclusion context used by future Core Topic and follow-up-question extraction. Priority: must-have
+  > Socrates: Counter-argument considered: model instructions cannot deterministically prevent a semantically reworded excluded subject from returning. Resolution: accepted for the MVP; every manual extraction must include the current exclusion list, while semantic compliance remains explicitly best-effort.
+- [modified] FR-008: An owner can manually regenerate Core Topics with the complete current exclusion context applied without changing the person's original interaction history. Priority: must-have
+  > Socrates: Counter-argument considered: resending accumulated exclusions expands model disclosure and may eventually increase prompt size. Resolution: accepted for the small personal MVP; context-window pressure is not expected in foreseeable use, and compaction can be designed later if needed.
 
-### People and interactions
+### Preserved capabilities
 
-- FR-002: A user can create, edit, and delete a person with a relationship circle and birthday. Priority: must-have
-  > Socrates: Counter-arguments considered: deletion, circles, and birthdays broaden the proof path, and permanent deletion could be deferred. Resolution: kept as written.
-- FR-003: A user can record a dated free-text interaction for a person. Priority: must-have
-  > Socrates: Counter-arguments considered: requiring a date adds friction, while structured input could be more reliable. Resolution: kept as written.
+- [preserved] FR-009: An owner can continue creating, editing, deleting, and storing people with the existing behavior throughout the Core Topics change. Priority: must-have
+  > Socrates: Counter-argument considered: freezing the person model prevents adding optional birth year, Person Details navigation, or exclusion management in this slice. Resolution: preserved for this one-week change to reduce delivery risk; those person-profile changes remain eligible for later slices.
+- [preserved] FR-010: An owner can continue recording and browsing dated interaction notes with timestamps and rejection of future dates. Priority: must-have
+  > Socrates: Counter-argument considered: an incorrect or outdated interaction may keep influencing generated Core Topics when individual notes cannot be removed. Resolution: preserve the current workflow for this MVP and defer individual interaction deletion as FR-017.
+- [preserved] FR-011: An owner can continue signing in through the existing access model, keep relationship data owner-local, and invoke model extraction only on demand. Priority: must-have
+  > Socrates: Counter-argument considered: automatic or background extraction could keep topics fresher without a manual action. Resolution: preserve explicit on-demand extraction for the MVP; background processing remains future scope.
 
-### Topics and follow-ups
+### Future capabilities
 
-- FR-004: A user can have topics and potential follow-ups extracted and classified from an interaction note. Priority: must-have
-  > Socrates: Counter-arguments considered: incorrect extraction may undermine trust, and processing sensitive notes may conflict with the privacy promise. Resolution: kept as written.
-- FR-005: A user can correct or dismiss inaccurate extracted topics and follow-ups. Priority: must-have
-  > Socrates: Counter-arguments considered: a correction interface adds complexity, and reprocessing could replace manual correction. Resolution: kept as written.
-- FR-006: A user can mark open topics or follow-ups as resolved. Priority: must-have
-  > Socrates: Counter-arguments considered: explicit status management may feel like task tracking, and automatic expiry could replace manual resolution. Resolution: kept as written.
+- [new] FR-007: An owner can view their Excluded Topics for a person and restore an excluded subject. Priority: nice-to-have
+  > Socrates: Counter-argument considered: a management panel adds UI and lifecycle overhead for something the owner may rarely revisit. Resolution: deferred from the MVP while retained as a future capability; the MVP keeps confirmation before Don't suggest.
+- [new] FR-012: An owner can view a concise Person Details summary derived from recorded interaction context, including approximate age when an optional year of birth is available. Priority: nice-to-have
+  > Socrates: Counter-argument considered: summarizing sensitive or inaccurate personal facts may feel like surveillance. Resolution: retained for later as a private second-brain capability comparable to personal notes; details must be grounded in recorded interactions, remain owner-private, and be correctable.
+- [new] FR-013: An owner can view recommendations extracted from a person's interaction context in a collection separate from Core Topics. Priority: nice-to-have
+  > Socrates: Counter-argument considered: the model may confuse something a person liked or disliked with an explicit recommendation. Resolution: accept the low-impact mistake for this future feature; the resulting suggestion may still be useful or become a light conversation story.
+- [new] FR-014: An owner can browse recommendations aggregated across people, mark one as experienced, and save a comment as a passive interaction associated with the recommending person. Priority: nice-to-have
+  > Socrates: Counter-argument considered: the history would contain an experience completed independently rather than a direct conversation. Resolution: intentional; a recommendation reaction is a passive interaction connected to the person and may become useful context for a later conversation.
+- [new] FR-015: An owner can record a voice note, transcribe it, and save the transcription as an interaction. Priority: nice-to-have
+  > Socrates: Counter-argument considered: transcription errors could pollute interaction history. Resolution: the current preference is owner review and editing before save, but this capability is distant future scope and its workflow must be reshaped before implementation.
+- [modified] FR-016: An owner can keep their edited Core Topic wording authoritative across later extractions until they deliberately change the topic's lifecycle state. Priority: nice-to-have
+  > Socrates: Counter-argument considered: permanent owner wording may preserve a stale interpretation after later interactions change the subject. Resolution: retain only as a future question and redesign the reconciliation behavior before implementation.
+- [new] FR-017: An owner can delete an individual interaction so it no longer appears in history or influences later extraction. Priority: nice-to-have
+  > Socrates: Counter-argument considered: deleting a source interaction can leave previously derived topics or future summaries stale. Resolution: deletion removes the source record only; extraction remains a separate deliberate action, and the owner reruns it when they want derived context refreshed.
 
-### Briefing and reminders
+## Constraints & Compatibility
 
-- FR-007: A user can view a person's briefing with the last contact, recent context, and unresolved conversation anchors. Priority: must-have
-  > Socrates: Counter-arguments considered: the briefing may duplicate stored notes, and a chronological interaction list might be sufficient. Resolution: kept as written.
-- FR-008: A user can view upcoming birthdays. Priority: must-have
-  > Socrates: Counter-arguments considered: birthdays sit outside the primary proof path and could remain optional until that path works. Resolution: kept as written.
-- FR-009: A user can receive a gift suggestion derived from recorded interests and conversations. Priority: nice-to-have
-  > Socrates: Counter-arguments considered: suggestions may feel intrusive and add unreliable recommendation scope to a three-week MVP. Resolution: kept as written.
+- Existing authentication, flat owner access, and owner-local relationship storage behavior must not change.
+- Existing people-management and dated-interaction behavior must continue to work after the change, but current local test records do not require preservation.
+- Old generated anchor records and the three-category anchor contract may be discarded.
+- Extraction remains an explicit owner action. Automatic or background processing is outside this MVP.
+- The existing external processing privacy boundary remains, with Excluded Topics added to the permitted manual extraction content.
+- A manual extraction either completes successfully or reports failure within 90 seconds.
+- A failed extraction leaves the existing Core Topics briefing unchanged.
+- Saving an interaction does not invoke external processing.
+- Relationship data remains owner-local except for content deliberately submitted during a manual extraction request.
+- A manual Core Topics request may contain interaction text and Excluded Topics but contains no person name, birthday, account identifier, or other profile fields.
+- Submitted extraction content is not retained by the processor or used for training.
+- Semantic compliance with Excluded Topics is best-effort and is not presented as a deterministic guarantee.
 
-## Non-Functional Requirements
+## Business Logic Changes
 
-- Relationship data is stored locally on the user's smartphone.
-- Any synchronized relationship data is unreadable to the synchronization provider; recovery requires a user-held recovery passphrase. Unprotected synchronization must not be offered.
-- External extraction may receive note text but receives no linked profile name, birthday, or account identifier; the processor does not retain the text or use it for training.
-- Extraction completes within two minutes of saving an interaction note.
-- An existing person briefing appears within two seconds of being requested.
-- A user's correction or dismissal of an extracted item takes effect immediately.
-- Deleting a person removes all associated relationship data immediately.
+KeepInTouch turns a person's recorded interactions into no more than seven useful Core Topics, attaches up to three perspective-broadening questions to each topic, and uses the owner's exclusions to discourage unwanted subjects in later manual extractions.
 
-## Business Logic
+The current rule produces three overlapping categories of conversation context. This change replaces those categories with one primary Core Topics list; questions are subordinate prompts revealed only when the owner expands a topic.
 
-KeepInTouch extracts and classifies meaningful details from an interaction, assesses which topics and follow-ups remain open, and presents those items as anchors for the next conversation.
+The rule consumes the person's recorded interaction text together with the owner's Excluded Topics. **Not now** hides a topic from the current view but leaves it eligible for a later extraction. After confirmation, **Don't suggest** stores the subject as exclusion context for later extraction on a best-effort basis. Editing changes only the topic displayed in the current managed briefing; durable owner-authoritative wording remains future scope.
 
-The rule consumes a user's dated conversation note together with later corrections and status changes. It produces classified topics and follow-ups, including an assessment of which items remain unresolved.
+## Access Control Changes
 
-The user encounters the result in the person's briefing, where unresolved items are presented as context for the next contact.
+Users continue to sign in through passwordless email authentication. Each owner can access only their own relationship data. Core Topics, optional follow-up questions, future Person Details, future Recommendations, and an optional year of birth introduce no new roles, sharing, collaboration, or access-control behavior.
 
-## Access Control
-
-Users sign in through passwordless email authentication. Each user can access only their own private relationship data. The MVP has one flat user role with no admin, guest, shared-access, or collaboration roles.
+No access control changes are planned; the current model is preserved.
 
 ## Non-Goals
 
-- No external messaging, professional-network, contact-book, or social-media integrations; the MVP proves value through direct user input.
-- No automatic message sending or advanced relationship coaching; the product supports the user's judgment rather than acting on their behalf.
-- No native mobile app, voice recognition, or location tracking; the MVP is a smartphone-oriented web app.
-- No shared or team workspaces, admin roles, or unprotected cloud synchronization; the MVP retains its private single-user model.
-- No contact-frequency scoring or neglected-contact recommendations; they are outside the primary conversation-anchor flow.
-- Gift suggestions and end-to-end encrypted synchronization are optional and are not required for MVP acceptance.
+- No Person Details or optional birth-year and age enrichment; those require a separate profile-context slice.
+- No Recommendations, aggregate recommendation view, or passive-interaction workflow; those remain a later product axis.
+- No voice capture or transcription; the workflow must be reshaped when it becomes active.
+- No Excluded Topics management, interaction deletion, permanent edited wording, or advanced snooze timing; these lifecycle refinements remain future work.
+- No automatic or background extraction and no deterministic semantic-exclusion guarantee; extraction stays explicit and exclusions remain best-effort.
 
 ## Open Questions
 
-None.
+None blocking the Core Topics change. Future slices must revisit their own deferred lifecycle, profile, recommendation, and voice-workflow decisions before implementation.
