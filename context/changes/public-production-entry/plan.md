@@ -253,24 +253,24 @@ No application data or schema migration is required. Existing browser-local rela
 
 #### Automated
 
-- [x] 1.1 Changed public UI passes formatting and lint checks
-- [x] 1.2 Production build completes with the Cloudflare adapter
-- [x] 1.3 Existing auth unit tests remain green
+- [x] 1.1 Changed public UI passes formatting and lint checks — f4196a6
+- [x] 1.2 Production build completes with the Cloudflare adapter — f4196a6
+- [x] 1.3 Existing auth unit tests remain green — f4196a6
 
 ### Phase 2: Lock the public and private application boundaries
 
 #### Automated
 
-- [ ] 2.1 Public-entry browser checks pass
-- [ ] 2.2 Complete browser suite passes
-- [ ] 2.3 Complete unit suite passes
-- [ ] 2.4 Repository quality gates pass
+- [x] 2.1 Public-entry browser checks pass
+- [x] 2.2 Complete browser suite passes
+- [x] 2.3 Complete unit suite passes
+- [x] 2.4 Repository quality gates pass
 
 #### Manual
 
-- [ ] 2.5 Local public experience is visually accepted at desktop and mobile widths
-- [ ] 2.6 Keyboard navigation and accessible labels are accepted
-- [ ] 2.7 Existing dashboard behavior is accepted after local authenticated entry
+- [x] 2.5 Local public experience is visually accepted at desktop and mobile widths
+- [x] 2.6 Keyboard navigation and accessible labels are accepted
+- [x] 2.7 Existing dashboard behavior is accepted after local authenticated entry
 
 ### Phase 3: Release a public production entry with rollback
 
