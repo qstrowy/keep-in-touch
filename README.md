@@ -45,6 +45,7 @@ npx supabase stop
 npm run dev       # Start the development server
 npm test          # Run the Vitest unit and component suite
 npm run e2e       # Run the Playwright browser suite
+npm run typecheck # Check TypeScript and Astro diagnostics
 npm run lint      # Run type-aware lint and formatting checks
 npm run lint:fix  # Apply supported lint fixes
 npm run format    # Format files with Prettier
@@ -80,7 +81,11 @@ npm run build
 npx wrangler deploy
 ```
 
-GitHub Actions runs synchronization, linting, and the production build for pushes and pull requests targeting `main`.
+GitHub Actions runs typechecking, linting, Vitest, the production build, and the Playwright smoke suite for pushes and
+pull requests targeting `main`.
+
+Project-local Codex hooks run lint and typecheck after edits. Review and trust `.codex/hooks.json` with `/hooks` before
+the hooks can run for the first time; Codex records trust against the exact hook definition.
 
 ### Restore Cloudflare Access on production
 

@@ -39,7 +39,6 @@ describe("Core Topics briefing helpers", () => {
       isExtractionSnapshotCurrent(snapshot, {
         personId: "person-1",
         generation: 4,
-        sourceInteractionIds: ["old", "new"],
       }),
     ).toBe(true);
   });

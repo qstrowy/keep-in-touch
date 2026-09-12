@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-09-11
+> Last updated: 2026-09-12
 
 ## 1. Strategy
 
@@ -71,10 +71,10 @@ the orchestrator updates Status and Change-folder cells as artifacts land.
 
 | #   | Phase name                         | Goal (one line)                                                                                                                   | Risks covered | Test types                               | Status        | Change folder                                          |
 | --- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------- | ------------- | ------------------------------------------------------ |
-| 1   | Authenticated ownership smoke      | Prove the critical browser path: session protection plus owner-isolated local data.                                               | #1, #3        | integration + targeted e2e               | change opened | context/changes/testing-authenticated-ownership-smoke/ |
-| 2   | Extraction reliability and privacy | Prove truthful failure handling, snapshot preservation, data-minimized requests, and boundary validation.                         | #2, #4        | unit + contract + API integration        | not started   | —                                                      |
-| 3   | Atomic local lifecycle regression  | Prove deletion races, managed-topic/exclusion preservation, empty-result replacement, and preserved people/interactions behavior. | #3, #5, #6    | unit + storage integration + focused e2e | not started   | —                                                      |
-| 4   | Quality-gate wiring                | Make the proven unit, integration, e2e, lint, and build floor run locally and in CI.                                              | #1–#6         | test/lint/build/CI gates                 | not started   | —                                                      |
+| 1   | Authenticated ownership smoke      | Prove the critical browser path: session protection plus owner-isolated local data.                                               | #1, #3        | integration + targeted e2e               | complete | `context/archive/2026-09-11-testing-authenticated-ownership-smoke/` |
+| 2   | Extraction reliability and privacy | Prove truthful failure handling, snapshot preservation, data-minimized requests, and boundary validation.                         | #2, #4        | unit + contract + API integration        | complete | extraction contract, endpoint, client, and OpenRouter suites |
+| 3   | Atomic local lifecycle regression  | Prove owner-scoped deletion, managed-topic/exclusion preservation, empty-result replacement, and preserved people/interactions behavior. | #3, #5, #6 | unit + storage integration + focused e2e | complete | relationship-data, people, interactions, and anchors suites |
+| 4   | Quality-gate wiring                | Make the proven unit, integration, e2e, lint, typecheck, and build floor run locally and in CI.                                   | #1–#6         | test/lint/typecheck/build/CI gates       | complete | `context/changes/test-plan-refresh-2026-09-12/` |
 
 AI-native review, visual diffing, and provider-infrastructure testing are not
 included. Deterministic behavior tests provide the stronger signal for this
@@ -83,25 +83,26 @@ setup. Only KeepInTouch-owned behavior at those boundaries is in scope.
 
 ## 4. Stack
 
-The classic test base is sparse: Vitest is available through `npm test`, 14
-focused TypeScript tests exist, and coverage is concentrated in `src/lib`
-plus one API test. No dedicated Vitest, Playwright, accessibility, or API
-mocking configuration currently exists.
+The test base is meaningful for this MVP: 16 Vitest files contain 91 unit and
+integration tests across authentication, local storage, people, interactions,
+Core Topics, extraction contracts, and the API boundary. Four Playwright spec
+files contain five browser tests for public entry, protected routes,
+authenticated ownership, and the representative CRUD seed flow.
 
 | Layer                   | Tool                   | Version  | Notes                                                                                                    |
 | ----------------------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------- |
-| unit + integration      | Vitest                 | `^5.0.0` | Existing runner and focused domain/API tests; expand by cost × signal.                                   |
-| API mocking             | None yet               | —        | Research should mock only the external HTTP edge when needed.                                            |
-| e2e                     | None yet — see Phase 1 | —        | Add only the targeted browser path needed for auth plus owner isolation.                                 |
-| accessibility           | None yet               | —        | Use semantic assertions in targeted browser tests; no standalone accessibility rollout is justified yet. |
+| unit + integration      | Vitest                 | `^5.0.0` | 91 tests across domain, storage, auth, extraction, and API boundaries.                                    |
+| API mocking             | Vitest boundary stubs  | `^5.0.0` | External fetch and provider behavior are replaced only at the application boundary.                       |
+| e2e                     | Playwright             | `^1.55.0` | Five targeted browser tests use the local synthetic-session seam and Chromium.                            |
+| accessibility           | Playwright semantics   | —        | Browser tests use role and label locators; no separate accessibility scanner is justified for this MVP.  |
 | provider infrastructure | Out of scope           | —        | Cloudflare and Supabase general infrastructure are assumed correctly configured.                         |
 
 **Stack grounding tools (current session):**
 
-- Docs: Context7 unavailable; official Astro testing documentation checked via Exa; checked: 2026-09-11
-- Search: Exa.ai available and used for official documentation; checked: 2026-09-11
-- Runtime/browser: CUA browser available; Playwright MCP not available in current session; checked: 2026-09-11
-- Provider/platform: GitHub tools exposed for future CI inspection; Cloudflare/Supabase provider tools not available in current session; checked: 2026-09-11
+- Docs: official OpenAI Codex hook documentation checked for project hooks and trust behavior; checked: 2026-09-12
+- Search: web search available; no additional test-library research was needed because installed configs and passing commands were authoritative; checked: 2026-09-12
+- Runtime/browser: Playwright is configured locally and was used for seed, deliberate-red, and repeated-suite verification; checked: 2026-09-12
+- Provider/platform: GitHub Actions runs application-owned gates; Cloudflare and Supabase provider availability remain outside test scope; checked: 2026-09-12
 
 ## 5. Quality Gates
 
@@ -111,9 +112,9 @@ part of these gates.
 
 | Gate                       | Where             | Required?                 | Catches                                                                  |
 | -------------------------- | ----------------- | ------------------------- | ------------------------------------------------------------------------ |
-| lint + production build    | local + CI        | required now              | syntax, type, framework, and production-build drift                      |
-| unit + integration tests   | local + CI        | required after §3 Phase 2 | domain, storage, API-contract, and extraction regressions                |
-| critical-flow e2e smoke    | CI on PR          | required after §3 Phase 1 | broken application-owned auth, ownership, and user journeys              |
+| lint + typecheck + production build | local + CI | required | syntax, type, framework, formatting, and production-build drift          |
+| unit + integration tests   | local + CI        | required | domain, storage, API-contract, and extraction regressions                |
+| critical-flow e2e smoke    | local + CI        | required | broken application-owned auth, ownership, and user journeys              |
 | application pre-prod smoke | before production | optional after §3 Phase 4 | environment-specific application wiring failures, not provider internals |
 
 ## 6. Cookbook Patterns
@@ -125,34 +126,40 @@ the relevant rollout phase ships.
 
 - **Location**: next to the domain unit under test in `src/lib/`.
 - **Naming**: `<module>.test.ts`.
-- **Reference test**: TBD — see §3 Phase 2 for extraction contract behavior.
+- **Reference test**: `src/lib/extraction/contract.test.ts`.
 - **Run locally**: `npm test -- --run <test-file>`.
 
 ### 6.2 Adding an integration test
 
 - **Location**: next to the relevant storage or API behavior in `src/`.
 - **Mocking policy**: mock only external boundaries; do not mock internal ownership, transaction, or replacement logic.
-- **Reference test**: TBD — see §3 Phase 1 for authenticated ownership and §3 Phase 3 for local lifecycle behavior.
+- **Reference test**: `src/lib/relationship-data/local-vault.test.ts`.
 - **Run locally**: `npm test -- --run <test-file>`.
 
 ### 6.3 Adding an e2e test
 
-- TBD — see §3 Phase 1 for the authenticated owner-isolation smoke pattern.
+- **Location**: `tests/e2e/*.spec.ts`.
+- **Reference seed**: `tests/e2e/seed.spec.ts` demonstrates role-based locators, state-based waits, unique data, and cleanup.
+- **Authentication**: use the fixed test-only owner fixture; never send real magic links or accept arbitrary owner IDs.
+- **Run locally**: `npm run e2e`.
 
 ### 6.4 Adding a test for a new API endpoint
 
 - **Test type**: integration at the application boundary, with contract coverage for input and output.
 - **Pattern**: assert request authorization, validation, response shape, and application-owned side effects; mock only external HTTP.
-- **Reference test**: TBD — see §3 Phase 2 for extraction boundary coverage.
+- **Reference test**: `src/lib/extraction/endpoint.test.ts`.
 - **When to add e2e instead**: only when the failure requires the full application path across browser session, route, and handler.
 
 ### 6.5 Adding a test for a new content-build rule
 
-- TBD — no active content-build risk is in the current roadmap.
+- No active content-build risk is in the current roadmap; add a deterministic build assertion only when such a risk appears.
 
 ### 6.6 Per-rollout-phase notes
 
-- TBD — each completed phase should record the reusable behavior pattern and any surprising fixture or boundary requirement.
+- Auth and ownership browser tests use a production-disabled synthetic-session seam and a fresh Playwright browser context.
+- Provider failures are tested with boundary stubs; tests never call hosted OpenRouter, Cloudflare, or Supabase infrastructure.
+- Storage tests use `fake-indexeddb` and real owner-scoped vault transactions.
+- The E2E wrapper stops Astro before and after Playwright, including failed runs. Wrangler needs access to its Windows AppData registry locally; CI uses Linux and installs Chromium explicitly.
 
 ## 7. What We Deliberately Don't Test
 
@@ -166,9 +173,9 @@ only if the underlying product scope changes.
 
 ## 8. Freshness Ledger
 
-- Strategy (§1–§5) last reviewed: 2026-09-11
-- Stack versions last verified: 2026-09-11
-- AI-native tool references last verified: 2026-09-11
+- Strategy (§1–§5) last reviewed: 2026-09-12
+- Stack versions last verified: 2026-09-12
+- AI-native tool references last verified: 2026-09-12
 
 Refresh (`/10x-test-plan --refresh`) when:
 

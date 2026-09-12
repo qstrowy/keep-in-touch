@@ -39,6 +39,7 @@ export function coreTopicFromRecord(record: RelationshipRecord): CoreTopic | nul
   const text = normalizeText(payload.text);
   const questions = normalizeTextList(payload.questions, 3);
   const sourceInteractionIds = normalizeSourceInteractionIds(payload.sourceInteractionIds);
+  if (typeof payload.position !== "number" || typeof payload.createdAt !== "number") return null;
   if (
     !text ||
     !questions ||

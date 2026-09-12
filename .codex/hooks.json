@@ -1,0 +1,24 @@
+{
+  "description": "Fast project checks after Codex edits source files.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm run lint -- --quiet",
+            "timeout": 30,
+            "statusMessage": "Linting the workspace"
+          },
+          {
+            "type": "command",
+            "command": "npm run typecheck",
+            "timeout": 60,
+            "statusMessage": "Checking TypeScript and Astro"
+          }
+        ]
+      }
+    ]
+  }
+}

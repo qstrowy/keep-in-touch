@@ -2,8 +2,8 @@
   "package": "@przeprogramowani/10x-cli",
   "version": "1.20.0",
   "manifestVersion": 3,
-  "lastApplied": "2026-09-10T15:01:33.428Z",
-  "lessonId": "m2l3",
+  "lastApplied": "2026-09-12T20:24:35.914Z",
+  "lessonId": "m3l2",
   "course": "10xdevs3",
   "tool": "codex",
   "files": {
@@ -137,7 +137,7 @@
         ],
         "contentHashes": {
           "references/milestone-state.md": "d9446372acbab5617de079c5ee1e1d4a17fb3329e7bcc1a0129d3ee894fe0a2b",
-          "SKILL.md": "c41cadcb63e40628a403e8f9f4ff3114511830d8db98f8c22692fd653f9dd357"
+          "SKILL.md": "0e385b9c0b0d36045422abbb86392099c132fef3f5edd88ec51e35c08d767a39"
         }
       },
       "10x-new": {
@@ -157,7 +157,7 @@
         ],
         "contentHashes": {
           "references/progress-format.md": "acd3841cb4b2baa3066f5ec4997d0c21b8791fcd432a66777fd8bcb38119e218",
-          "SKILL.md": "d2300600cb964bb140902700fe66cceffb8a84ad696416db2008dbb9e88272cc"
+          "SKILL.md": "bcb3a3451d3cf7a8a160b0c92da1deb5acad2added6d6ddd3be5e14689836522"
         }
       },
       "10x-plan-review": {
@@ -173,7 +173,7 @@
           "SKILL.md"
         ],
         "contentHashes": {
-          "SKILL.md": "aa82300c06a7cea31a1fd4475ab17fd58c12b0dde05346467b7f7dbf0fae3542"
+          "SKILL.md": "b805c14a8cb08f5976602c371d7d13eab2adafaa431bb604e1608d4fabad6096"
         }
       },
       "10x-archive": {
@@ -1294,7 +1294,7 @@
       "configs": []
     },
     "m3l2": {
-      "appliedAt": "2026-09-10T15:01:03.554Z",
+      "appliedAt": "2026-09-12T20:24:35.912Z",
       "skills": {
         "10x-init": {
           "files": [

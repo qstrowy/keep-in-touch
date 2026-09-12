@@ -172,7 +172,12 @@ describe("OpenRouter extraction service", () => {
   });
 
   it("fails neutrally when configuration, provider response, or content is unavailable", async () => {
-    await expect(createOpenRouterExtractor({}).extract({ note: "Private note", excludedTopics: [] })).resolves.toEqual({
+    await expect(
+      createOpenRouterExtractor({ apiKey: undefined, model: undefined, provider: undefined }).extract({
+        note: "Private note",
+        excludedTopics: [],
+      }),
+    ).resolves.toEqual({
       ok: false,
       error: "unavailable",
     });
