@@ -3,7 +3,7 @@ project: KeepInTouch
 version: 1
 status: draft
 created: 2026-09-07
-updated: 2026-09-11
+updated: 2026-09-12
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -39,11 +39,11 @@ Here, the north star means the smallest end-to-end result that proves the change
 
 ## At a glance
 
-| ID   | Change ID                   | Outcome (user can …)                                                                     | Prerequisites | PRD refs                              | Status      |
-| ---- | --------------------------- | ---------------------------------------------------------------------------------------- | ------------- | ------------------------------------- | ----------- |
-| S-01 | consolidated-core-topics    | manually generate one concise Core Topics list and expand grounded follow-up questions   | —             | US-01, FR-002, FR-003, FR-010, FR-011 | done        |
-| S-02 | manage-current-core-topics  | edit a Core Topic or hide it from the current briefing with **Not now**                  | S-01          | US-01, FR-004, FR-005, FR-009         | done        |
-| S-03 | exclusion-aware-core-topics | confirm **Don't suggest** and regenerate Core Topics with all current exclusions applied | S-01          | US-01, FR-006, FR-008, FR-011         | done        |
+| ID   | Change ID                   | Outcome (user can …)                                                                     | Prerequisites | PRD refs                              | Status |
+| ---- | --------------------------- | ---------------------------------------------------------------------------------------- | ------------- | ------------------------------------- | ------ |
+| S-01 | consolidated-core-topics    | manually generate one concise Core Topics list and expand grounded follow-up questions   | —             | US-01, FR-002, FR-003, FR-010, FR-011 | done   |
+| S-02 | manage-current-core-topics  | edit a Core Topic or hide it from the current briefing with **Not now**                  | S-01          | US-01, FR-004, FR-005, FR-009         | done   |
+| S-03 | exclusion-aware-core-topics | confirm **Don't suggest** and regenerate Core Topics with all current exclusions applied | S-01          | US-01, FR-006, FR-008, FR-011         | done   |
 
 ## Streams
 
@@ -121,6 +121,7 @@ None. The PRD records no question that blocks the Core Topics milestone.
 
 ## Parked
 
+- **Cross-device relationship data sync** — Why parked: the MVP intentionally keeps relationship data in the current browser, so signing in on another device or browser does not restore it. Revisit when multi-device continuity becomes a priority; the future outcome is authenticated, owner-only cloud persistence with a safe path for existing local data.
 - **Single chronological interaction history (FR-001)** — Why parked: it is explicitly optional under the hard delivery target and does not block the Core Topics proof.
 - **Excluded Topics management, interaction deletion, permanent edited wording, and advanced snooze timing (FR-007, FR-016, FR-017)** — Why parked: the PRD defers these lifecycle refinements beyond the first Core Topics implementation.
 - **Person Details and optional birth-year enrichment (FR-012)** — Why parked: the PRD assigns profile context to a later product slice with its own grounding and correction decisions.
