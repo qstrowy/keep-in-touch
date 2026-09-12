@@ -2,7 +2,7 @@
 
 > Submission evidence for the KeepInTouch MVP after completing Modules 1–3.
 >
-> Last verified: 2026-09-12
+> Last verified: 2026-09-13
 
 ## Builder Criteria
 
@@ -47,9 +47,23 @@ during the first batch; convention accuracy and required corrections are the rel
 
 - `context/foundation/test-plan.md` maps six product risks to the cheapest useful test layers and records four completed rollout phases.
 - Sixteen Vitest files contain 91 unit and integration tests.
-- Four Playwright spec files contain five browser tests, including `tests/e2e/seed.spec.ts` as the convention seed.
+- Five Playwright spec files contain six browser tests, including `tests/e2e/seed.spec.ts` as the convention seed.
 - `.codex/hooks.json` defines post-edit lint and typecheck checks. `.husky/pre-commit` runs lint-staged for manual edits.
 - `.github/workflows/ci.yml` runs typecheck, lint, Vitest, build, installs Chromium, and runs Playwright.
+
+### Module 3 Lesson 4 Exercise
+
+- Installed the lesson toolkit with `npx @przeprogramowani/10x-cli@latest get m3l4`; the toolkit manifest records
+  `lessonId: m3l4`, and `AGENTS.md` contains the thin `/10x-e2e` rule pointer.
+- The seed test demonstrates semantic locators, state-based waits, unique test data, explicit cleanup, and a name tied
+  to Risk #6 from `context/foundation/test-plan.md`.
+- A standalone `/10x-e2e` exercise generated `tests/e2e/person-edit-persistence.spec.ts` for the still-uncovered Risk
+  #6 behavior that an edited person must remain updated after a page reload.
+- Review against the five agent E2E anti-patterns found no hallucinated assertion, brittle selector, shared state,
+  fixed delay, or missing cleanup.
+- Deliberate red: production persistence was temporarily bypassed only for edits. The test displayed the new name
+  before reload, then failed at the post-reload updated-heading assertion. Production code was immediately restored,
+  and the focused test passed again.
 
 ### E2E Review Evidence
 

@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-09-12
+> Last updated: 2026-09-13
 
 ## 1. Strategy
 
@@ -74,7 +74,7 @@ the orchestrator updates Status and Change-folder cells as artifacts land.
 | 1   | Authenticated ownership smoke      | Prove the critical browser path: session protection plus owner-isolated local data.                                               | #1, #3        | integration + targeted e2e               | complete | `context/archive/2026-09-11-testing-authenticated-ownership-smoke/` |
 | 2   | Extraction reliability and privacy | Prove truthful failure handling, snapshot preservation, data-minimized requests, and boundary validation.                         | #2, #4        | unit + contract + API integration        | complete | extraction contract, endpoint, client, and OpenRouter suites |
 | 3   | Atomic local lifecycle regression  | Prove owner-scoped deletion, managed-topic/exclusion preservation, empty-result replacement, and preserved people/interactions behavior. | #3, #5, #6 | unit + storage integration + focused e2e | complete | relationship-data, people, interactions, and anchors suites |
-| 4   | Quality-gate wiring                | Make the proven unit, integration, e2e, lint, typecheck, and build floor run locally and in CI.                                   | #1–#6         | test/lint/typecheck/build/CI gates       | complete | `context/changes/test-plan-refresh-2026-09-12/` |
+| 4   | Quality-gate wiring                | Make the proven unit, integration, e2e, lint, typecheck, and build floor run locally and in CI.                                   | #1–#6         | test/lint/typecheck/build/CI gates       | complete | `context/archive/2026-09-12-test-plan-refresh-2026-09-12/` |
 
 AI-native review, visual diffing, and provider-infrastructure testing are not
 included. Deterministic behavior tests provide the stronger signal for this
@@ -85,24 +85,24 @@ setup. Only KeepInTouch-owned behavior at those boundaries is in scope.
 
 The test base is meaningful for this MVP: 16 Vitest files contain 91 unit and
 integration tests across authentication, local storage, people, interactions,
-Core Topics, extraction contracts, and the API boundary. Four Playwright spec
-files contain five browser tests for public entry, protected routes,
-authenticated ownership, and the representative CRUD seed flow.
+Core Topics, extraction contracts, and the API boundary. Five Playwright spec
+files contain six browser tests for public entry, protected routes,
+authenticated ownership, the representative CRUD seed flow, and edit persistence.
 
 | Layer                   | Tool                   | Version  | Notes                                                                                                    |
 | ----------------------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------- |
 | unit + integration      | Vitest                 | `^5.0.0` | 91 tests across domain, storage, auth, extraction, and API boundaries.                                    |
 | API mocking             | Vitest boundary stubs  | `^5.0.0` | External fetch and provider behavior are replaced only at the application boundary.                       |
-| e2e                     | Playwright             | `^1.55.0` | Five targeted browser tests use the local synthetic-session seam and Chromium.                            |
+| e2e                     | Playwright             | `^1.55.0` | Six targeted browser tests use the local synthetic-session seam and Chromium.                             |
 | accessibility           | Playwright semantics   | —        | Browser tests use role and label locators; no separate accessibility scanner is justified for this MVP.  |
 | provider infrastructure | Out of scope           | —        | Cloudflare and Supabase general infrastructure are assumed correctly configured.                         |
 
 **Stack grounding tools (current session):**
 
-- Docs: official OpenAI Codex hook documentation checked for project hooks and trust behavior; checked: 2026-09-12
-- Search: web search available; no additional test-library research was needed because installed configs and passing commands were authoritative; checked: 2026-09-12
-- Runtime/browser: Playwright is configured locally and was used for seed, deliberate-red, and repeated-suite verification; checked: 2026-09-12
-- Provider/platform: GitHub Actions runs application-owned gates; Cloudflare and Supabase provider availability remain outside test scope; checked: 2026-09-12
+- Docs: official OpenAI Codex hook documentation checked for project hooks and trust behavior; checked: 2026-09-13
+- Search: web search available; no additional test-library research was needed because installed configs and passing commands were authoritative; checked: 2026-09-13
+- Runtime/browser: Playwright is configured locally and was used for seed, deliberate-red, and repeated-suite verification; checked: 2026-09-13
+- Provider/platform: GitHub Actions runs application-owned gates; Cloudflare and Supabase provider availability remain outside test scope; checked: 2026-09-13
 
 ## 5. Quality Gates
 
@@ -173,9 +173,9 @@ only if the underlying product scope changes.
 
 ## 8. Freshness Ledger
 
-- Strategy (§1–§5) last reviewed: 2026-09-12
-- Stack versions last verified: 2026-09-12
-- AI-native tool references last verified: 2026-09-12
+- Strategy (§1–§5) last reviewed: 2026-09-13
+- Stack versions last verified: 2026-09-13
+- AI-native tool references last verified: 2026-09-13
 
 Refresh (`/10x-test-plan --refresh`) when:
 
