@@ -276,13 +276,13 @@ No application data or schema migration is required. Existing browser-local rela
 
 #### Automated
 
-- [x] 3.1 Final repository verification passes immediately before deployment
-- [x] 3.2 Signed-out production HTTP probes confirm application-level boundaries
-- [x] 3.3 Signed-out preview probe confirms Cloudflare Access remains active
+- [x] 3.1 Final repository verification passes immediately before deployment — 86d0314
+- [x] 3.2 Signed-out production HTTP probes confirm application-level boundaries — 86d0314
+- [x] 3.3 Signed-out preview probe confirms Cloudflare Access remains active — 86d0314
 
 #### Manual
 
-- [x] 3.4 Deployed branded experience is accepted before changing Access
-- [x] 3.5 Live production and preview protection split and rollback action are recorded
-- [x] 3.6 Real production magic-link session and sign-out flow pass in a clean browser
-- [x] 3.7 Final production Access change and rollback control are approved
+- [x] 3.4 Deployed branded experience is accepted before changing Access — 86d0314
+- [x] 3.5 Live production and preview protection split and rollback action are recorded — 86d0314
+- [x] 3.6 Real production magic-link session and sign-out flow pass in a clean browser — 86d0314
+- [x] 3.7 Final production Access change and rollback control are approved — 86d0314

@@ -1,7 +1,7 @@
 ---
 change_id: public-production-entry
 title: Make production sign-in publicly accessible
-status: implementing
+status: impl_reviewed
 created: 2026-09-12
 updated: 2026-09-12
 archived_at: null
