@@ -2,7 +2,9 @@
 change_id: test-plan-refresh-2026-09-12
 created: 2026-09-12
 updated: 2026-09-12
-status: impl_reviewed
+status: archived
+archived_at: 2026-09-12T21:32:09Z
+implementation_commit: 0d6f712
 ---
 
 # Test plan refresh and certification evidence
