@@ -5,10 +5,20 @@ import MagicLinkForm from "@/components/auth/MagicLinkForm";
 const error = Astro.url.searchParams.get("error");
 ---
 
-<Layout title="Sign in">
-  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
-    <div class="w-full max-w-sm rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
+<Layout title="Sign in | KeepInTouch">
+  <main class="bg-cosmic flex min-h-screen items-center justify-center p-4">
+    <section
+      aria-labelledby="signin-title"
+      class="w-full max-w-sm rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl"
+    >
+      <a
+        href="/"
+        class="mb-6 block text-center text-sm font-semibold tracking-wide text-purple-200 hover:text-purple-100"
+      >
+        KeepInTouch
+      </a>
       <h1
+        id="signin-title"
         class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
       >
         Sign in
@@ -20,6 +30,6 @@ const error = Astro.url.searchParams.get("error");
       <p class="mt-4 text-center text-sm text-blue-100/60">
         New here? Your first sign-in link creates your private account.
       </p>
-    </div>
-  </div>
+    </section>
+  </main>
 </Layout>
