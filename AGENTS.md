@@ -22,7 +22,7 @@ Use strict TypeScript and the `@/*` alias for imports from `src/`. Prettier enfo
 
 ## Testing Guidelines
 
-No automated test framework is configured yet. Until one is added, every change must pass `npm run lint` and `npm run build`. When introducing business logic, add a test runner and an explicit `npm test` script in the same change; colocate tests as `*.test.ts` or `*.test.tsx` beside the code under test.
+Run `npm test` for the Vitest unit and component suite and `npm run e2e` for the Playwright browser suite. Code changes must also pass `npm run lint` and `npm run build`. Colocate business-logic tests as `*.test.ts` or `*.test.tsx`; place browser-flow coverage in `tests/e2e/`. The E2E suite uses synthetic sessions and does not replace a manual production magic-link check.
 
 ## Commit & Pull Request Guidelines
 
@@ -46,12 +46,12 @@ Review AI-generated code before merge with the **implementation review chain**:
 
 ### Task Router - Where to start
 
-| Skill | Use it when |
-| --- | --- |
-| **Code review (lesson focus)** | |
+| Skill                          | Use it when                                                                                                                                                                                                                             |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Code review (lesson focus)** |                                                                                                                                                                                                                                         |
 | `/10x-impl-review <change-id>` | You have implemented code and want a structured review before merge. The skill checks plan adherence, scope discipline, safety and quality, architecture, pattern consistency, and success criteria, then presents findings for triage. |
-| **Recurring lesson outcome** | |
-| `/10x-lesson` | A finding reveals a recurring project rule or agent failure pattern. Record it in `context/foundation/lessons.md` instead of treating it as a one-off note. |
+| **Recurring lesson outcome**   |                                                                                                                                                                                                                                         |
+| `/10x-lesson`                  | A finding reveals a recurring project rule or agent failure pattern. Record it in `context/foundation/lessons.md` instead of treating it as a one-off note.                                                                             |
 
 ### Triage discipline
 

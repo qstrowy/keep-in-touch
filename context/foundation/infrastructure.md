@@ -86,7 +86,7 @@ Supabase was provisioned in a region poorly aligned with application traffic, so
 - **Preview deploys**: Connect `qstrowy/keep-in-touch` to Workers Builds, use `main` as the production branch, and enable non-production branch builds. Production uses `npm run build` then `npx wrangler deploy`; preview branches use `npx wrangler versions upload`, which creates stable branch and version preview URLs without promoting them. Protect preview URLs with Cloudflare Access before using real personal data. Preview URL runtime logs are currently unavailable. Evidence: [build branches](https://developers.cloudflare.com/workers/ci-cd/builds/build-branches/) and [build configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
 - **Secrets**: Store `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, and future LLM credentials as Workers Secrets, never as committed Wrangler variables. Declare required secret names in `wrangler.jsonc`, use `.dev.vars` only locally, and scope the deployment API token to this Worker/account without DNS or billing permissions. Rotate with `npx wrangler versions secret put <KEY>`, validate the preview version, and then deploy it; secret values remain hidden from Wrangler and the dashboard.
 - **Rollback**: Run `npx wrangler deployments list --json`, select a known-good version, then execute `npx wrangler rollback <VERSION_ID> --message "reason"`. The code rollback is immediate across routes, but it cannot restore deleted/modified Cloudflare resources, Supabase schema, or data. Evidence: [Workers rollbacks](https://developers.cloudflare.com/workers/versions-and-deployments/rollbacks/).
-- **Approval**: An agent may build, lint, upload preview versions, and inspect logs unattended. Production promotion, secret rotation, custom-domain changes, database migrations, resource deletion, and rollback require explicit human approval. Dropping a database or deleting a Worker remains human-only.
+- **Approval**: An agent may build, lint, upload preview versions, and inspect logs unattended. Production promotion, changing the production or preview Access scope, secret rotation, custom-domain changes, database migrations, resource deletion, and rollback require explicit human approval. Dropping a database or deleting a Worker remains human-only.
 - **Logs**: Read GitHub pipeline state with `gh run list` and `gh run view <RUN_ID> --log-failed`. Read production runtime logs with `npx wrangler tail keep-in-touch --format json`, optionally filtering by `--status error`. Use the official Cloudflare observability MCP only for scoped, read-only discovery; do not grant it destructive permissions.
 
 ### Private extraction secret provisioning
@@ -106,17 +106,31 @@ Before provisioning, confirm the exact OpenRouter model/provider route is ZDR-co
 
 ## Passwordless authentication operation
 
-Before relying on hosted magic links, a human owner completes these external Supabase and Cloudflare steps. They are configuration changes, not repository changes, and require explicit approval.
+### Production and preview access
+
+The intended public-entry model is a publicly reachable production `workers.dev` URL with Supabase authentication protecting `/dashboard` and authenticated extraction, while all Worker preview URLs remain protected by Cloudflare Access. Cloudflare supports configuring production and preview protection separately for a Worker; enabled preview URLs are otherwise publicly available. Keep `workers_dev` and `preview_urls` route settings distinct from Access policy, and keep preview Access enabled before using real relationship data. See [workers.dev access](https://developers.cloudflare.com/workers/configuration/routing/workers-dev/) and [preview URL access](https://developers.cloudflare.com/workers/versions-and-deployments/preview-urls/).
+
+Until the release record confirms the change is complete, the live Cloudflare dashboard is authoritative; do not infer the current setting from this target-state guidance or the historical first-release record.
+
+For the public-entry rollout:
+
+1. Inspect and record the live production and preview Access settings and the control that restores production protection. Deploy and verify the branded application while production remains protected.
+2. Only after explicit human approval, disable Access protection for the production Worker URL while leaving preview protection enabled. If the live controls cannot make this split without a broad permanent Bypass policy, stop before changing Access.
+3. Preferred rollback is to restore the recorded production Access protection. The emergency control is disabling the production `workers.dev` route in the Cloudflare dashboard. Because `wrangler.jsonc` keeps `workers_dev: true`, a later Wrangler deployment can re-enable that route.
+
+### Supabase passwordless setup and verification
+
+Before relying on hosted magic links, a human owner configures Supabase. These are external account changes and require explicit approval.
 
 1. In Supabase Dashboard **Authentication → URL Configuration**, set the Site URL to `https://keep-in-touch.qstrowy.workers.dev` and allow these exact callback URLs:
    - `https://keep-in-touch.qstrowy.workers.dev/api/auth/callback`
    - `https://release-candidate-keep-in-touch.qstrowy.workers.dev/api/auth/callback`
-     Keep the allowlist limited to known, Cloudflare-Access-protected application origins; do not add wildcard or user-provided destinations.
+     Keep the list limited to these known application origins; do not add wildcard or user-provided destinations. Do not change the Site URL or allowlist unless live verification shows they are wrong; seek separate approval first.
 2. In Supabase Dashboard **Authentication → SMTP Settings**, configure and verify a production SMTP provider and sender identity. Keep SMTP credentials only in Supabase; do not place them in this repository, Worker configuration, or browser-accessible environment values.
-3. In an Access-authorized browser, request a sign-in link from the protected production URL or the stable preview URL. Open the received link in that same browser and confirm it reaches `/dashboard`; refresh once to confirm the session persists.
-4. Sign out, then retry a missing, expired, or already-used callback link. It must return to sign-in with generic retry guidance and no authenticated session. Record only the outcome in deployment notes—never a magic-link URL, session cookie, or email contents.
+3. After production is public, use a clean browser with no Cloudflare Access or Supabase session to request a production sign-in link. Open it in that same browser and confirm it reaches `/dashboard`; refresh once to confirm the session persists.
+4. Sign out and confirm the signed-out boundary returns. A missing, expired, or already-used callback must return to sign-in with generic retry guidance and no authenticated session. Record only outcomes in the release record—never a magic-link URL, session cookie, email address, or email contents.
 
-Treat Site URL, redirect allowlist, SMTP, and Cloudflare Access policy changes as separate human-approved operational actions. The application deliberately has no caller-controlled post-login redirect.
+Treat Site URL, redirect allowlist, SMTP, production deployment, and Cloudflare Access policy changes as separate human-approved operational actions. The application deliberately has no caller-controlled post-login redirect.
 
 ## Risk Register
 

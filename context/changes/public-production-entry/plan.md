@@ -261,28 +261,28 @@ No application data or schema migration is required. Existing browser-local rela
 
 #### Automated
 
-- [x] 2.1 Public-entry browser checks pass
-- [x] 2.2 Complete browser suite passes
-- [x] 2.3 Complete unit suite passes
-- [x] 2.4 Repository quality gates pass
+- [x] 2.1 Public-entry browser checks pass — 97aac00
+- [x] 2.2 Complete browser suite passes — 97aac00
+- [x] 2.3 Complete unit suite passes — 97aac00
+- [x] 2.4 Repository quality gates pass — 97aac00
 
 #### Manual
 
-- [x] 2.5 Local public experience is visually accepted at desktop and mobile widths
-- [x] 2.6 Keyboard navigation and accessible labels are accepted
-- [x] 2.7 Existing dashboard behavior is accepted after local authenticated entry
+- [x] 2.5 Local public experience is visually accepted at desktop and mobile widths — 97aac00
+- [x] 2.6 Keyboard navigation and accessible labels are accepted — 97aac00
+- [x] 2.7 Existing dashboard behavior is accepted after local authenticated entry — 97aac00
 
 ### Phase 3: Release a public production entry with rollback
 
 #### Automated
 
-- [ ] 3.1 Final repository verification passes immediately before deployment
-- [ ] 3.2 Signed-out production HTTP probes confirm application-level boundaries
-- [ ] 3.3 Signed-out preview probe confirms Cloudflare Access remains active
+- [x] 3.1 Final repository verification passes immediately before deployment
+- [x] 3.2 Signed-out production HTTP probes confirm application-level boundaries
+- [x] 3.3 Signed-out preview probe confirms Cloudflare Access remains active
 
 #### Manual
 
-- [ ] 3.4 Deployed branded experience is accepted before changing Access
-- [ ] 3.5 Live production and preview protection split and rollback action are recorded
-- [ ] 3.6 Real production magic-link session and sign-out flow pass in a clean browser
-- [ ] 3.7 Final production Access change and rollback control are approved
+- [x] 3.4 Deployed branded experience is accepted before changing Access
+- [x] 3.5 Live production and preview protection split and rollback action are recorded
+- [x] 3.6 Real production magic-link session and sign-out flow pass in a clean browser
+- [x] 3.7 Final production Access change and rollback control are approved

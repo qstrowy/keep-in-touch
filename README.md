@@ -13,8 +13,6 @@ The planned core flow is:
 
 Upcoming birthdays are required for the MVP. Gift suggestions based on interests are optional. See [`context/foundation/prd.md`](context/foundation/prd.md) for the product contract and [`context/foundation/tech-stack.md`](context/foundation/tech-stack.md) for the selected architecture.
 
-> The current scaffold includes reference email/password authentication screens. They must be adapted to the passwordless flow defined in the PRD.
-
 ## Technology
 
 - Astro 7 with React 19 and strict TypeScript
@@ -45,6 +43,8 @@ npx supabase stop
 
 ```bash
 npm run dev       # Start the development server
+npm test          # Run the Vitest unit and component suite
+npm run e2e       # Run the Playwright browser suite
 npm run lint      # Run type-aware lint and formatting checks
 npm run lint:fix  # Apply supported lint fixes
 npm run format    # Format files with Prettier
@@ -52,7 +52,7 @@ npm run build     # Produce the Cloudflare build
 npm run preview   # Preview the production build locally
 ```
 
-No automated test runner is configured yet. Until one is added, `npm run lint` and `npm run build` are the required validation checks.
+The browser suite uses a fixed synthetic session seam and does not call hosted Supabase or send real sign-in emails. Verify production passwordless sign-in manually after deployment.
 
 ## Project structure
 
@@ -69,7 +69,7 @@ context/         Product, stack, and change documentation
 
 ## Security status
 
-Never commit `.env`, `.env.*`, or `.dev.vars`; `.env.example` contains placeholders only. The historical bootstrap findings remain recorded in [`context/changes/bootstrap-verification/verification.md`](context/changes/bootstrap-verification/verification.md). The first infrastructure release upgraded the affected framework and tooling; `npm audit` is a required release gate.
+Never commit `.env`, `.env.*`, or `.dev.vars`; `.env.example` contains placeholders only. The historical bootstrap findings remain recorded in [`context/archive/2026-08-21-bootstrap-verification/verification.md`](context/archive/2026-08-21-bootstrap-verification/verification.md). The first infrastructure release upgraded the affected framework and tooling; `npm audit` is a required release gate.
 
 ## Deployment
 
@@ -81,3 +81,9 @@ npx wrangler deploy
 ```
 
 GitHub Actions runs synchronization, linting, and the production build for pushes and pull requests targeting `main`.
+
+### Restore Cloudflare Access on production
+
+To put the Cloudflare Access login gate back in front of the production Worker, sign in at [dash.cloudflare.com](https://dash.cloudflare.com), then open **Workers & Pages → keep-in-touch → Access**. Change the Worker access scope from **Previews only** to **All traffic** and apply the change. This re-protects production and previews with the existing authentication policies; leave the account-wide Access setting unchanged.
+
+The preferred rollback is this Access-scope change. For the emergency option of disabling the production `workers.dev` route, see the [infrastructure guide](context/foundation/infrastructure.md); a later Wrangler deployment can re-enable the route while `workers_dev: true` remains configured.
