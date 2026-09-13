@@ -92,11 +92,32 @@ export default function InteractionPanel({ ownerId, personId, onInteractionSaved
   }
 
   return (
-    <section className="mt-8 border-t border-white/10 pt-6" aria-labelledby="interactions-heading">
-      <h3 className="text-xl font-semibold" id="interactions-heading">
-        Interactions
-      </h3>
-      <form className="mt-4 space-y-4" noValidate onSubmit={handleSubmit}>
+    <section
+      className="rounded-3xl border border-cyan-100/15 bg-gradient-to-br from-cyan-400/[0.08] via-slate-950/45 to-blue-500/[0.04] p-5 shadow-xl shadow-cyan-950/15 sm:p-6"
+      aria-labelledby="interactions-heading"
+    >
+      <div className="flex items-start gap-3">
+        <span
+          aria-hidden="true"
+          className="grid size-10 shrink-0 place-items-center rounded-2xl border border-cyan-100/15 bg-cyan-200/10 text-lg text-cyan-100"
+        >
+          ◷
+        </span>
+        <div>
+          <p className="text-xs font-semibold tracking-[0.16em] text-cyan-100/65 uppercase">The moments in between</p>
+          <h3 className="mt-1 text-xl font-semibold" id="interactions-heading">
+            Interactions
+          </h3>
+          <p className="mt-1 text-sm leading-5 text-blue-100/65">
+            Keep a dated note close to the conversation it came from.
+          </p>
+        </div>
+      </div>
+      <form
+        className="mt-5 space-y-4 rounded-2xl border border-white/10 bg-slate-950/25 p-4"
+        noValidate
+        onSubmit={handleSubmit}
+      >
         <div>
           <label className="block text-sm font-medium" htmlFor="interaction-date">
             Date
@@ -104,7 +125,7 @@ export default function InteractionPanel({ ownerId, personId, onInteractionSaved
           <input
             aria-describedby={fieldErrors.occurredOn ? "interaction-date-error" : undefined}
             aria-invalid={Boolean(fieldErrors.occurredOn)}
-            className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white"
+            className="mt-2 w-full rounded-xl border border-white/15 bg-slate-950/50 px-3 py-2.5 text-white focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none"
             disabled={isSaving}
             id="interaction-date"
             max={today}
@@ -127,7 +148,7 @@ export default function InteractionPanel({ ownerId, personId, onInteractionSaved
           <textarea
             aria-describedby={fieldErrors.note ? "interaction-note-error" : undefined}
             aria-invalid={Boolean(fieldErrors.note)}
-            className="mt-2 min-h-28 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white"
+            className="mt-2 min-h-28 w-full rounded-xl border border-white/15 bg-slate-950/50 px-3 py-2.5 text-white focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none"
             disabled={isSaving}
             id="interaction-note"
             maxLength={MAX_INTERACTION_NOTE_LENGTH}
@@ -148,7 +169,7 @@ export default function InteractionPanel({ ownerId, personId, onInteractionSaved
           </p>
         )}
         <button
-          className="rounded-lg bg-blue-200 px-4 py-2 font-semibold text-slate-950 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-xl bg-gradient-to-r from-cyan-100 to-blue-200 px-4 py-2.5 font-semibold text-slate-950 transition-colors hover:from-white hover:to-blue-100 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
           disabled={isSaving}
           type="submit"
         >
@@ -156,17 +177,22 @@ export default function InteractionPanel({ ownerId, personId, onInteractionSaved
         </button>
       </form>
       {isLoading ? (
-        <p className="mt-6 text-sm text-blue-100/75" role="status">
+        <p
+          className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-blue-100/75"
+          role="status"
+        >
           Loading interactions…
         </p>
       ) : interactions.length === 0 ? (
-        <p className="mt-6 text-sm text-blue-100/75">No interactions saved yet.</p>
+        <p className="mt-5 rounded-xl border border-dashed border-white/15 bg-white/[0.02] p-4 text-sm leading-6 text-blue-100/65">
+          No interactions saved yet. A few remembered details can make a future catch-up feel more natural.
+        </p>
       ) : (
-        <ol className="mt-6 space-y-4">
+        <ol className="mt-5 space-y-3">
           {interactions.map((interaction) => (
-            <li className="border-b border-white/10 pb-4" key={interaction.id}>
-              <p className="text-sm text-blue-100/75">{interaction.occurredOn}</p>
-              <p className="mt-1 whitespace-pre-wrap">{interaction.note}</p>
+            <li className="relative rounded-xl border border-white/10 bg-slate-950/25 p-4" key={interaction.id}>
+              <p className="text-xs font-semibold tracking-wide text-cyan-100/75">{interaction.occurredOn}</p>
+              <p className="mt-2 text-sm leading-6 whitespace-pre-wrap text-blue-50/90">{interaction.note}</p>
             </li>
           ))}
         </ol>

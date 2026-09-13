@@ -215,76 +215,108 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
   const isDeleting = screenState === "deleting";
   const isInteractionLocked = isSaving || isDeleting || isDeleteConfirmationVisible;
 
+  const hasSavedPeople = people.length > 0;
+
   return (
-    <div className="space-y-8">
-      {people.length > 0 && (
-        <section aria-labelledby="people-list-heading">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-lg font-semibold" id="people-list-heading">
-              Saved people
-            </h2>
+    <div className={hasSavedPeople ? "grid items-start gap-5 lg:grid-cols-[17rem_minmax(0,1fr)]" : "space-y-6"}>
+      {hasSavedPeople && (
+        <aside className="rounded-3xl border border-white/10 bg-slate-950/35 p-4 shadow-xl shadow-blue-950/20 backdrop-blur sm:p-5">
+          <section aria-labelledby="people-list-heading">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold tracking-[0.18em] text-blue-200/65 uppercase">Your circle</p>
+                <h2 className="mt-1 text-lg font-semibold" id="people-list-heading">
+                  People
+                </h2>
+              </div>
+              <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-blue-100/70">
+                {people.length}
+              </span>
+            </div>
             <button
-              className="rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-blue-200/20 bg-blue-200/10 px-3 py-2.5 text-sm font-semibold text-blue-50 transition-colors hover:border-blue-200/40 hover:bg-blue-200/15 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
               disabled={isInteractionLocked}
               onClick={startCreatingPerson}
               type="button"
             >
+              <span aria-hidden="true" className="text-lg leading-none">
+                +
+              </span>
               Add person
             </button>
-          </div>
-          <ul className="mt-3 flex flex-wrap gap-2">
-            {people.map((person) => (
-              <li key={person.id}>
-                <button
-                  aria-pressed={person.id === selectedPersonId && screenState === "summary"}
-                  className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60 aria-pressed:border-blue-200 aria-pressed:bg-blue-200 aria-pressed:text-slate-950"
-                  disabled={isInteractionLocked}
-                  onClick={() => {
-                    selectPerson(person.id);
-                  }}
-                  type="button"
-                >
-                  {person.displayName}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
+            <ul className="mt-4 space-y-2">
+              {people.map((person) => (
+                <li key={person.id}>
+                  <button
+                    aria-pressed={person.id === selectedPersonId && screenState === "summary"}
+                    className="flex w-full items-center gap-3 rounded-2xl border border-transparent px-3 py-3 text-left transition-colors hover:border-white/10 hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60 aria-pressed:border-blue-200/30 aria-pressed:bg-gradient-to-r aria-pressed:from-blue-300/15 aria-pressed:to-purple-300/10"
+                    disabled={isInteractionLocked}
+                    onClick={() => {
+                      selectPerson(person.id);
+                    }}
+                    type="button"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="grid size-10 shrink-0 place-items-center rounded-full border border-blue-100/15 bg-gradient-to-br from-blue-200/20 to-purple-300/20 text-sm font-semibold text-blue-50"
+                    >
+                      {person.displayName.slice(0, 1).toUpperCase()}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold text-white">{person.displayName}</span>
+                      <span className="mt-0.5 block text-xs text-blue-100/60">
+                        {formatCircle(person.relationshipCircle)}
+                      </span>
+                    </span>
+                    <span aria-hidden="true" className="text-blue-100/40">
+                      ›
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+          <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-5 text-blue-100/55">
+            Your records stay here unless you choose Generate Core Topics, which sends note text for processing.
+          </p>
+        </aside>
       )}
 
-      {screenState === "list" ? (
-        <p className="text-sm text-blue-100/75" role="status">
-          Choose a person to view their saved details.
-        </p>
-      ) : selectedPerson && (screenState === "summary" || screenState === "deleting") ? (
-        <PersonSummary
-          isDeleteConfirmationVisible={isDeleteConfirmationVisible}
-          isDeleting={isDeleting}
-          onCancelDelete={cancelDeleteConfirmation}
-          onDelete={handleDelete}
-          onEdit={startEditingPerson}
-          onShowDeleteConfirmation={showDeleteConfirmation}
-          ownerId={ownerId}
-          person={selectedPerson}
-          interactionRevision={interactionRevision}
-          onInteractionSaved={() => {
-            setInteractionRevision((current) => current + 1);
-          }}
-          storageError={storageError}
-        />
-      ) : (
-        <PersonForm
-          fieldErrors={fieldErrors}
-          form={form}
-          formMode={formMode}
-          hasSavedPeople={people.length > 0}
-          isSaving={isSaving}
-          onCancel={cancelForm}
-          onSubmit={handleSubmit}
-          onUpdate={updateForm}
-          storageError={storageError}
-        />
-      )}
+      <div className="min-w-0">
+        {screenState === "list" ? (
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-blue-100/75" role="status">
+            Choose a person to view their saved details.
+          </div>
+        ) : selectedPerson && (screenState === "summary" || screenState === "deleting") ? (
+          <PersonSummary
+            isDeleteConfirmationVisible={isDeleteConfirmationVisible}
+            isDeleting={isDeleting}
+            onCancelDelete={cancelDeleteConfirmation}
+            onDelete={handleDelete}
+            onEdit={startEditingPerson}
+            onShowDeleteConfirmation={showDeleteConfirmation}
+            ownerId={ownerId}
+            person={selectedPerson}
+            interactionRevision={interactionRevision}
+            onInteractionSaved={() => {
+              setInteractionRevision((current) => current + 1);
+            }}
+            storageError={storageError}
+          />
+        ) : (
+          <PersonForm
+            fieldErrors={fieldErrors}
+            form={form}
+            formMode={formMode}
+            hasSavedPeople={hasSavedPeople}
+            isSaving={isSaving}
+            onCancel={cancelForm}
+            onSubmit={handleSubmit}
+            onUpdate={updateForm}
+            storageError={storageError}
+          />
+        )}
+      </div>
     </div>
   );
 }
@@ -318,143 +350,218 @@ function PersonForm({
     : hasSavedPeople
       ? "Add another person"
       : "Add the first person you want to keep in touch with";
+  const isFirstRun = !hasSavedPeople && !isEditing;
 
   return (
-    <section aria-labelledby="person-form-heading">
-      <h2 id="person-form-heading" className="text-2xl font-semibold">
-        {heading}
-      </h2>
-      <p className="mt-2 text-sm text-blue-100/75">This information is stored only in this browser.</p>
-
-      <form className="mt-6 space-y-5" noValidate onSubmit={onSubmit}>
-        <div>
-          <label className="block text-sm font-medium" htmlFor="person-display-name">
-            Name
-          </label>
-          <input
-            aria-describedby={fieldErrors.displayName ? "person-display-name-error" : undefined}
-            aria-invalid={Boolean(fieldErrors.displayName)}
-            className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder:text-blue-100/45"
-            disabled={isSaving}
-            id="person-display-name"
-            onChange={(event) => {
-              onUpdate("displayName", event.target.value);
-            }}
-            placeholder="For example, Marta"
-            type="text"
-            value={form.displayName}
-          />
-          {fieldErrors.displayName && (
-            <p className="mt-2 text-sm text-red-200" id="person-display-name-error">
-              {fieldErrors.displayName}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium" htmlFor="person-relationship-circle">
-            Relationship circle
-          </label>
-          <select
-            aria-describedby={fieldErrors.relationshipCircle ? "person-relationship-circle-error" : undefined}
-            aria-invalid={Boolean(fieldErrors.relationshipCircle)}
-            className="mt-2 w-full rounded-lg border border-white/20 bg-slate-900 px-3 py-2 text-white"
-            disabled={isSaving}
-            id="person-relationship-circle"
-            onChange={(event) => {
-              onUpdate("relationshipCircle", event.target.value);
-            }}
-            value={form.relationshipCircle}
-          >
-            <option value="">Choose one</option>
-            {RELATIONSHIP_CIRCLES.map((circle) => (
-              <option key={circle} value={circle}>
-                {formatCircle(circle)}
-              </option>
-            ))}
-          </select>
-          {fieldErrors.relationshipCircle && (
-            <p className="mt-2 text-sm text-red-200" id="person-relationship-circle-error">
-              {fieldErrors.relationshipCircle}
-            </p>
-          )}
-        </div>
-
-        <fieldset>
-          <legend className="text-sm font-medium">
-            Birthday <span className="text-blue-100/65">(optional)</span>
-          </legend>
-          <div className="mt-2 grid grid-cols-2 gap-3">
-            <select
-              aria-describedby={fieldErrors.birthday ? "person-birthday-error" : undefined}
-              aria-invalid={Boolean(fieldErrors.birthday)}
-              aria-label="Birthday month"
-              className="rounded-lg border border-white/20 bg-slate-900 px-3 py-2 text-white"
-              disabled={isSaving}
-              onChange={(event) => {
-                onUpdate("birthdayMonth", event.target.value);
-              }}
-              value={form.birthdayMonth}
-            >
-              <option value="">Month</option>
-              {Array.from({ length: 12 }, (_, index) => index + 1).map((month) => (
-                <option key={month} value={month}>
-                  {month}
-                </option>
-              ))}
-            </select>
-            <select
-              aria-describedby={fieldErrors.birthday ? "person-birthday-error" : undefined}
-              aria-invalid={Boolean(fieldErrors.birthday)}
-              aria-label="Birthday day"
-              className="rounded-lg border border-white/20 bg-slate-900 px-3 py-2 text-white"
-              disabled={isSaving}
-              onChange={(event) => {
-                onUpdate("birthdayDay", event.target.value);
-              }}
-              value={form.birthdayDay}
-            >
-              <option value="">Day</option>
-              {Array.from({ length: 31 }, (_, index) => index + 1).map((day) => (
-                <option key={day} value={day}>
-                  {day}
-                </option>
-              ))}
-            </select>
-          </div>
-          {fieldErrors.birthday && (
-            <p className="mt-2 text-sm text-red-200" id="person-birthday-error">
-              {fieldErrors.birthday}
-            </p>
-          )}
-        </fieldset>
-
-        {storageError && (
-          <p className="rounded-lg border border-red-200/40 bg-red-950/30 p-3 text-sm text-red-100" role="alert">
-            {storageError}
+    <section
+      aria-labelledby="person-form-heading"
+      className={isFirstRun ? "grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(24rem,0.95fr)]" : ""}
+    >
+      {isFirstRun && (
+        <section
+          aria-labelledby="workflow-intro-heading"
+          className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-slate-950/30 p-5 shadow-2xl shadow-blue-950/25 backdrop-blur sm:p-8"
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-20 -right-16 -z-10 size-64 rounded-full bg-purple-400/10 blur-3xl"
+          ></div>
+          <p className="text-xs font-semibold tracking-[0.2em] text-purple-200/80 uppercase">
+            A little context goes a long way
           </p>
-        )}
+          <h2 id="workflow-intro-heading" className="mt-3 max-w-lg text-2xl leading-tight font-semibold sm:mt-4 sm:text-4xl">
+            Stay close to the people who matter.
+          </h2>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-blue-100/70 sm:mt-4 sm:text-base">
+            Keep the small details and shared moments you want to remember, then return to them when it is time to
+            reconnect.
+          </p>
+          <ol className="mt-5 grid grid-cols-3 gap-2 xl:mt-8 xl:block xl:space-y-3">
+            <li className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.035] p-2.5 sm:p-3 xl:flex-row xl:gap-4 xl:p-4">
+              <span
+                aria-hidden="true"
+                className="grid size-7 shrink-0 place-items-center rounded-full bg-blue-200/10 text-xs font-semibold text-blue-100 xl:size-9 xl:text-sm"
+              >
+                01
+              </span>
+              <span>
+                <span className="block text-xs leading-4 font-semibold text-white sm:text-sm">Add someone</span>
+                <span className="mt-1 hidden text-sm leading-5 text-blue-100/65 xl:block">
+                  Start with a person you want to keep in touch with.
+                </span>
+              </span>
+            </li>
+            <li className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.035] p-2.5 sm:p-3 xl:flex-row xl:gap-4 xl:p-4">
+              <span
+                aria-hidden="true"
+                className="grid size-7 shrink-0 place-items-center rounded-full bg-purple-200/10 text-xs font-semibold text-purple-100 xl:size-9 xl:text-sm"
+              >
+                02
+              </span>
+              <span>
+                <span className="block text-xs leading-4 font-semibold text-white sm:text-sm">Capture a moment</span>
+                <span className="mt-1 hidden text-sm leading-5 text-blue-100/65 xl:block">
+                  Save a dated note while the details are fresh.
+                </span>
+              </span>
+            </li>
+            <li className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.035] p-2.5 sm:p-3 xl:flex-row xl:gap-4 xl:p-4">
+              <span
+                aria-hidden="true"
+                className="grid size-7 shrink-0 place-items-center rounded-full bg-cyan-200/10 text-xs font-semibold text-cyan-100 xl:size-9 xl:text-sm"
+              >
+                03
+              </span>
+              <span>
+                <span className="block text-xs leading-4 font-semibold text-white sm:text-sm">Prepare to reconnect</span>
+                <span className="mt-1 hidden text-sm leading-5 text-blue-100/65 xl:block">
+                  Generate Core Topics when you are ready.
+                </span>
+              </span>
+            </li>
+          </ol>
+        </section>
+      )}
 
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          {hasSavedPeople && (
-            <button
-              className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 font-semibold transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
+      <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.035] p-5 shadow-2xl shadow-blue-950/20 backdrop-blur sm:p-7">
+        <p className="text-xs font-semibold tracking-[0.18em] text-blue-200/70 uppercase">
+          {isEditing ? "Person details" : hasSavedPeople ? "Grow your circle" : "Your first step"}
+        </p>
+        <h2 id="person-form-heading" className="mt-2 text-2xl font-semibold">
+          {heading}
+        </h2>
+        <p className="mt-2 text-sm leading-6 text-blue-100/70">This information is stored only in this browser.</p>
+
+        <form className="mt-6 space-y-5" noValidate onSubmit={onSubmit}>
+          <div>
+            <label className="block text-sm font-medium" htmlFor="person-display-name">
+              Name
+            </label>
+            <input
+              aria-describedby={fieldErrors.displayName ? "person-display-name-error" : undefined}
+              aria-invalid={Boolean(fieldErrors.displayName)}
+              className="mt-2 w-full rounded-xl border border-white/15 bg-slate-950/40 px-3 py-2.5 text-white transition-colors placeholder:text-blue-100/45 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none"
               disabled={isSaving}
-              onClick={onCancel}
-              type="button"
+              id="person-display-name"
+              onChange={(event) => {
+                onUpdate("displayName", event.target.value);
+              }}
+              placeholder="For example, Marta"
+              type="text"
+              value={form.displayName}
+            />
+            {fieldErrors.displayName && (
+              <p className="mt-2 text-sm text-red-200" id="person-display-name-error">
+                {fieldErrors.displayName}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium" htmlFor="person-relationship-circle">
+              Relationship circle
+            </label>
+            <select
+              aria-describedby={fieldErrors.relationshipCircle ? "person-relationship-circle-error" : undefined}
+              aria-invalid={Boolean(fieldErrors.relationshipCircle)}
+              className="mt-2 w-full rounded-xl border border-white/15 bg-slate-950/60 px-3 py-2.5 text-white focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none"
+              disabled={isSaving}
+              id="person-relationship-circle"
+              onChange={(event) => {
+                onUpdate("relationshipCircle", event.target.value);
+              }}
+              value={form.relationshipCircle}
             >
-              Cancel
-            </button>
+              <option value="">Choose one</option>
+              {RELATIONSHIP_CIRCLES.map((circle) => (
+                <option key={circle} value={circle}>
+                  {formatCircle(circle)}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.relationshipCircle && (
+              <p className="mt-2 text-sm text-red-200" id="person-relationship-circle-error">
+                {fieldErrors.relationshipCircle}
+              </p>
+            )}
+          </div>
+
+          <fieldset>
+            <legend className="text-sm font-medium">
+              Birthday <span className="text-blue-100/65">(optional)</span>
+            </legend>
+            <div className="mt-2 grid grid-cols-2 gap-3">
+              <select
+                aria-describedby={fieldErrors.birthday ? "person-birthday-error" : undefined}
+                aria-invalid={Boolean(fieldErrors.birthday)}
+                aria-label="Birthday month"
+                className="rounded-xl border border-white/15 bg-slate-950/60 px-3 py-2.5 text-white focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none"
+                disabled={isSaving}
+                onChange={(event) => {
+                  onUpdate("birthdayMonth", event.target.value);
+                }}
+                value={form.birthdayMonth}
+              >
+                <option value="">Month</option>
+                {Array.from({ length: 12 }, (_, index) => index + 1).map((month) => (
+                  <option key={month} value={month}>
+                    {month}
+                  </option>
+                ))}
+              </select>
+              <select
+                aria-describedby={fieldErrors.birthday ? "person-birthday-error" : undefined}
+                aria-invalid={Boolean(fieldErrors.birthday)}
+                aria-label="Birthday day"
+                className="rounded-xl border border-white/15 bg-slate-950/60 px-3 py-2.5 text-white focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none"
+                disabled={isSaving}
+                onChange={(event) => {
+                  onUpdate("birthdayDay", event.target.value);
+                }}
+                value={form.birthdayDay}
+              >
+                <option value="">Day</option>
+                {Array.from({ length: 31 }, (_, index) => index + 1).map((day) => (
+                  <option key={day} value={day}>
+                    {day}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {fieldErrors.birthday && (
+              <p className="mt-2 text-sm text-red-200" id="person-birthday-error">
+                {fieldErrors.birthday}
+              </p>
+            )}
+          </fieldset>
+
+          {storageError && (
+            <p className="rounded-lg border border-red-200/40 bg-red-950/30 p-3 text-sm text-red-100" role="alert">
+              {storageError}
+            </p>
           )}
-          <button
-            className="rounded-lg bg-blue-200 px-4 py-2 font-semibold text-slate-950 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-40"
-            disabled={isSaving}
-            type="submit"
-          >
-            {isSaving ? "Saving person…" : isEditing ? "Save changes" : "Save person"}
-          </button>
-        </div>
-      </form>
+
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            {hasSavedPeople && (
+              <button
+                className="rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 font-semibold transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isSaving}
+                onClick={onCancel}
+                type="button"
+              >
+                Cancel
+              </button>
+            )}
+            <button
+              className="rounded-xl bg-gradient-to-r from-blue-200 to-purple-200 px-4 py-2.5 font-semibold text-slate-950 shadow-lg shadow-blue-950/20 transition-colors hover:from-blue-100 hover:to-purple-100 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-40"
+              disabled={isSaving}
+              type="submit"
+            >
+              {isSaving ? "Saving person…" : isEditing ? "Save changes" : "Save person"}
+            </button>
+          </div>
+        </form>
+      </div>
     </section>
   );
 }
@@ -487,83 +594,106 @@ function PersonSummary({
   storageError,
 }: PersonSummaryProps) {
   return (
-    <section aria-labelledby="saved-person-heading">
-      <p className="text-sm font-medium text-blue-100/75">Saved privately in this browser</p>
-      <h2 className="mt-2 text-3xl font-semibold" id="saved-person-heading">
-        {person.displayName}
-      </h2>
-      <dl className="mt-6 space-y-3 text-sm">
-        <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-3">
-          <dt className="text-blue-100/75">Relationship circle</dt>
-          <dd className="font-medium">{formatCircle(person.relationshipCircle)}</dd>
-        </div>
-        {person.birthday && (
-          <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-3">
-            <dt className="text-blue-100/75">Birthday</dt>
-            <dd className="font-medium">
-              {person.birthday.month}/{person.birthday.day}
-            </dd>
+    <div className="space-y-5">
+      <section
+        aria-labelledby="saved-person-heading"
+        className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-slate-950/35 to-blue-500/[0.05] p-5 shadow-xl shadow-blue-950/20 backdrop-blur sm:p-6"
+      >
+        <header className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex min-w-0 items-start gap-4">
+            <span
+              aria-hidden="true"
+              className="grid size-14 shrink-0 place-items-center rounded-2xl border border-blue-100/15 bg-gradient-to-br from-blue-200/20 to-purple-300/20 text-xl font-semibold text-white shadow-inner shadow-white/5"
+            >
+              {person.displayName.slice(0, 1).toUpperCase()}
+            </span>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold tracking-[0.18em] text-blue-200/70 uppercase">
+                Your relationship memory
+              </p>
+              <h2 className="mt-1 truncate text-3xl font-semibold" id="saved-person-heading">
+                {person.displayName}
+              </h2>
+              <p className="mt-1 text-sm text-blue-100/60">Saved privately in this browser</p>
+            </div>
           </div>
-        )}
-      </dl>
-      <AnchorBriefing ownerId={ownerId} personId={person.id} refreshToken={interactionRevision} />
-      <InteractionPanel ownerId={ownerId} personId={person.id} onInteractionSaved={onInteractionSaved} />
-      {isDeleteConfirmationVisible ? (
-        <section
-          className="mt-6 rounded-lg border border-red-200/40 bg-red-950/30 p-4"
-          aria-labelledby="delete-person-heading"
-        >
-          <h3 className="font-semibold" id="delete-person-heading">
-            Delete {person.displayName} permanently?
-          </h3>
-          <p className="mt-2 text-sm text-red-100">
-            This permanently removes this person and any associated relationship data stored in this browser.
-          </p>
-          {storageError && (
-            <p className="mt-3 text-sm text-red-100" role="alert">
-              {storageError}
-            </p>
+          {!isDeleteConfirmationVisible && (
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <button
+                className="rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-blue-50 transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none"
+                onClick={onEdit}
+                type="button"
+              >
+                Edit person
+              </button>
+              <button
+                className="rounded-xl border border-red-200/25 bg-red-950/20 px-4 py-2.5 text-sm font-semibold text-red-100 transition-colors hover:border-red-200/50 hover:bg-red-950/35 focus-visible:ring-2 focus-visible:ring-red-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none"
+                onClick={onShowDeleteConfirmation}
+                type="button"
+              >
+                Delete person
+              </button>
+            </div>
           )}
-          <div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-            <button
-              className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isDeleting}
-              onClick={onCancelDelete}
-              type="button"
-            >
-              Cancel
-            </button>
-            <button
-              className="rounded-lg bg-red-200 px-4 py-2 text-sm font-semibold text-red-950 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isDeleting}
-              onClick={() => {
-                void onDelete();
-              }}
-              type="button"
-            >
-              {isDeleting ? "Deleting person…" : "Delete permanently"}
-            </button>
+        </header>
+        <dl className="mt-5 flex flex-wrap gap-2 text-sm">
+          <div className="rounded-xl border border-white/10 bg-slate-950/30 px-3 py-2">
+            <dt className="text-xs text-blue-100/55">Relationship circle</dt>
+            <dd className="mt-0.5 font-medium text-blue-50">{formatCircle(person.relationshipCircle)}</dd>
           </div>
-        </section>
-      ) : (
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <button
-            className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold transition-colors hover:bg-white/20"
-            onClick={onEdit}
-            type="button"
+          {person.birthday && (
+            <div className="rounded-xl border border-white/10 bg-slate-950/30 px-3 py-2">
+              <dt className="text-xs text-blue-100/55">Birthday</dt>
+              <dd className="mt-0.5 font-medium text-blue-50">
+                {person.birthday.month}/{person.birthday.day}
+              </dd>
+            </div>
+          )}
+        </dl>
+        {isDeleteConfirmationVisible && (
+          <section
+            className="mt-5 rounded-2xl border border-red-200/25 bg-red-950/30 p-4"
+            aria-labelledby="delete-person-heading"
           >
-            Edit person
-          </button>
-          <button
-            className="rounded-lg border border-red-200/50 bg-red-950/30 px-4 py-2 text-sm font-semibold text-red-100 transition-colors hover:bg-red-950/50"
-            onClick={onShowDeleteConfirmation}
-            type="button"
-          >
-            Delete person
-          </button>
-        </div>
-      )}
-    </section>
+            <h3 className="font-semibold" id="delete-person-heading">
+              Delete {person.displayName} permanently?
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-red-100/85">
+              This permanently removes this person and any associated relationship data stored in this browser.
+            </p>
+            {storageError && (
+              <p className="mt-3 text-sm text-red-100" role="alert">
+                {storageError}
+              </p>
+            )}
+            <div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                className="rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isDeleting}
+                onClick={onCancelDelete}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                className="rounded-xl bg-red-200 px-4 py-2.5 text-sm font-semibold text-red-950 transition-colors hover:bg-white focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isDeleting}
+                onClick={() => {
+                  void onDelete();
+                }}
+                type="button"
+              >
+                {isDeleting ? "Deleting person…" : "Delete permanently"}
+              </button>
+            </div>
+          </section>
+        )}
+      </section>
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
+        <AnchorBriefing ownerId={ownerId} personId={person.id} refreshToken={interactionRevision} />
+        <InteractionPanel ownerId={ownerId} personId={person.id} onInteractionSaved={onInteractionSaved} />
+      </div>
+    </div>
   );
 }
 

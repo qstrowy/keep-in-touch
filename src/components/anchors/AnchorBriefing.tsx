@@ -352,26 +352,38 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
     isLoading || isRunning || editingTopicId !== null || mutationTopicId !== null || pendingExclusionTopicId !== null;
 
   return (
-    <section className="mt-8 pt-6" aria-labelledby="core-topics-heading">
-      <div className="flex flex-col gap-4">
-        <div>
-          <h3 className="text-xl font-semibold" id="core-topics-heading">
-            Core Topics
-          </h3>
-          <p className="mt-1 text-sm text-blue-100/75">
-            {interactions[0] ? `Last contact: ${interactions[0].occurredOn}` : "No interactions saved yet."}
-          </p>
+    <section
+      className="rounded-3xl border border-purple-100/15 bg-gradient-to-br from-purple-400/[0.09] via-slate-950/35 to-blue-500/[0.06] p-5 shadow-xl shadow-purple-950/20 sm:p-6"
+      aria-labelledby="core-topics-heading"
+    >
+      <div className="flex flex-col gap-5">
+        <div className="flex items-start gap-3">
+          <span
+            aria-hidden="true"
+            className="grid size-10 shrink-0 place-items-center rounded-2xl border border-purple-100/15 bg-purple-200/10 text-lg text-purple-100"
+          >
+            ✦
+          </span>
+          <div>
+            <p className="text-xs font-semibold tracking-[0.16em] text-purple-100/65 uppercase">Conversation prep</p>
+            <h3 className="mt-1 text-xl font-semibold" id="core-topics-heading">
+              Core Topics
+            </h3>
+            <p className="mt-1 text-sm text-blue-100/70">
+              {interactions[0] ? `Last contact: ${interactions[0].occurredOn}` : "No interactions saved yet."}
+            </p>
+          </div>
         </div>
-        <div className="flex flex-col gap-3 rounded-lg border border-white/10 bg-white/5 p-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-3 rounded-2xl border border-purple-100/10 bg-slate-950/35 p-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="text-sm text-blue-100/80">
             <p className="font-medium text-white">Generate Core Topics</p>
-            <p className="mt-1 max-w-xl">
+            <p className="mt-1 max-w-xl leading-6">
               Saved note text and confirmed exclusion subjects will be sent to the configured processing service. Names,
               dates, and account data are not added by the app.
             </p>
           </div>
           <button
-            className="shrink-0 rounded-lg bg-blue-200 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="shrink-0 rounded-xl bg-gradient-to-r from-purple-200 to-blue-200 px-4 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:from-white hover:to-blue-100 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
             disabled={!canGenerate}
             onClick={() => {
               void handleExtract();
@@ -386,7 +398,7 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
             <p>{error}</p>
             {interactions.length > 0 && canGenerate && (
               <button
-                className="mt-2 font-semibold underline underline-offset-2"
+                className="mt-2 rounded-sm font-semibold underline underline-offset-2 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:outline-none"
                 onClick={() => {
                   void handleExtract();
                 }}
@@ -404,11 +416,15 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
         ) : (
           <>
             {topics.length === 0 ? (
-              <p className="text-sm text-blue-100/75">No Core Topics yet.</p>
+              <p className="rounded-2xl border border-dashed border-purple-100/15 bg-white/[0.02] p-4 text-sm leading-6 text-blue-100/70">
+                {interactions.length === 0
+                  ? "Save a dated interaction first, then generate Core Topics when you are ready."
+                  : "Generate Core Topics when you are ready to prepare for a conversation."}
+              </p>
             ) : (
               <ol className="space-y-3">
                 {topics.map((topic) => (
-                  <li className="rounded-lg border border-white/10 bg-white/5 p-4" key={topic.id}>
+                  <li className="rounded-2xl border border-white/10 bg-slate-950/30 p-4 sm:p-5" key={topic.id}>
                     <div className="mb-3 flex flex-wrap items-center gap-2" aria-label={`Actions for ${topic.text}`}>
                       {editingTopicId === topic.id ? (
                         <form
@@ -424,7 +440,7 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
                           >
                             Edit Core Topic
                             <input
-                              className="mt-1 w-full rounded-lg border border-white/20 bg-slate-950/60 px-3 py-2 font-normal text-white outline-none focus:border-blue-200"
+                              className="mt-1 w-full rounded-xl border border-white/15 bg-slate-950/70 px-3 py-2.5 font-normal text-white focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none"
                               id={`edit-topic-${topic.id}`}
                               maxLength={500}
                               onChange={(event) => {
@@ -435,14 +451,14 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
                           </label>
                           <div className="flex gap-2">
                             <button
-                              className="rounded-lg bg-blue-200 px-3 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+                              className="rounded-lg bg-blue-200 px-3 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-white focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                               disabled={mutationTopicId !== null}
                               type="submit"
                             >
                               Save
                             </button>
                             <button
-                              className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                              className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                               disabled={mutationTopicId !== null}
                               onClick={() => {
                                 cancelEditing();
@@ -465,7 +481,7 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
                           <div className="mt-3 flex flex-wrap gap-2">
                             <button
                               autoFocus
-                              className="rounded-lg bg-amber-200 px-3 py-2 text-sm font-semibold text-amber-950 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+                              className="rounded-lg bg-amber-200 px-3 py-2 text-sm font-semibold text-amber-950 transition-colors hover:bg-white focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                               disabled={mutationTopicId !== null}
                               onClick={() => {
                                 void handleConfirmExclusion(topic);
@@ -475,7 +491,7 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
                               Confirm
                             </button>
                             <button
-                              className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                              className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                               disabled={mutationTopicId !== null}
                               onClick={() => {
                                 cancelExclusionConfirmation();
@@ -489,7 +505,7 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
                       ) : (
                         <>
                           <button
-                            className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                             disabled={topicControlsDisabled}
                             onClick={() => {
                               startEditing(topic);
@@ -499,7 +515,7 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
                             Edit
                           </button>
                           <button
-                            className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                             disabled={topicControlsDisabled}
                             onClick={() => {
                               void handleHideTopic(topic);
@@ -509,7 +525,7 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
                             Not now
                           </button>
                           <button
-                            className="rounded-lg border border-amber-200/40 px-3 py-2 text-sm font-semibold text-amber-100 transition-colors hover:bg-amber-950/40 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="rounded-lg border border-amber-200/40 px-3 py-2 text-sm font-semibold text-amber-100 transition-colors hover:bg-amber-950/40 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                             disabled={topicControlsDisabled}
                             onClick={() => {
                               startExclusionConfirmation(topic);
@@ -522,7 +538,9 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
                       )}
                     </div>
                     <details>
-                      <summary className="cursor-pointer font-semibold">{topic.text}</summary>
+                      <summary className="cursor-pointer rounded-sm font-semibold focus-visible:ring-2 focus-visible:ring-purple-200 focus-visible:outline-none">
+                        {topic.text}
+                      </summary>
                       {topic.questions.length > 0 && (
                         <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-blue-100/80">
                           {topic.questions.map((question, index) => (
