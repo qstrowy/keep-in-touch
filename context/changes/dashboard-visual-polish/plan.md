@@ -118,13 +118,13 @@ None. Existing records and browser-local storage are unchanged.
 
 #### Automated
 
-- [x] 1.1 Astro/TypeScript validation passes
-- [x] 1.2 Lint passes
-- [x] 1.3 Unit and integration tests pass
-- [x] 1.4 Production build succeeds
-- [x] 1.5 Existing browser journeys pass
+- [x] 1.1 Astro/TypeScript validation passes — 6d7701b
+- [x] 1.2 Lint passes — 6d7701b
+- [x] 1.3 Unit and integration tests pass — 6d7701b
+- [x] 1.4 Production build succeeds — 6d7701b
+- [x] 1.5 Existing browser journeys pass — 6d7701b
 
 #### Manual
 
-- [x] 1.6 Desktop/mobile and keyboard review passes with synthetic data
-- [x] 1.7 Existing sign-in, person, topic, interaction, and sign-out behavior remains intact
+- [x] 1.6 Desktop/mobile and keyboard review passes with synthetic data — 6d7701b
+- [x] 1.7 Existing sign-in, person, topic, interaction, and sign-out behavior remains intact — 6d7701b

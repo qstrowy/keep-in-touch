@@ -1,7 +1,7 @@
 ---
 change_id: dashboard-visual-polish
 title: Make KeepInTouch dashboard feel like a relationship workspace
-status: implementing
+status: implemented
 created: 2026-09-13
 updated: 2026-09-13
 archived_at: null
