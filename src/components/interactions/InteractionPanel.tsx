@@ -93,19 +93,19 @@ export default function InteractionPanel({ ownerId, personId, onInteractionSaved
 
   return (
     <section
-      className="rounded-3xl border border-cyan-100/15 bg-gradient-to-br from-cyan-400/[0.08] via-slate-950/45 to-blue-500/[0.04] p-5 shadow-xl shadow-cyan-950/15 sm:p-6"
+      className="rounded-3xl border border-t-2 border-cyan-100/25 border-t-cyan-200/50 bg-gradient-to-br from-cyan-300/[0.12] via-slate-950/45 to-blue-500/[0.04] p-5 shadow-xl shadow-cyan-950/15 sm:p-6"
       aria-labelledby="interactions-heading"
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 rounded-2xl border border-cyan-100/15 bg-cyan-300/[0.06] p-3 sm:p-4">
         <span
           aria-hidden="true"
-          className="grid size-10 shrink-0 place-items-center rounded-2xl border border-cyan-100/15 bg-cyan-200/10 text-lg text-cyan-100"
+          className="grid size-10 shrink-0 place-items-center rounded-2xl border border-cyan-100/20 bg-cyan-200/[0.15] text-lg text-cyan-100"
         >
           ◷
         </span>
         <div>
-          <p className="text-xs font-semibold tracking-[0.16em] text-cyan-100/65 uppercase">The moments in between</p>
-          <h3 className="mt-1 text-xl font-semibold" id="interactions-heading">
+          <p className="text-xs font-semibold tracking-[0.16em] text-cyan-100/80 uppercase">The moments in between</p>
+          <h3 className="mt-1 text-xl font-semibold text-cyan-50" id="interactions-heading">
             Interactions
           </h3>
           <p className="mt-1 text-sm leading-5 text-blue-100/65">

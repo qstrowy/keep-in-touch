@@ -353,20 +353,20 @@ export default function AnchorBriefing({ ownerId, personId, refreshToken = 0 }: 
 
   return (
     <section
-      className="rounded-3xl border border-purple-100/15 bg-gradient-to-br from-purple-400/[0.09] via-slate-950/35 to-blue-500/[0.06] p-5 shadow-xl shadow-purple-950/20 sm:p-6"
+      className="rounded-3xl border border-t-2 border-purple-100/25 border-t-purple-200/50 bg-gradient-to-br from-purple-300/[0.13] via-slate-950/35 to-blue-500/[0.06] p-5 shadow-xl shadow-purple-950/20 sm:p-6"
       aria-labelledby="core-topics-heading"
     >
       <div className="flex flex-col gap-5">
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3 rounded-2xl border border-purple-100/15 bg-purple-300/[0.06] p-3 sm:p-4">
           <span
             aria-hidden="true"
-            className="grid size-10 shrink-0 place-items-center rounded-2xl border border-purple-100/15 bg-purple-200/10 text-lg text-purple-100"
+            className="grid size-10 shrink-0 place-items-center rounded-2xl border border-purple-100/20 bg-purple-200/[0.15] text-lg text-purple-100"
           >
             ✦
           </span>
           <div>
-            <p className="text-xs font-semibold tracking-[0.16em] text-purple-100/65 uppercase">Conversation prep</p>
-            <h3 className="mt-1 text-xl font-semibold" id="core-topics-heading">
+            <p className="text-xs font-semibold tracking-[0.16em] text-purple-100/80 uppercase">Conversation prep</p>
+            <h3 className="mt-1 text-xl font-semibold text-purple-50" id="core-topics-heading">
               Core Topics
             </h3>
             <p className="mt-1 text-sm text-blue-100/70">

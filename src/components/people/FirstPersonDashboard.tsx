@@ -220,16 +220,16 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
   return (
     <div className={hasSavedPeople ? "grid items-start gap-5 lg:grid-cols-[17rem_minmax(0,1fr)]" : "space-y-6"}>
       {hasSavedPeople && (
-        <aside className="rounded-3xl border border-white/10 bg-slate-950/35 p-4 shadow-xl shadow-blue-950/20 backdrop-blur sm:p-5">
+        <aside className="rounded-3xl border border-t-2 border-blue-100/20 border-t-blue-200/50 bg-gradient-to-br from-blue-400/[0.08] via-slate-950/35 to-slate-950/35 p-4 shadow-xl shadow-blue-950/20 backdrop-blur sm:p-5">
           <section aria-labelledby="people-list-heading">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-blue-100/15 bg-blue-300/[0.06] p-3">
               <div>
-                <p className="text-xs font-semibold tracking-[0.18em] text-blue-200/65 uppercase">Your circle</p>
-                <h2 className="mt-1 text-lg font-semibold" id="people-list-heading">
+                <p className="text-xs font-semibold tracking-[0.18em] text-blue-200/80 uppercase">Your circle</p>
+                <h2 className="mt-1 text-lg font-semibold text-blue-50" id="people-list-heading">
                   People
                 </h2>
               </div>
-              <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-blue-100/70">
+              <span className="rounded-full border border-blue-100/20 bg-blue-300/[0.08] px-2.5 py-1 text-xs text-blue-50/80">
                 {people.length}
               </span>
             </div>
@@ -369,7 +369,10 @@ function PersonForm({
           <p className="text-xs font-semibold tracking-[0.2em] text-purple-200/80 uppercase">
             A little context goes a long way
           </p>
-          <h2 id="workflow-intro-heading" className="mt-3 max-w-lg text-2xl leading-tight font-semibold sm:mt-4 sm:text-4xl">
+          <h2
+            id="workflow-intro-heading"
+            className="mt-3 max-w-lg text-2xl leading-tight font-semibold sm:mt-4 sm:text-4xl"
+          >
             Stay close to the people who matter.
           </h2>
           <p className="mt-3 max-w-xl text-sm leading-6 text-blue-100/70 sm:mt-4 sm:text-base">
@@ -413,7 +416,9 @@ function PersonForm({
                 03
               </span>
               <span>
-                <span className="block text-xs leading-4 font-semibold text-white sm:text-sm">Prepare to reconnect</span>
+                <span className="block text-xs leading-4 font-semibold text-white sm:text-sm">
+                  Prepare to reconnect
+                </span>
                 <span className="mt-1 hidden text-sm leading-5 text-blue-100/65 xl:block">
                   Generate Core Topics when you are ready.
                 </span>
@@ -597,9 +602,9 @@ function PersonSummary({
     <div className="space-y-5">
       <section
         aria-labelledby="saved-person-heading"
-        className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-slate-950/35 to-blue-500/[0.05] p-5 shadow-xl shadow-blue-950/20 backdrop-blur sm:p-6"
+        className="rounded-3xl border border-t-2 border-blue-100/20 border-t-blue-200/50 bg-gradient-to-br from-blue-300/[0.1] via-slate-950/35 to-blue-500/[0.06] p-5 shadow-xl shadow-blue-950/20 backdrop-blur sm:p-6"
       >
-        <header className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+        <header className="flex flex-col gap-5 rounded-2xl border border-blue-100/15 bg-blue-300/[0.055] p-3 sm:flex-row sm:items-start sm:justify-between sm:p-4">
           <div className="flex min-w-0 items-start gap-4">
             <span
               aria-hidden="true"
@@ -608,7 +613,7 @@ function PersonSummary({
               {person.displayName.slice(0, 1).toUpperCase()}
             </span>
             <div className="min-w-0">
-              <p className="text-xs font-semibold tracking-[0.18em] text-blue-200/70 uppercase">
+              <p className="text-xs font-semibold tracking-[0.18em] text-blue-200/85 uppercase">
                 Your relationship memory
               </p>
               <h2 className="mt-1 truncate text-3xl font-semibold" id="saved-person-heading">
