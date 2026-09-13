@@ -1,7 +1,7 @@
 ---
 change_id: dashboard-color-coding
 title: Differentiate dashboard sections with existing accent colors
-status: implementing
+status: implemented
 created: 2026-09-13
 updated: 2026-09-13
 archived_at: null

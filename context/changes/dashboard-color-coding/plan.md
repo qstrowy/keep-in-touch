@@ -127,13 +127,13 @@ None. Existing records, user flows, and stored data are unchanged.
 
 #### Automated
 
-- [x] 1.1 Astro/TypeScript validation passes
-- [x] 1.2 Lint passes
-- [x] 1.3 Unit and integration tests pass
-- [x] 1.4 Production build succeeds
+- [x] 1.1 Astro/TypeScript validation passes — 5f9526e
+- [x] 1.2 Lint passes — 5f9526e
+- [x] 1.3 Unit and integration tests pass — 5f9526e
+- [x] 1.4 Production build succeeds — 5f9526e
 
 #### Manual
 
-- [x] 1.5 Desktop/mobile color distinction and layout review passes
-- [x] 1.6 State, contrast, focus, and existing behavior review passes
-- [x] 1.7 First-run step markers remain visually unchanged
+- [x] 1.5 Desktop/mobile color distinction and layout review passes — 5f9526e
+- [x] 1.6 State, contrast, focus, and existing behavior review passes — 5f9526e
+- [x] 1.7 First-run step markers remain visually unchanged — 5f9526e
