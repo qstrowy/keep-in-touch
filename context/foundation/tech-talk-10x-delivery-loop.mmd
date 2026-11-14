@@ -1,0 +1,18 @@
+flowchart TD
+  item["One user outcome or risk"] --> change["Change identity: change.md"]
+  change --> explore["Frame or research when needed"]
+  explore --> plan["10x-plan: plan.md and plan-brief.md"]
+  plan --> review["Optional 10x-plan-review"]
+  review --> execution["Execute eligible phase: implement, tdd, or e2e"]
+  execution --> automated{"Automated checks pass?"}
+  automated -->|No| execution
+  automated -->|Yes| manual["Human acceptance where required"]
+  manual --> recorded["Record evidence, commit, and Progress"]
+  recorded --> remaining{"More planned phases?"}
+  remaining -->|Yes| execution
+  remaining -->|No| implreview["Optional 10x-impl-review"]
+  implreview --> followup{"Fix or replan needed?"}
+  followup -->|Yes| plan
+  followup -->|No| archive["10x-archive: retain history and update roadmap"]
+  archive --> next["Select the next outcome or risk"]
+  next --> item

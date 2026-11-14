@@ -1,0 +1,9 @@
+flowchart LR
+  intent["Describe the user problem"] --> probe["Ask a focused question"]
+  probe --> choices["Expose ambiguity and alternatives"]
+  choices --> explain["Explain consequences in business terms"]
+  explain --> human["Human confirms a choice or asks for clarification"]
+  human --> record["Record decision and rationale"]
+  record --> challenge{"Assumptions or gaps to revisit?"}
+  challenge -->|Yes| probe
+  challenge -->|No| next["Pass agreed artifact to the next step"]

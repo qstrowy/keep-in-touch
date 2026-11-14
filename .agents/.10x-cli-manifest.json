@@ -2,8 +2,8 @@
   "package": "@przeprogramowani/10x-cli",
   "version": "1.20.0",
   "manifestVersion": 3,
-  "lastApplied": "2026-09-12T21:57:25.618Z",
-  "lessonId": "m3l4",
+  "lastApplied": "2026-09-14T08:04:59.309Z",
+  "lessonId": "m1l2",
   "course": "10xdevs3",
   "tool": "codex",
   "files": {
@@ -57,11 +57,21 @@
       "10x-stack-assess": {
         "files": [
           "references/agent-friendly-criteria.md",
-          "SKILL.md"
+          "SKILL.md",
+          "references/decision-flow.md",
+          "references/eval-cases.md",
+          "references/handoff-schema.md",
+          "references/residual-interview.md",
+          "references/starter-registry.yaml"
         ],
         "contentHashes": {
           "references/agent-friendly-criteria.md": "04e0cd99f1e64dd6dffe37a68844ddd8efb593057584afbe0fed308724eb0cad",
-          "SKILL.md": "07562667c85ca96fd87025527874b83b722687eb5d7177a4bd8236481ed656bd"
+          "SKILL.md": "07562667c85ca96fd87025527874b83b722687eb5d7177a4bd8236481ed656bd",
+          "references/decision-flow.md": "8f88998ae05601eb52d8d7038af4310a7b558d8c14ac091668e148b06de4fffd",
+          "references/eval-cases.md": "1bd474bd52bfb7a7efd5fa9a4f50f31f1a123f6acd6d0b5f2e9fd310b32fb920",
+          "references/handoff-schema.md": "157c5b8546b32c115b4e4ad05e29546bc6adda2a3739e30148bf391c9de167b2",
+          "references/residual-interview.md": "6b2b3f2b5975745e7c68e26748e7c2aaf4300de00e415f7c712fb8fac0272d95",
+          "references/starter-registry.yaml": "b31c10153c403b4c34b18a06c4665cfcde062ec148114630ccb17d2bd8afe6dc"
         }
       },
       "10x-bootstrapper": {
@@ -261,7 +271,8 @@
       "m1l5-3-extend-prerequisites.md": "d7e20964986be981a46b63346e3623b2f03deff8970dfbc4d60b89d657788e80",
       "m1l5-4-store-plan.md": "adcc1fc02f2943618fc3c190323b1eef44039727632117acaf4791175dc09c44",
       "m3l2-ad-hoc-testing.md": "6a4509b6b90d3ea9229d19dbec77aea0c6812d0d706144006f9465e195f5387f"
-    }
+    },
+    "configHashes": {}
   },
   "lessons": {
     "m1l1": {
@@ -285,11 +296,10 @@
         }
       },
       "prompts": [],
-      "configs": [],
-      "catalogContentHash": "5f20c9fd41c8fa03d49d389f0bfd6a5a44fe08778583d1a14ae2cb7d21e5b468"
+      "configs": []
     },
     "m1l2": {
-      "appliedAt": "2026-08-21T08:49:17.498Z",
+      "appliedAt": "2026-09-14T08:04:59.309Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -321,14 +331,25 @@
         "10x-stack-assess": {
           "files": [
             "references/agent-friendly-criteria.md",
-            "SKILL.md"
+            "SKILL.md",
+            "references/decision-flow.md",
+            "references/eval-cases.md",
+            "references/handoff-schema.md",
+            "references/residual-interview.md",
+            "references/starter-registry.yaml"
           ]
         }
       },
       "prompts": [
         "skill-explainer.md"
       ],
-      "configs": []
+      "configs": [],
+      "representation": {
+        "lang": "en",
+        "tool": "codex",
+        "courseRules": true,
+        "rules": true
+      }
     },
     "m1l3": {
       "appliedAt": "2026-08-21T08:49:20.104Z",
@@ -1893,5 +1914,11 @@
       ],
       "configs": []
     }
+  },
+  "managedRules": {
+    "path": "AGENTS.md",
+    "begin": "<!-- BEGIN @przeprogramowani/10x-cli -->",
+    "end": "<!-- END @przeprogramowani/10x-cli -->",
+    "upstreamHash": "d9ae3ea082b82227b235b70901591f32a93c8927c8ccdea631b83f3cc552cf3d"
   }
 }

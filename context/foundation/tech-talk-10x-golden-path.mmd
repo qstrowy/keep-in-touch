@@ -1,0 +1,24 @@
+flowchart TD
+  idea["Idea or meaningful product change"] --> init["Prepare context folders with 10x-init if needed"]
+  init --> shape["10x-shape: question and challenge assumptions"]
+  shape --> notes["shape-notes.md"]
+  notes --> prd["10x-prd: structure agreed product requirements"]
+  prd --> spec["prd.md"]
+  spec --> mode{"New or existing project?"}
+  mode -->|New| select["10x-tech-stack-selector"]
+  select --> stack["tech-stack.md"]
+  stack --> boot["10x-bootstrapper"]
+  boot --> base["Codebase and baseline evidence"]
+  mode -->|Existing| assess["10x-stack-assess"]
+  assess --> assessment["stack-assessment.md"]
+  assessment --> health["10x-health-check"]
+  health --> base
+  spec --> roadmap["10x-roadmap: choose milestone and usable slices"]
+  base --> roadmap
+  base -.-> support["As needed: project rules and infrastructure decision"]
+  support -.-> roadmap
+  roadmap --> slices["roadmap.md"]
+  slices --> loop["Repeat the feature delivery loop"]
+  loop --> release["Verify and release through the chosen deployment plan"]
+  release --> feedback["Observe and decide what to change next"]
+  feedback --> roadmap

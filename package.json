@@ -9,6 +9,8 @@
     "astro": "astro",
     "test": "vitest run",
     "e2e": "node scripts/e2e.mjs",
+    "demo": "node scripts/presentation.mjs",
+    "demo:verify": "playwright test --config playwright.presentation.config.ts",
     "typecheck": "astro check",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

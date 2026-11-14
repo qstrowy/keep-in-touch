@@ -33,3 +33,6 @@ supabase/.temp/
 
 # local instruction backups
 AGENTold.md
+
+# Local presentation browser, screenshots, and test artifacts
+.presentation-demo/
