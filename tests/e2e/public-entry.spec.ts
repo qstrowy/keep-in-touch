@@ -3,10 +3,10 @@ import { expect, test } from "@playwright/test";
 test("lets a signed-out visitor start the email sign-in journey", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "KeepInTouch", exact: true })).toBeVisible();
-  await expect(page.getByText("A private place for the people you want to keep in touch with.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "The little things are the big things.", exact: true })).toBeVisible();
+  await expect(page.getByText(/You remember the person\./)).toBeVisible();
 
-  await page.getByRole("link", { name: "Sign in with email" }).click();
+  await page.getByRole("link", { name: "Start remembering", exact: true }).first().click();
   await expect(page).toHaveURL(/\/auth\/signin$/);
   await expect(page.getByRole("heading", { name: "Sign in", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "KeepInTouch", exact: true })).toBeVisible();

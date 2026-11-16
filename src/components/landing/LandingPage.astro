@@ -1,0 +1,178 @@
+---
+import Brand from "@/components/landing/Brand.astro";
+import CoffeeCups from "@/components/landing/CoffeeCups.astro";
+
+const { user } = Astro.locals;
+---
+
+<a class="kit-skip" href="#main">Skip to content</a>
+<header class="kit-header kit-wrap" id="top">
+  <Brand />
+  <nav aria-label="Main navigation">
+    <a class="kit-nav-process" href="#how-it-works">How it works</a>
+    <a href={user ? "/dashboard" : "/auth/signin"} class="kit-nav-login">
+      {user ? "Your people" : "Sign in"}<span aria-hidden="true">↗</span>
+    </a>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="kit-hero kit-wrap" aria-labelledby="hero-title" data-hero>
+    <p class="kit-eyebrow kit-hero-eyebrow">FOR THE PEOPLE IN YOUR LIFE</p>
+    <h1 id="hero-title">The little things<br />are the <em>big things.</em></h1>
+    <p class="kit-hero-copy">You remember the person.<br />Keep a little space for the details.</p>
+    <div class="kit-hero-actions">
+      <a class="kit-button" href="/auth/signin">Start remembering <span aria-hidden="true">↗</span></a>
+      <a class="kit-text-link" href="#how-it-works">See how it works <span aria-hidden="true">↓</span></a>
+    </div>
+
+    <div class="kit-hero-note kit-note-interview" aria-hidden="true">
+      <span class="kit-note-label">a little thing to remember</span>
+      <p>Her big interview.<br /><em>Next Thursday.</em></p>
+      <svg class="kit-note-underline" width="155" height="12" viewBox="0 0 155 12" fill="none"
+        ><path d="M3 8c40-7 85-8 147-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg
+      >
+    </div>
+    <div class="kit-hero-note kit-note-dog" aria-hidden="true">
+      <svg width="50" height="44" viewBox="0 0 60 50" fill="none"
+        ><path
+          d="M12 32c-4-8 0-20 10-20h12l5-7 9 5v13l-9 4v12m-27-7v9m8-9v9m-8-17L5 19m16 3h16"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path><circle cx="44" cy="15" r="1.8" fill="currentColor"></circle></svg
+      >
+      <p>The new puppy<br />is called <em>Olive.</em></p>
+    </div>
+    <div class="kit-hero-stamp" aria-hidden="true">little things<br /><span>matter.</span></div>
+    <div class="kit-hero-friends">
+      <img
+        src="/landing/friends-v1.webp"
+        alt="Original illustration of two friends catching up over coffee, with a little dog beside them."
+        width="1200"
+        height="800"
+        fetchpriority="high"
+      />
+    </div>
+    <div class="kit-hero-bottom">
+      <p>A thoughtful place for what matters<br />between conversations.</p>
+      <span class="kit-illustration-label">A little scene, imagined.</span>
+      <a href="#how-it-works" class="kit-scroll-cue" aria-label="Discover how KeepInTouch works">↓</a>
+    </div>
+  </section>
+
+  <section class="kit-sequence" id="how-it-works" aria-labelledby="sequence-title" data-memory-sequence>
+    <div class="kit-memory-sticky kit-wrap">
+      <div class="kit-sequence-copy">
+        <p class="kit-eyebrow">THOUGHT OF IT. WROTE IT DOWN. REMEMBERED.</p>
+        <h2 id="sequence-title">A little note.<br /><em>A lot to<br class="kit-desktop-break" /> come back to.</em></h2>
+        <p>The name. The plan. The thing they were excited about. Give those details somewhere to land.</p>
+        <p class="kit-sequence-invitation"><span aria-hidden="true">↓</span> Watch the pieces come together.</p>
+      </div>
+      <div
+        class="kit-memory-board"
+        role="img"
+        aria-label="Illustrative sequence: notes about Maya's interview, her dog Olive, and a first half-marathon come together as context for the next conversation."
+      >
+        <div class="kit-memory-note kit-memory-one" aria-hidden="true">
+          <span class="kit-note-label">after coffee with Maya</span>
+          <p>Big interview<br /><em>on Thursday.</em></p>
+          <span class="kit-note-small">She's excited. And a little nervous.</span>
+        </div>
+        <div class="kit-memory-note kit-memory-two" aria-hidden="true">
+          <span class="kit-note-label">also, important</span>
+          <p>The puppy's<br />name is <em>Olive.</em></p>
+          <span class="kit-note-small">Currently eating every sock.</span>
+        </div>
+        <div class="kit-memory-note kit-memory-three" aria-hidden="true">
+          <span class="kit-note-label">something she's looking forward to</span>
+          <p>First half-marathon.<br /><em>One run at a time.</em></p>
+        </div>
+        <div class="kit-context-sheet" aria-hidden="true">
+          <span class="kit-context-kicker">BEFORE YOUR NEXT COFFEE</span>
+          <span class="kit-context-name">Maya<span>↗</span></span>
+          <div class="kit-context-rule"></div>
+          <p>“How did<br />Thursday go?”</p>
+          <span class="kit-context-foot">A small detail.<br />A place to pick things up.</span>
+        </div>
+        <span class="kit-fiction-label">Fictional notes, to illustrate the idea.</span>
+      </div>
+    </div>
+  </section>
+  <section class="kit-method kit-wrap" aria-labelledby="method-title">
+    <div class="kit-method-heading">
+      <p class="kit-eyebrow">A LITTLE SPACE FOR YOUR PEOPLE</p>
+      <h2 id="method-title">A small habit.<br /><em>More to pick up on.</em></h2>
+      <p>
+        KeepInTouch is a private relationship memory aid. A place for the little things you want to remember, ready when
+        you come back.
+      </p>
+    </div>
+    <ol class="kit-method-steps">
+      <li>
+        <span class="kit-step-number">01<span aria-hidden="true">↗</span></span>
+        <h3>Start with a person.</h3>
+        <p>A friend, a sibling, a colleague. Someone whose world you want to make a little room for.</p>
+      </li>
+      <li>
+        <span class="kit-step-number">02<span aria-hidden="true">✎</span></span>
+        <h3>Catch a little moment.</h3>
+        <p>A quick note after coffee. Something they mentioned on a call. It doesn't have to be beautifully written.</p>
+      </li>
+      <li>
+        <span class="kit-step-number">03<span aria-hidden="true">↩</span></span>
+        <h3>Come back with context.</h3>
+        <p>
+          Revisit your notes before you reconnect. When you choose, generate Core Topics with questions to help you find
+          a place to start.
+        </p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="kit-privacy kit-wrap" id="your-space" aria-labelledby="privacy-title">
+    <div class="kit-privacy-heading">
+      <p class="kit-eyebrow">YOUR NOTES. YOUR CHOICE.</p>
+      <h2 id="privacy-title">Personal,<br /><em>by design.</em></h2>
+      <svg width="130" height="40" viewBox="0 0 130 40" fill="none" aria-hidden="true"
+        ><path
+          d="M4 24c31-19 76-22 117-8m-15-12 17 12-19 10"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path></svg
+      >
+    </div>
+    <div class="kit-privacy-copy">
+      <h3>A little control goes a long way.</h3>
+      <p>
+        Your people and notes are stored in this browser. They aren't synced across devices, so use a browser and device
+        you trust.
+      </p>
+      <p>
+        Core Topics are generated only when you ask. That action sends note text and topics you've excluded for external
+        processing. Your notes may contain personal information; you choose what to include.
+      </p>
+      <span class="kit-privacy-foot">Saving a note doesn't start generation.</span>
+    </div>
+  </section>
+
+  <section class="kit-finale kit-wrap" aria-labelledby="finale-title">
+    <CoffeeCups />
+    <p class="kit-eyebrow">THERE'S ALWAYS SOMETHING TO COME BACK TO</p>
+    <h2 id="finale-title">Pick up where<br /><em>you left off.</em></h2>
+    <p>Make a little space for the people in your life.</p>
+    <a class="kit-button" href="/auth/signin">Start remembering <span aria-hidden="true">↗</span></a>
+    <span class="kit-finale-note">One person. One little note. A place to start.</span>
+  </section>
+</main>
+
+<footer class="kit-footer kit-wrap">
+  <Brand />
+  <p>For the little things that bring us closer.</p>
+  <nav aria-label="Footer"><a href="#your-space">Your space</a><a href="#top">Back to top ↑</a></nav>
+</footer>
+
+<script>
+  import "@/lib/landing-motion";
+</script>

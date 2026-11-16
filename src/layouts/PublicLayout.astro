@@ -1,0 +1,18 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import "@/styles/landing.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "KeepInTouch — Remember the little things",
+  description = "A thoughtful place to remember what matters between conversations. Capture a moment, keep the context, and pick up where you left off.",
+} = Astro.props;
+---
+
+<Layout title={title} description={description}>
+  <div class="kit-public"><slot /></div>
+</Layout>

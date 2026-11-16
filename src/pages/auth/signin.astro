@@ -1,35 +1,35 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import PublicLayout from "@/layouts/PublicLayout.astro";
+import Brand from "@/components/landing/Brand.astro";
 import MagicLinkForm from "@/components/auth/MagicLinkForm";
 
 const error = Astro.url.searchParams.get("error");
 ---
 
-<Layout title="Sign in | KeepInTouch">
-  <main class="bg-cosmic flex min-h-screen items-center justify-center p-4">
-    <section
-      aria-labelledby="signin-title"
-      class="w-full max-w-sm rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl"
-    >
-      <a
-        href="/"
-        class="mb-6 block text-center text-sm font-semibold tracking-wide text-purple-200 hover:text-purple-100"
-      >
-        KeepInTouch
-      </a>
-      <h1
-        id="signin-title"
-        class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
-      >
-        Sign in
-      </h1>
-      <p class="mb-6 text-center text-sm text-blue-100/70">
-        Enter your email and we’ll send you a secure sign-in link.
-      </p>
-      <MagicLinkForm serverError={error} client:load />
-      <p class="mt-4 text-center text-sm text-blue-100/60">
-        New here? Your first sign-in link creates your private account.
-      </p>
+<PublicLayout title="Sign in | KeepInTouch">
+  <header class="kit-header kit-wrap">
+    <Brand /><a class="kit-text-link" href="/">Back to the little things <span aria-hidden="true">↗</span></a>
+  </header>
+  <main class="kit-auth-layout kit-wrap">
+    <div class="kit-auth-story">
+      <p class="kit-eyebrow">A LITTLE SPACE FOR YOUR PEOPLE</p>
+      <h2>Good to see<br /><em>you here.</em></h2>
+      <p>The next conversation starts with<br />a little something you remembered.</p>
+      <img
+        src="/landing/friends-v1.webp"
+        alt="Two illustrated friends catching up over coffee."
+        width="1200"
+        height="800"
+      />
+    </div>
+    <section aria-labelledby="signin-title" class="kit-auth-sheet">
+      <span class="kit-auth-corner" aria-hidden="true">hello again ↗</span>
+      <h1 id="signin-title" class="kit-auth-title">Sign in</h1>
+      <p class="kit-auth-intro">Enter your email and we’ll send you a secure sign-in link. No password to remember.</p>
+      <div class="kit-auth-form"><MagicLinkForm serverError={error} client:load /></div>
+      <p class="kit-auth-footnote">New here? Your first sign-in link creates your private account.</p>
+      <a class="kit-auth-privacy-link" href="/#your-space">A note about your notes <span aria-hidden="true">↗</span></a>
     </section>
   </main>
-</Layout>
+  <footer class="kit-auth-footer kit-wrap">For the little things that bring us closer.</footer>
+</PublicLayout>
