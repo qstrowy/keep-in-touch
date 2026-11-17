@@ -101,3 +101,7 @@ Opening and resolved frames are saved for review alongside the source. They show
 ![Opening note field](evidence/opening.jpg)
 
 ![Resolved conversation](evidence/resolved.jpg)
+
+## Off-screen approach study
+
+`motion-study-approach.fragment.html` explores a looser, varied note field and separate man, woman/dog, and table layers entering from beyond the left, right, and bottom edges while the scene scales down. It is a scrubber-driven concept, not a production scroll implementation. The three assets in `assets/` are AI-generated approximations, not exact cutouts of the approved illustration. The original artwork fades in at the end to restore the approved final composition; clean matching transparent cutouts would be needed to refine the transition. Checked opening, mid-approach and final views in the browser, including 320px width.
