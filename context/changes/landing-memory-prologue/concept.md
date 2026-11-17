@@ -2,6 +2,8 @@
 
 Status: concept proposal and motion study only. No application routes, styles, authentication, or current artwork have been changed.
 
+Current revision: [Camera pull-back revision](depth-revision.md). It supersedes the rough three-mask entrances below with an intact-image depth study, a denser note field, and a smaller seamless reading area. The original proposal and study remain here for comparison.
+
 ## Protected baseline
 
 - Approved design: `codex/keepintouch-landing`, pushed to `origin` through `597fc9e`.
