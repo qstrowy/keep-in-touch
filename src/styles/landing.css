@@ -1216,3 +1216,197 @@
     font-size: 14px;
   }
 }
+/* The opening resolves to a complete static scene when scripts or motion are unavailable. */
+.kit-prologue {
+  position: relative;
+  --prologue-progress: 1;
+}
+.kit-prologue-stage {
+  position: relative;
+  height: min(760px, calc(100svh - 110px));
+  min-height: 560px;
+  overflow: hidden;
+  background: var(--kit-paper);
+  isolation: isolate;
+}
+.kit-prologue-notes {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.kit-prologue-note {
+  position: absolute;
+  width: 125px;
+  min-height: 90px;
+  padding: 12px 13px;
+  background: var(--note-fill);
+  box-shadow: 1px 3px 8px #29251f0b;
+  transform-origin: center;
+}
+.kit-prologue-note span {
+  display: block;
+  margin-bottom: 8px;
+  color: #625a4e;
+  font-size: 11px;
+  line-height: 1.2;
+}
+.kit-prologue-note p {
+  font:
+    11px/1.25 Georgia,
+    serif;
+}
+.kit-prologue-note.is-featured p {
+  font-size: 18px;
+}
+.kit-prologue-note:not(:nth-child(-n + 4)) {
+  opacity: 0;
+}
+.kit-prologue-note:nth-child(1) {
+  left: 4%;
+  top: 32%;
+  transform: rotate(-12deg);
+}
+.kit-prologue-note:nth-child(2) {
+  right: 4%;
+  top: 33%;
+  transform: rotate(11deg);
+}
+.kit-prologue-note:nth-child(3) {
+  left: 3%;
+  top: 72%;
+  transform: rotate(9deg);
+}
+.kit-prologue-note:nth-child(4) {
+  right: 4%;
+  top: 74%;
+  transform: rotate(7deg);
+}
+.kit-prologue-well {
+  position: absolute;
+  z-index: 2;
+  width: min(490px, 92%);
+  height: 230px;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #f6f2e8 0%, #f6f2e8 43%, #f6f2e8d1 64%, #f6f2e84d 83%, #f6f2e800 100%);
+  filter: blur(12px);
+  pointer-events: none;
+  opacity: 0;
+}
+.kit-public .kit-prologue h1,
+.kit-prologue-opening {
+  position: absolute;
+  z-index: 5;
+  top: 45px;
+  left: 15%;
+  width: 70%;
+  margin: 0;
+  text-align: center;
+  pointer-events: none;
+}
+.kit-public .kit-prologue h1,
+.kit-prologue-opening p {
+  font:
+    400 clamp(42px, 5.5vw, 76px)/1.02 Georgia,
+    serif;
+  letter-spacing: -2.6px;
+  text-shadow: 0 0 9px var(--kit-paper);
+}
+.kit-prologue-opening {
+  opacity: 0;
+}
+.kit-prologue-opening span {
+  display: block;
+  margin-top: 13px;
+  font-size: 15px;
+}
+.kit-prologue-action {
+  position: absolute;
+  z-index: 8;
+  top: 250px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.kit-prologue-action:hover {
+  transform: translateX(-50%) translateY(-2px);
+}
+.kit-prologue-art {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.kit-prologue-art img {
+  position: absolute;
+  width: min(430px, 73%);
+  height: auto;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+}
+.kit-prologue-art [data-layer="man"],
+.kit-prologue-art [data-layer="woman"],
+.kit-prologue-art [data-layer="table"] {
+  opacity: 0;
+}
+.kit-prologue-art [data-layer="original"] {
+  z-index: 2;
+}
+.kit-prologue-art [data-layer="table"] {
+  z-index: 3;
+}
+.kit-prologue.is-animated {
+  height: 200svh;
+}
+.kit-prologue.is-animated .kit-prologue-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+}
+@media (max-width: 700px) {
+  .kit-prologue-stage {
+    height: calc(100svh - 83px);
+    min-height: 500px;
+  }
+  .kit-public .kit-prologue h1,
+  .kit-prologue-opening {
+    top: 50px;
+    left: 8%;
+    width: 84%;
+  }
+  .kit-public .kit-prologue h1,
+  .kit-prologue-opening p {
+    font-size: clamp(35px, 8vw, 50px);
+    letter-spacing: -1.8px;
+  }
+  .kit-prologue-opening span {
+    font-size: 12px;
+  }
+  .kit-prologue-action {
+    top: 170px;
+  }
+  .kit-prologue-note {
+    width: 100px;
+    padding: 10px;
+    min-height: 82px;
+  }
+  .kit-prologue-note.is-featured p {
+    font-size: 14px;
+  }
+  .kit-prologue-art img {
+    width: min(430px, 102%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kit-prologue.is-animated {
+    height: auto;
+  }
+  .kit-prologue.is-animated .kit-prologue-stage {
+    position: relative;
+    height: calc(100svh - 83px);
+  }
+}

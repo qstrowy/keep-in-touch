@@ -1,6 +1,6 @@
 # A field of memories becomes a conversation
 
-Status: concept proposal and motion study only. No application routes, styles, authentication, or current artwork have been changed.
+Status: implemented on the experimental branch; the original design is preserved on its separate branch. The historical proposal and studies below record the design exploration.
 
 Current revision: [Camera pull-back revision](depth-revision.md). It supersedes the rough three-mask entrances below with an intact-image depth study, a denser note field, and a smaller seamless reading area. The original proposal and study remain here for comparison.
 
@@ -8,7 +8,7 @@ Current revision: [Camera pull-back revision](depth-revision.md). It supersedes 
 
 - Approved design: `codex/keepintouch-landing`, pushed to `origin` through `597fc9e`.
 - The implementation is commit `526bf59`; the separate startup-guidance commit is `597fc9e`.
-- This exploration lives on `codex/landing-memory-prologue`, branched from that saved baseline. Do not merge or replace the approved design as part of the concept review.
+- This exploration lives on `codex/landing-memory-prologue`, branched from that saved baseline. The original design remains available on this branch while the selected direction is promoted to main.
 
 ## User request
 
@@ -105,3 +105,7 @@ Opening and resolved frames are saved for review alongside the source. They show
 ## Off-screen approach study
 
 `motion-study-approach.fragment.html` explores a looser, varied note field and separate man, woman/dog, and table layers entering from beyond the left, right, and bottom edges while the scene scales down. It is a scrubber-driven concept, not a production scroll implementation. The three assets in `assets/` are AI-generated approximations, not exact cutouts of the approved illustration. The original artwork fades in at the end to restore the approved final composition; clean matching transparent cutouts would be needed to refine the transition. Checked opening, mid-approach and final views in the browser, including 320px width.
+
+## Implemented opening
+
+The selected study is now implemented in the landing page: four notes remain, the scene layers enter with a linear pull-back, and the table stays in front. Reduced motion and script-free rendering show the completed scene. The separated illustration assets remain generated approximations; the original image is used for the final composition. The earlier design remains on `codex/keepintouch-landing`.

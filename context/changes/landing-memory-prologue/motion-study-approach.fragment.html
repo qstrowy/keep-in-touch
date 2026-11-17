@@ -78,11 +78,11 @@
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
       const saved = window.openai && window.openai.widgetState;
       const initial = saved && (saved.privateContent || saved.modelContent || saved);
-      const state = { departure: "Soft dissolve", survivors: 3, cameraZoom: 3.1 };
-      if (initial && initial.revision === "camera-approach-v3" && ["Blur and drift", "Drift away", "Soft dissolve"].includes(initial.departure)) state.departure = initial.departure;
-      if (initial && initial.revision === "camera-approach-v3" && Number.isFinite(initial.survivors)) state.survivors = Math.max(0, Math.min(6, initial.survivors));
-      if (initial && initial.revision === "camera-approach-v3" && Number.isFinite(initial.cameraZoom)) state.cameraZoom = Math.max(2,Math.min(4.5,initial.cameraZoom));
-      let progress = reduce.matches ? 1 : initial && initial.revision === "camera-approach-v3" && Number.isFinite(initial.progress) ? Math.max(0, Math.min(1, initial.progress)) : 0;
+      const state = { departure: "Soft dissolve", survivors: 4, cameraZoom: 3.1 };
+      if (initial && initial.revision === "camera-approach-v4" && ["Blur and drift", "Drift away", "Soft dissolve"].includes(initial.departure)) state.departure = initial.departure;
+      if (initial && initial.revision === "camera-approach-v4" && Number.isFinite(initial.survivors)) state.survivors = Math.max(0, Math.min(6, initial.survivors));
+      if (initial && initial.revision === "camera-approach-v4" && Number.isFinite(initial.cameraZoom)) state.cameraZoom = Math.max(2,Math.min(4.5,initial.cameraZoom));
+      let progress = reduce.matches ? 1 : initial && initial.revision === "camera-approach-v4" && Number.isFinite(initial.progress) ? Math.max(0, Math.min(1, initial.progress)) : 0;
       let frame = 0;
       let playing = false;
       let priorPhase = "";
@@ -136,7 +136,7 @@
       function clamp(value) { return Math.max(0,Math.min(1,value)); }
       function smooth(start,end,value) { const t = clamp((value-start)/(end-start)); return t*t*(3-2*t); }
       function save() {
-        if (window.openai && window.openai.setWidgetState) window.openai.setWidgetState({modelContent:{revision:"camera-approach-v3",progress:progress,departure:state.departure,survivors:state.survivors,cameraZoom:state.cameraZoom},privateContent:{revision:"camera-approach-v3",progress:progress,departure:state.departure,survivors:state.survivors,cameraZoom:state.cameraZoom}}).catch(function () {});
+        if (window.openai && window.openai.setWidgetState) window.openai.setWidgetState({modelContent:{revision:"camera-approach-v4",progress:progress,departure:state.departure,survivors:state.survivors,cameraZoom:state.cameraZoom},privateContent:{revision:"camera-approach-v4",progress:progress,departure:state.departure,survivors:state.survivors,cameraZoom:state.cameraZoom}}).catch(function () {});
       }
       function render(value) {
         progress = clamp(value);
@@ -144,7 +144,7 @@
         const height = stage.clientHeight;
         const narrow = width < 560;
         const loss = smooth(.06,.7,progress);
-        const pullback = smooth(.18,.87,progress);
+        const pullback = clamp((progress-.04)/.78);
         const title = smooth(.66,.86,progress);
         const artWidth = Math.min(430,width * (narrow ? 1.02 : .73));
         const artHeight = artWidth * 2 / 3;
@@ -152,7 +152,6 @@
         const y = height-artHeight-20;
         const closeScale = narrow ? 1+(state.cameraZoom-1)*.55 : state.cameraZoom;
         const scale = 1+(closeScale-1)*(1-pullback);
-        const z = 900*(1-1/scale);
         stage.dataset.departure=state.departure;
         stage.dataset.cameraScale=scale.toFixed(3);
         camera.style.perspectiveOrigin="50% "+(narrow?"65%":"55%");
@@ -160,21 +159,23 @@
         art.style.height=artHeight+"px";
         art.style.left=x+"px";
         art.style.top=y+"px";
-        art.style.transform="translate3d(0,0,"+z+"px)";
+        art.style.transform="scale("+scale+")";
+        art.style.zIndex="2";
         const blend=smooth(.88,.98,progress);
         art.style.opacity=String(blend);
         const entries=[
-          [man,-1,0,smooth(.04,.62,progress),1.04],
-          [woman,1,0,smooth(.08,.66,progress),.98],
-          [table,0,1,smooth(.12,.7,progress),.91]
+          [man,-1,0,pullback,0],
+          [woman,1,0,pullback,1],
+          [table,0,1,pullback,3]
         ];
         entries.forEach(function(entry){
-          const element=entry[0], horizontal=entry[1], vertical=entry[2], arrival=entry[3], depth=entry[4];
-          const dx=horizontal*((width+artWidth*scale)/2+60)*(1-arrival)/scale;
-          const dy=vertical*((height+artHeight*scale)/2+60)*(1-arrival)/scale;
+          const element=entry[0], horizontal=entry[1], vertical=entry[2], arrival=entry[3], layer=entry[4];
+          const dx=horizontal*((width+artWidth*closeScale)/2+60)*(1-arrival);
+          const dy=vertical*(height-y+artHeight*(closeScale-1)/2+60)*(1-arrival);
           element.style.width=artWidth+"px";element.style.height=artHeight+"px";
           element.style.left=x+"px";element.style.top=y+"px";
-          element.style.transform="translate3d("+dx+"px,"+dy+"px,"+(z*depth)+"px)";
+          element.style.transform="translate("+dx+"px,"+dy+"px) scale("+scale+")";
+          element.style.zIndex=String(layer);
           element.style.opacity=String(1-blend);
         });
         opening.style.opacity=String(1-smooth(.28,.44,progress));
@@ -183,8 +184,8 @@
         well.style.opacity=String(1-smooth(.32,.64,progress));
         resolved.style.transform="translateY(" + ((1-title)*14) + "px)";
         const fieldHeight=field.clientHeight;
-        const featuredPositions=[[5,22],[79,24],[3,63],[80,66],[23,79],[69,82]];
-        const extraPositions=[[38,56],[57,65],[48,82],[32,43]];
+        const featuredPositions=[[14,39],[79,24],[3,63],[79,54],[37,69],[69,82]];
+        const extraPositions=[[38,56],[51,48],[48,82],[32,43]];
         const finalPositions=[[.04,.32],[.79,.33],[.025,.72],[.8,.74],[.16,.85],[.7,.86]];
         elements.forEach(function (item) {
           const keep = item.index < state.survivors;
@@ -198,7 +199,7 @@
           const cardH=item.index<6?90:70;
           const direction = baseX < width/2 ? -1 : 1;
           const drift = state.departure === "Soft dissolve" ? 12 : (narrow ? 75 : 145);
-          const finalW=narrow?104:138;
+          const finalW=item.index===1?cardW:(narrow?104:138);
           const finalX=keep?Math.min(width-finalW-8,Math.max(8,width*finalPositions[item.index][0])):baseX;
           const finalY=keep?fieldHeight*finalPositions[item.index][1]:baseY;
           const dx = keep ? (finalX-baseX)*loss : loss * drift * direction * item.depth;
@@ -236,7 +237,7 @@
       window.addEventListener("openai:set_globals",function(event){
         const snapshot=event.detail&&event.detail.globals&&event.detail.globals.widgetState;
         const restored=snapshot&&(snapshot.privateContent||snapshot.modelContent||snapshot);
-        if(!restored||restored.revision!=="camera-approach-v3")return;
+        if(!restored||restored.revision!=="camera-approach-v4")return;
         stop();
         if(["Blur and drift","Drift away","Soft dissolve"].includes(restored.departure))state.departure=restored.departure;
         if(Number.isFinite(restored.survivors))state.survivors=Math.max(0,Math.min(6,restored.survivors));

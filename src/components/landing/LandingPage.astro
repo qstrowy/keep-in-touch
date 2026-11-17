@@ -1,6 +1,7 @@
 ---
 import Brand from "@/components/landing/Brand.astro";
 import CoffeeCups from "@/components/landing/CoffeeCups.astro";
+import MemoryPrologue from "@/components/landing/MemoryPrologue.astro";
 
 const { user } = Astro.locals;
 ---
@@ -17,49 +18,7 @@ const { user } = Astro.locals;
 </header>
 
 <main id="main">
-  <section class="kit-hero kit-wrap" aria-labelledby="hero-title" data-hero>
-    <p class="kit-eyebrow kit-hero-eyebrow">FOR THE PEOPLE IN YOUR LIFE</p>
-    <h1 id="hero-title">The little things<br />are the <em>big things.</em></h1>
-    <p class="kit-hero-copy">You remember the person.<br />Keep a little space for the details.</p>
-    <div class="kit-hero-actions">
-      <a class="kit-button" href="/auth/signin">Start remembering <span aria-hidden="true">↗</span></a>
-      <a class="kit-text-link" href="#how-it-works">See how it works <span aria-hidden="true">↓</span></a>
-    </div>
-
-    <div class="kit-hero-note kit-note-interview" aria-hidden="true">
-      <span class="kit-note-label">a little thing to remember</span>
-      <p>Her big interview.<br /><em>Next Thursday.</em></p>
-      <svg class="kit-note-underline" width="155" height="12" viewBox="0 0 155 12" fill="none"
-        ><path d="M3 8c40-7 85-8 147-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg
-      >
-    </div>
-    <div class="kit-hero-note kit-note-dog" aria-hidden="true">
-      <svg width="50" height="44" viewBox="0 0 60 50" fill="none"
-        ><path
-          d="M12 32c-4-8 0-20 10-20h12l5-7 9 5v13l-9 4v12m-27-7v9m8-9v9m-8-17L5 19m16 3h16"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"></path><circle cx="44" cy="15" r="1.8" fill="currentColor"></circle></svg
-      >
-      <p>The new puppy<br />is called <em>Olive.</em></p>
-    </div>
-    <div class="kit-hero-stamp" aria-hidden="true">little things<br /><span>matter.</span></div>
-    <div class="kit-hero-friends">
-      <img
-        src="/landing/friends-v1.webp"
-        alt="Original illustration of two friends catching up over coffee, with a little dog beside them."
-        width="1200"
-        height="800"
-        fetchpriority="high"
-      />
-    </div>
-    <div class="kit-hero-bottom">
-      <p>A thoughtful place for what matters<br />between conversations.</p>
-      <span class="kit-illustration-label">A little scene, imagined.</span>
-      <a href="#how-it-works" class="kit-scroll-cue" aria-label="Discover how KeepInTouch works">↓</a>
-    </div>
-  </section>
+  <MemoryPrologue />
 
   <section class="kit-sequence" id="how-it-works" aria-labelledby="sequence-title" data-memory-sequence>
     <div class="kit-memory-sticky kit-wrap">

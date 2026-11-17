@@ -1,0 +1,73 @@
+---
+const notes = [
+  ["a little thing to remember", "Her big interview. Next Thursday."],
+  ["also, important", "The puppy is called Olive."],
+  ["his usual order", "Tea. No sugar."],
+  ["next time you talk", "Ask how the move went."],
+  ["one run at a time", "His first half-marathon."],
+  ["something new", "Finally learning Italian."],
+  ["after the call", "A garden on the balcony."],
+  ["a shared moment", "That little cafe by the park."],
+  ["remember this", "The book she couldn't put down."],
+  ["a small plan", "Sunday lunch with his dad."],
+  ["a little thing", "The new flat has blue doors."],
+  ["next coffee", "Ask about the painting class."],
+  ["something he said", "A train trip in the spring."],
+  ["last conversation", "Trying to grow tomatoes."],
+  ["a birthday idea", "She loves second-hand books."],
+  ["one little note", "The climbing course starts soon."],
+  ["next time", "Ask about the new team."],
+  ["small detail", "The dog hates the rain."],
+  ["over coffee", "A new recipe for Sunday."],
+  ["a little plan", "Learning to play the piano."],
+  ["a thing to ask", "How was the first rehearsal?"],
+  ["after lunch", "His sister is visiting soon."],
+  ["remember", "They found a quiet beach."],
+  ["last week", "A small woodworking project."],
+  ["for next time", "Ask about the tomato plants."],
+  ["a familiar detail", "Always the window seat."],
+  ["something to keep", "That story about the train."],
+  ["another little thing", "A very ambitious jigsaw."],
+  ["when you reconnect", "The first day at the new job."],
+  ["worth remembering", "Coffee after the morning walk."],
+  ["a small victory", "The garden is finally growing."],
+  ["after that call", "The little red bicycle."],
+  ["next time", "Ask about the music lessons."],
+  ["one detail", "A favourite Sunday ritual."],
+];
+const fills = ["#eedb96", "#dcd3e7", "#dce1cf", "#e6b7a1", "#eee5cc"];
+---
+
+<section class="kit-prologue" data-prologue aria-labelledby="hero-title">
+  <div class="kit-prologue-stage" data-prologue-stage>
+    <div class="kit-prologue-notes" aria-hidden="true">
+      {
+        notes.map((note, index) => (
+          <div
+            class:list={["kit-prologue-note", { "is-featured": index < 6 }]}
+            data-note={index}
+            style={`--note-fill:${fills[(index * 7 + Math.floor(index / 4) * 3) % fills.length]}`}
+          >
+            <>
+              <span>{note[0]}</span>
+              <p>{note[1]}</p>
+            </>
+          </div>
+        ))
+      }
+    </div>
+    <div class="kit-prologue-well" aria-hidden="true"></div>
+    <div class="kit-prologue-opening" aria-hidden="true">
+      <p>You remember<br />the person.</p><span>What was that little thing?</span>
+    </div>
+    <h1 id="hero-title">The little things<br />are the <em>big things.</em></h1>
+    <a class="kit-button kit-prologue-action" href="/auth/signin">Start remembering <span aria-hidden="true">↗</span></a
+    >
+    <div class="kit-prologue-art" role="img" aria-label="Two friends catching up over coffee, with a dog beside them.">
+      <img data-layer="man" src="/landing/man-candidate.webp" width="1200" height="800" alt="" />
+      <img data-layer="woman" src="/landing/woman-candidate.webp" width="1200" height="800" alt="" />
+      <img data-layer="original" src="/landing/friends-v1.webp" width="1200" height="800" alt="" fetchpriority="high" />
+      <img data-layer="table" src="/landing/table-candidate.webp" width="1200" height="800" alt="" />
+    </div>
+  </div>
+</section>
