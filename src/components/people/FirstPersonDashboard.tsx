@@ -11,6 +11,7 @@ import {
   validatePersonInput,
 } from "@/lib/people/person";
 import { createRelationshipVault } from "@/lib/relationship-data/local-vault";
+import { seedDemoData } from "@/lib/demo-data";
 import InteractionPanel from "@/components/interactions/InteractionPanel";
 import AnchorBriefing from "@/components/anchors/AnchorBriefing";
 import type { Interaction } from "@/lib/interactions/interaction";
@@ -173,6 +174,25 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
     }
   }
 
+  async function handleLoadDemoData() {
+    setScreenState("saving");
+    setStorageError(null);
+
+    try {
+      await seedDemoData(ownerId);
+      const vault = createRelationshipVault(ownerId);
+      const records = await vault.listByCollection(PEOPLE_COLLECTION);
+      const savedPeople = records.map(personFromRecord).filter((person): person is Person => person !== null);
+
+      setPeople(savedPeople);
+      setSelectedPersonId(savedPeople[0]?.id ?? null);
+      setScreenState(savedPeople.length > 0 ? "summary" : "form");
+    } catch {
+      setStorageError("We could not load the sample people into this browser. Please try again.");
+      setScreenState("form");
+    }
+  }
+
   async function handleDelete() {
     if (!selectedPerson) {
       return;
@@ -311,6 +331,7 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
             formMode={formMode}
             hasSavedPeople={hasSavedPeople}
             isSaving={isSaving}
+            onLoadDemoData={handleLoadDemoData}
             onCancel={cancelForm}
             onSubmit={handleSubmit}
             onUpdate={updateForm}
@@ -328,6 +349,7 @@ interface PersonFormProps {
   formMode: FormMode;
   hasSavedPeople: boolean;
   isSaving: boolean;
+  onLoadDemoData: () => Promise<void>;
   onCancel: () => void;
   onSubmit: (event: SyntheticEvent<HTMLFormElement>) => Promise<void>;
   onUpdate: <Field extends keyof PersonFormInput>(field: Field, value: PersonFormInput[Field]) => void;
@@ -340,6 +362,7 @@ function PersonForm({
   formMode,
   hasSavedPeople,
   isSaving,
+  onLoadDemoData,
   onCancel,
   onSubmit,
   onUpdate,
@@ -426,6 +449,22 @@ function PersonForm({
               </span>
             </li>
           </ol>
+          <div className="mt-6 border-t border-white/10 pt-5">
+            <button
+              className="kit-demo-seed"
+              disabled={isSaving}
+              onClick={() => {
+                void onLoadDemoData();
+              }}
+              type="button"
+            >
+              {isSaving ? "Adding sample people…" : "Load sample people"}
+              {!isSaving && <span aria-hidden="true">↗</span>}
+            </button>
+            <p className="mt-2 text-xs leading-5 text-blue-100/70">
+              Six fictional people and 13 conversation notes, saved only in this browser.
+            </p>
+          </div>
         </section>
       )}
 

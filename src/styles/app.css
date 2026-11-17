@@ -52,7 +52,10 @@
   background: transparent;
   font: inherit;
   font-size: 14px;
-  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
 }
 
 .kit-app-signout:hover {
@@ -169,13 +172,44 @@
 
 .kit-app .kit-person-row[aria-pressed="true"] {
   border-color: rgb(41 37 31 / 42%) !important;
-  box-shadow: inset 0 0 0 1px rgb(41 37 31 / 12%), 0 8px 18px rgb(67 52 35 / 10%);
+  box-shadow:
+    inset 0 0 0 1px rgb(41 37 31 / 12%),
+    0 8px 18px rgb(67 52 35 / 10%);
 }
 
 .kit-app .kit-circle-label {
   color: #514738 !important;
   background-color: rgb(255 253 247 / 72%) !important;
   font-weight: 600;
+}
+
+.kit-app .kit-demo-seed {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgb(166 63 41 / 40%);
+  border-radius: 5px;
+  padding: 10px 14px;
+  color: var(--kit-rust);
+  background: rgb(255 253 247 / 75%);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.kit-app .kit-demo-seed:hover:not(:disabled) {
+  border-color: var(--kit-rust);
+  color: #fffaf0;
+  background: var(--kit-rust);
+}
+
+.kit-app .kit-demo-seed:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }
 
 .kit-app [class*="text-white"],
