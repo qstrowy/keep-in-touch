@@ -39,35 +39,49 @@ const fills = ["#eedb96", "#dcd3e7", "#dce1cf", "#e6b7a1", "#eee5cc"];
 ---
 
 <section class="kit-prologue" data-prologue aria-labelledby="hero-title">
-  <div class="kit-prologue-stage" data-prologue-stage>
-    <div class="kit-prologue-notes" aria-hidden="true">
-      {
-        notes.map((note, index) => (
-          <div
-            class:list={["kit-prologue-note", { "is-featured": index < 6 }]}
-            data-note={index}
-            style={`--note-fill:${fills[(index * 7 + Math.floor(index / 4) * 3) % fills.length]}`}
-          >
-            <>
-              <span>{note[0]}</span>
-              <p>{note[1]}</p>
-            </>
-          </div>
-        ))
-      }
-    </div>
-    <div class="kit-prologue-well" aria-hidden="true"></div>
-    <div class="kit-prologue-opening" aria-hidden="true">
-      <p>You remember<br />the person.</p><span>What was that little thing?</span>
-    </div>
-    <h1 id="hero-title">The little things<br />are the <em>big things.</em></h1>
-    <a class="kit-button kit-prologue-action" href="/auth/signin">Start remembering <span aria-hidden="true">↗</span></a
-    >
-    <div class="kit-prologue-art" role="img" aria-label="Two friends catching up over coffee, with a dog beside them.">
-      <img data-layer="man" src="/landing/man-candidate.webp" width="1200" height="800" alt="" />
-      <img data-layer="woman" src="/landing/woman-candidate.webp" width="1200" height="800" alt="" />
-      <img data-layer="original" src="/landing/friends-v1.webp" width="1200" height="800" alt="" fetchpriority="high" />
-      <img data-layer="table" src="/landing/table-candidate.webp" width="1200" height="800" alt="" />
+  <div class="kit-prologue-stage">
+    <div class="kit-prologue-composition" data-prologue-stage>
+      <div class="kit-prologue-notes" aria-hidden="true">
+        {
+          notes.map((note, index) => (
+            <div
+              class:list={["kit-prologue-note", { "is-featured": index < 6 }]}
+              data-note={index}
+              style={`--note-fill:${fills[(index * 7 + Math.floor(index / 4) * 3) % fills.length]}`}
+            >
+              <>
+                <span>{note[0]}</span>
+                <p>{note[1]}</p>
+              </>
+            </div>
+          ))
+        }
+      </div>
+      <div class="kit-prologue-well" aria-hidden="true"></div>
+      <div class="kit-prologue-opening" aria-hidden="true">
+        <p>You remember<br />the person.</p><span>What was that little thing?</span>
+      </div>
+      <h1 id="hero-title">The little things<br />are the <em>big things.</em></h1>
+      <a class="kit-button kit-prologue-action" href="/auth/signin"
+        >Start remembering <span aria-hidden="true">↗</span></a
+      >
+      <div
+        class="kit-prologue-art"
+        role="img"
+        aria-label="Two friends catching up over coffee, with a dog beside them."
+      >
+        <img data-layer="man" src="/landing/man-candidate.webp" width="1200" height="800" alt="" />
+        <img data-layer="woman" src="/landing/woman-candidate.webp" width="1200" height="800" alt="" />
+        <img
+          data-layer="original"
+          src="/landing/friends-v1.webp"
+          width="1200"
+          height="800"
+          alt=""
+          fetchpriority="high"
+        />
+        <img data-layer="table" src="/landing/table-candidate.webp" width="1200" height="800" alt="" />
+      </div>
     </div>
   </div>
 </section>

@@ -61,3 +61,70 @@ test("shows the completed scene immediately for reduced motion", async ({ page }
   await expect(page.locator("#hero-title")).toHaveCSS("opacity", "1");
   await expect(page.locator("[data-prologue]")).not.toHaveClass(/is-animated/);
 });
+
+test("keeps the opening composition proportionate on a 4K display", async ({ page }) => {
+  await page.setViewportSize({ width: 3840, height: 2160 });
+  await page.goto("/");
+  const composition = page.locator("[data-prologue-stage]");
+  const prologue = page.locator("[data-prologue]");
+  const olive = page.locator('[data-note="1"]');
+  const noteBefore = await olive.evaluate((element) => getComputedStyle(element).width);
+  const opening = await composition.boundingBox();
+  if (!opening) throw new Error("Composition is missing");
+  expect(opening.width).toBeGreaterThan(2500);
+  expect(opening.width).toBeLessThanOrEqual(3840);
+  const man = await page.locator('[data-layer="man"]').boundingBox();
+  const woman = await page.locator('[data-layer="woman"]').boundingBox();
+  if (!man || !woman) throw new Error("Entrance layers are missing");
+  expect(man.x + man.width).toBeLessThan(0);
+  expect(woman.x).toBeGreaterThan(3840);
+  const notes = await page.locator("[data-note]").evaluateAll((elements) =>
+    elements.map((element) => {
+      const bounds = element.getBoundingClientRect();
+      return { left: bounds.left, right: bounds.right };
+    }),
+  );
+  for (const note of notes) {
+    expect(note.left).toBeGreaterThanOrEqual(0);
+    expect(note.right).toBeLessThanOrEqual(3840);
+  }
+  await prologue.evaluate((element) => {
+    window.scrollTo(
+      0,
+      element.getBoundingClientRect().top + window.scrollY + element.clientHeight - window.innerHeight,
+    );
+  });
+  await expect(page.locator('[data-layer="original"]')).toHaveCSS("opacity", "1");
+  await expect(olive).toHaveCSS("width", noteBefore);
+  const scene = await page.locator('[data-layer="original"]').boundingBox();
+  if (!scene) throw new Error("Scene is missing");
+  expect(scene.width).toBeGreaterThan(800);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(3840);
+});
+
+test("keeps the complete scene visible with reduced motion at 4K", async ({ page }) => {
+  await page.setViewportSize({ width: 3840, height: 2160 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const stage = await page.locator(".kit-prologue-stage").boundingBox();
+  const scene = await page.locator('[data-layer="original"]').boundingBox();
+  if (!stage || !scene) throw new Error("Scene is missing");
+  expect(scene.y + scene.height).toBeLessThanOrEqual(stage.y + stage.height);
+  await expect(page.locator('[data-layer="original"]')).toHaveCSS("opacity", "1");
+});
+
+test("keeps the scene solid while the final illustration fades in", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("[data-prologue]").evaluate((element) => {
+    const travel = element.clientHeight - window.innerHeight;
+    window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY + travel * 0.93);
+  });
+  const original = page.locator('[data-layer="original"]');
+  await expect
+    .poll(async () => Number(await original.evaluate((element) => getComputedStyle(element).opacity)))
+    .toBeGreaterThan(0);
+  await expect(page.locator('[data-layer="man"]')).toHaveCSS("opacity", "1");
+  await expect(page.locator('[data-layer="woman"]')).toHaveCSS("opacity", "1");
+  await expect(page.locator('[data-layer="table"]')).toHaveCSS("opacity", "1");
+  await expect(original).toHaveCSS("z-index", "4");
+});

@@ -15,13 +15,16 @@ function updateComposition() {
     const animate = !reducedMotion.matches;
     hero.classList.toggle("is-animated", animate);
     const bounds = hero.getBoundingClientRect();
-    const progress = animate ? clamp(-bounds.top / Math.max(1, bounds.height - stage.clientHeight)) : 1;
+    const progress = animate ? clamp(-bounds.top / Math.max(1, bounds.height - window.innerHeight)) : 1;
+    const compositionScale = Math.max(1, Math.min(window.innerWidth / 1500, window.innerHeight / 1000, 2));
+    stage.style.transform = `translateX(-50%) scale(${compositionScale})`;
     const width = stage.clientWidth;
     const height = stage.clientHeight;
     const narrow = width < 700;
+    const noteScale = narrow ? 1 : 1.2;
     const loss = smooth(0.06, 0.7, progress);
     const pullback = clamp((progress - 0.04) / 0.78);
-    const artWidth = Math.min(430, width * (narrow ? 1.02 : 0.73));
+    const artWidth = Math.min(narrow ? 430 : 520, width * (narrow ? 1.02 : 0.73), height * 0.7);
     const artHeight = (artWidth * 2) / 3;
     const x = (width - artWidth) / 2;
     const y = height - artHeight - 20;
@@ -31,14 +34,17 @@ function updateComposition() {
     const layers = [
       { name: "man", x: -1, y: 0, z: 0 },
       { name: "woman", x: 1, y: 0, z: 1 },
-      { name: "original", x: 0, y: 0, z: 2 },
+      { name: "original", x: 0, y: 0, z: 4 },
       { name: "table", x: 0, y: 1, z: 3 },
     ];
     for (const layer of layers) {
       const element = stage.querySelector<HTMLElement>(`[data-layer="${layer.name}"]`);
       if (!element) continue;
-      const dx = layer.x * ((width + artWidth * closeScale) / 2 + 60) * (1 - pullback);
-      const dy = layer.y * (height - y + (artHeight * (closeScale - 1)) / 2 + 60) * (1 - pullback);
+      const dx = layer.x * ((window.innerWidth / compositionScale + artWidth * closeScale) / 2 + 60) * (1 - pullback);
+      const dy =
+        layer.y *
+        (Math.max(height, window.innerHeight / compositionScale) - y + (artHeight * (closeScale - 1)) / 2 + 60) *
+        (1 - pullback);
       Object.assign(element.style, {
         width: `${artWidth}px`,
         height: `${artHeight}px`,
@@ -46,7 +52,7 @@ function updateComposition() {
         top: `${y}px`,
         bottom: "auto",
         transform: `translate(${dx}px, ${dy}px) scale(${scale})`,
-        opacity: String(layer.name === "original" ? blend : 1 - blend),
+        opacity: String(layer.name === "original" ? blend : blend < 1 ? 1 : 0),
         zIndex: String(layer.z),
       });
     }
@@ -71,10 +77,10 @@ function updateComposition() {
       [32, 43],
     ];
     const final = [
-      [0.04, 0.32],
-      [0.79, 0.33],
-      [0.025, 0.72],
-      [0.8, 0.74],
+      [0.17, 0.39],
+      [0.69, 0.38],
+      [0.14, 0.66],
+      [0.7, 0.65],
     ];
     stage.querySelectorAll<HTMLElement>("[data-note]").forEach((element, index) => {
       const keep = index < 4;
@@ -90,11 +96,11 @@ function updateComposition() {
           : index >= 30
             ? extra[index - 30][1]
             : Math.floor(index / 6) * 19 + ((index * 7) % 15) - 9;
-      const baseX = (width * px) / 100;
+      const cardWidth = (index < 6 ? (narrow ? 100 : 125) : (narrow ? 74 : 96) + (index % 4) * 7) * noteScale;
+      const baseX = Math.max(20, Math.min(width - cardWidth - 20, (width * px) / 100));
       const baseY = (height * py) / 100;
-      const cardWidth = index < 6 ? (narrow ? 100 : 125) : (narrow ? 74 : 96) + (index % 4) * 7;
-      const finalWidth = index === 1 ? cardWidth : narrow ? 104 : 138;
-      const finalX = keep ? Math.min(width - finalWidth - 8, Math.max(8, width * final[index][0])) : baseX;
+      const finalWidth = index === 1 ? cardWidth : (narrow ? 104 : 138) * noteScale;
+      const finalX = keep ? Math.min(width - finalWidth - 20, Math.max(20, width * final[index][0])) : baseX;
       const finalY = keep ? height * final[index][1] : baseY;
       const depth = 0.65 + (index % 5) * 0.16;
       const dx = keep ? (finalX - baseX) * loss : loss * 12 * (baseX < width / 2 ? -1 : 1) * depth;
@@ -105,7 +111,7 @@ function updateComposition() {
         top: `${baseY}px`,
         right: "auto",
         width: `${keep ? cardWidth + (finalWidth - cardWidth) * loss : cardWidth}px`,
-        minHeight: `${keep ? 90 * (1 - loss) + 92 * loss : index < 6 ? 90 : 70}px`,
+        minHeight: `${(keep ? 90 * (1 - loss) + 92 * loss : index < 6 ? 90 : 70) * noteScale}px`,
         transform: `translate(${dx}px, ${dy}px) rotate(${angle * (1 - loss * 0.35)}deg) scale(${1 - loss * (keep ? 0 : 0.12)})`,
         opacity: String(keep ? 1 - loss * (narrow ? 0.38 : 0.16) : (1 - loss) * (index < 6 ? 1 : 0.82)),
         filter: `blur(${index < 6 ? 0 : index % 3 === 0 ? 1 : 0.2}px)`,

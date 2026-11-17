@@ -1229,6 +1229,16 @@
   background: var(--kit-paper);
   isolation: isolate;
 }
+.kit-prologue-composition {
+  position: absolute;
+  width: min(100%, 1500px);
+  height: min(100%, 760px);
+  top: clamp(0px, (100% - 760px) / 2, 100px);
+  left: 50%;
+  transform: translateX(-50%);
+  transform-origin: top center;
+  isolation: isolate;
+}
 .kit-prologue-notes {
   position: absolute;
   inset: 0;
@@ -1342,7 +1352,7 @@
 }
 .kit-prologue-art img {
   position: absolute;
-  width: min(430px, 73%);
+  width: min(520px, 73%);
   height: auto;
   left: 50%;
   bottom: 20px;
@@ -1354,7 +1364,8 @@
   opacity: 0;
 }
 .kit-prologue-art [data-layer="original"] {
-  z-index: 2;
+  z-index: 4;
+  background: var(--kit-paper);
 }
 .kit-prologue-art [data-layer="table"] {
   z-index: 3;
@@ -1408,5 +1419,26 @@
   .kit-prologue.is-animated .kit-prologue-stage {
     position: relative;
     height: calc(100svh - 83px);
+  }
+}
+@media (min-width: 1500px) and (min-height: 1000px) {
+  .kit-prologue-stage {
+    height: min(calc(100svh - 110px), 1800px);
+  }
+}
+
+@media (min-width: 701px) {
+  .kit-prologue-note {
+    padding: 14.4px 15.6px;
+  }
+  .kit-prologue-note span {
+    font-size: 13.2px;
+    margin-bottom: 9.6px;
+  }
+  .kit-prologue-note p {
+    font-size: 13.2px;
+  }
+  .kit-prologue-note.is-featured p {
+    font-size: 21.6px;
   }
 }
