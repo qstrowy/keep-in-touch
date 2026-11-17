@@ -16,6 +16,14 @@ KeepInTouch is an Astro 7 application using React, strict TypeScript, Tailwind C
 - `npx astro sync`: refresh generated Astro types after configuration changes.
 - `npx supabase start` / `npx supabase stop`: manage the optional local Supabase stack.
 
+## Starting the Application
+
+- Before starting a server, run `npx astro dev status` and check its reported URL. Reuse a healthy server when its mode matches the request.
+- Start one server, then wait for its startup result and poll the intended page for a successful HTTP response before opening the browser. Astro can run in the background automatically; a quiet terminal or a slow first request is not a reason to launch another instance.
+- If startup fails, inspect `npx astro dev logs` or `.astro/dev.log` before retrying. In this Windows environment, Cloudflare can encounter sandbox `EPERM` errors writing Wrangler logs or `EACCES` errors connecting to loopback. Use the approved permission escalation flow when these errors require it; repeating the same sandboxed command will not resolve them.
+- Check the requested browser's authentication capabilities before choosing a demo workflow. The existing synthetic session requires `KEEP_IN_TOUCH_E2E=1` and the `x-keep-in-touch-e2e-owner` request header (`owner-a` or `owner-b`). `npm run demo` opens a separate Edge profile; it does not sign in the built-in browser. Clearly identify synthetic demo access to the user.
+- After opening the page, verify the rendered application is ready before reporting success. Reuse the same tab while waiting or recovering from a load failure.
+
 ## Coding Style & Naming Conventions
 
 Use strict TypeScript and the `@/*` alias for imports from `src/`. Prettier enforces two-space indentation, semicolons, double quotes, trailing commas, and a 120-character line width. Name React and Astro components in `PascalCase`, functions and variables in `camelCase`, and route files in lowercase. Prefer Astro for server-rendered markup and React only where client interaction is needed. Never bypass type or lint errors without documenting why.
