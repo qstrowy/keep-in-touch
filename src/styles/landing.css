@@ -1358,14 +1358,21 @@
   bottom: 20px;
   transform: translateX(-50%);
 }
+.kit-prologue-still {
+  position: absolute;
+  z-index: 0;
+  width: min(520px, 73%);
+  height: auto;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  background: var(--kit-paper);
+  pointer-events: none;
+}
 .kit-prologue-art [data-layer="man"],
 .kit-prologue-art [data-layer="woman"],
 .kit-prologue-art [data-layer="table"] {
   opacity: 0;
-}
-.kit-prologue-art [data-layer="original"] {
-  z-index: 4;
-  background: var(--kit-paper);
 }
 .kit-prologue-art [data-layer="table"] {
   z-index: 3;

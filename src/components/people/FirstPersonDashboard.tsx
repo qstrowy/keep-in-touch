@@ -249,7 +249,8 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
                 <li key={person.id}>
                   <button
                     aria-pressed={person.id === selectedPersonId && screenState === "summary"}
-                    className="flex w-full items-center gap-3 rounded-2xl border border-transparent px-3 py-3 text-left transition-colors hover:border-white/10 hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60 aria-pressed:border-blue-200/30 aria-pressed:bg-gradient-to-r aria-pressed:from-blue-300/15 aria-pressed:to-purple-300/10"
+                    className="kit-person-row flex w-full items-center gap-3 rounded-2xl border border-transparent px-3 py-3 text-left transition-colors hover:border-white/10 hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60 aria-pressed:border-blue-200/30 aria-pressed:bg-gradient-to-r aria-pressed:from-blue-300/15 aria-pressed:to-purple-300/10"
+                    data-circle={person.relationshipCircle}
                     disabled={isInteractionLocked}
                     onClick={() => {
                       selectPerson(person.id);
@@ -264,7 +265,7 @@ export default function FirstPersonDashboard({ ownerId }: FirstPersonDashboardPr
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-semibold text-white">{person.displayName}</span>
-                      <span className="mt-0.5 block text-xs text-blue-100/60">
+                      <span className="kit-circle-label mt-1 inline-flex rounded-full px-2 py-0.5 text-xs">
                         {formatCircle(person.relationshipCircle)}
                       </span>
                     </span>

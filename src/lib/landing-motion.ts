@@ -34,7 +34,7 @@ function updateComposition() {
     const layers = [
       { name: "man", x: -1, y: 0, z: 0 },
       { name: "woman", x: 1, y: 0, z: 1 },
-      { name: "original", x: 0, y: 0, z: 4 },
+      { name: "original", x: 0, y: 0, z: 0 },
       { name: "table", x: 0, y: 1, z: 3 },
     ];
     for (const layer of layers) {

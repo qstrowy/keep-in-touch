@@ -11,9 +11,12 @@
   min-height: 100svh;
   overflow: clip;
   color: var(--kit-ink);
-  background:
-    radial-gradient(ellipse at 50% 12%, rgb(255 255 255 / 72%), transparent 38rem),
-    var(--kit-paper);
+  background-color: var(--kit-paper);
+  background-image:
+    radial-gradient(ellipse at 4% 14%, rgb(238 219 150 / 28%), transparent 34rem),
+    radial-gradient(ellipse at 96% 36%, rgb(220 211 231 / 37%), transparent 40rem),
+    radial-gradient(ellipse at 48% 94%, rgb(230 183 161 / 20%), transparent 46rem),
+    linear-gradient(145deg, #f8f5ed, #f2eee3);
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.5;
 }
@@ -129,6 +132,50 @@
 .kit-app button[class*="bg-gradient-to-r"]:hover,
 .kit-app button[class*="bg-blue-200"]:hover {
   background-color: #87331f !important;
+}
+
+.kit-app .kit-person-row {
+  border-color: rgb(41 37 31 / 12%) !important;
+  background-image: none !important;
+  color: var(--kit-ink) !important;
+  box-shadow: 0 5px 14px rgb(67 52 35 / 5%);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.kit-app .kit-person-row[data-circle="family"] {
+  background-color: #f0dfa2 !important;
+}
+
+.kit-app .kit-person-row[data-circle="friend"] {
+  background-color: #dce8cf !important;
+}
+
+.kit-app .kit-person-row[data-circle="professional"] {
+  background-color: #f0c4ad !important;
+}
+
+.kit-app .kit-person-row[data-circle="other"] {
+  background-color: #dfd6ea !important;
+}
+
+.kit-app .kit-person-row:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 9px 20px rgb(67 52 35 / 10%);
+}
+
+.kit-app .kit-person-row[aria-pressed="true"] {
+  border-color: rgb(41 37 31 / 42%) !important;
+  box-shadow: inset 0 0 0 1px rgb(41 37 31 / 12%), 0 8px 18px rgb(67 52 35 / 10%);
+}
+
+.kit-app .kit-circle-label {
+  color: #514738 !important;
+  background-color: rgb(255 253 247 / 72%) !important;
+  font-weight: 600;
 }
 
 .kit-app [class*="text-white"],
