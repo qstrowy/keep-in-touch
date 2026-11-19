@@ -2,7 +2,7 @@
 project: KeepInTouch
 status: approved-for-s05-handoff
 created: 2026-09-09
-updated: 2026-09-09
+updated: 2026-11-19
 ---
 
 # Private extraction contract
@@ -57,21 +57,29 @@ The Core Topics slice owns the manual “Generate Core Topics” control. Each a
 
 This record is the source of truth for the provider approval gate. Do not replace these fields with secret values or real note content.
 
-| Field                     | Current record                                                                                        |
-| ------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Verification status       | `verified-deployed` on 2026-09-09                                                                     |
-| Processor account         | Product-owned OpenRouter account; account identity and region must be confirmed by the owner          |
-| OpenRouter model          | Verified: `deepseek/deepseek-v4-flash-0731`                                                           |
-| OpenRouter provider       | Verified: `deepinfra/fp8`                                                                             |
-| ZDR evidence              | Confirmed by owner on 2026-09-09; evidence reference: https://openrouter.ai/docs/guides/features/zdr  |
-| Prompt logging            | Confirmed disabled by the owner on 2026-09-09                                                         |
-| Fallback routing          | Disabled in every application request with one provider; verified by deployed synthetic success       |
-| Reasoning configuration   | Disabled with `reasoning.effort: "none"` after a 2026-09-10 synthetic pinned-route verification       |
-| Deployment environment    | Production Worker verified with explicit owner approval after preview authentication redirect blocked |
-| Worker secret location    | Cloudflare Workers Secrets for `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, and `OPENROUTER_PROVIDER`    |
-| Synthetic deployed result | Authenticated same-origin synthetic request returned HTTP 200 with a schema-valid candidate response  |
+| Field                     | Current record                                                                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Verification status       | `verified-deployed` on 2026-11-19                                                                                                          |
+| Processor account         | Product-owned OpenRouter account; account identity and region must be confirmed by the owner                                               |
+| OpenRouter model          | Verified: `deepseek/deepseek-v4-flash-0731`                                                                                                |
+| OpenRouter provider       | Verified: `wafer/us` (Wafer); replaces `deepinfra/fp8` on 2026-11-19                                                                       |
+| ZDR evidence              | Wafer route listed by https://openrouter.ai/api/v1/endpoints/zdr with `safety_retention: false` on 2026-11-19; request retains `zdr: true` |
+| Prompt logging            | Confirmed disabled by the owner on 2026-09-09                                                                                              |
+| Fallback routing          | Disabled; one pinned provider in every request, unchanged during the Wafer switch                                                          |
+| Reasoning configuration   | Disabled with `reasoning.effort: "none"` after a 2026-09-10 synthetic pinned-route verification                                            |
+| Deployment environment    | Production Worker version `7d1e613e`, deployed to 100% traffic with owner authorization on 2026-11-19                                      |
+| Worker secret location    | Cloudflare Workers Secrets for `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, and `OPENROUTER_PROVIDER`                                         |
+| Synthetic deployed result | Signed-in Chrome: fresh Marta generation returned three topics; fresh Adam generation returned two topics after the provider deployment    |
 
 This record retains only the model/provider identifiers, evidence source and date, configuration outcome, and synthetic success/failure category. It never records a key, note text, response body, cookie, or authorization material.
+
+## Provider switch verification: 2026-11-19
+
+The owner authorized switching to the tested Wafer route. The production `OPENROUTER_PROVIDER` secret was updated through Cloudflare Dashboard to `wafer/us`; the same deployed application code was retained. Cloudflare reported version `7d1e613e` at 100% Ready, replacing `2b72fb67`. Local `.dev.vars` was aligned with the new provider.
+
+The model remains `deepseek/deepseek-v4-flash-0731`. Before deployment, the existing extractor returned valid responses for fictional Marta and Adam notes through both Wafer and Nebius. The public ZDR catalog classified the tested Wafer and Nebius endpoints with `safety_retention: false`. After deployment, both fictional records regenerated successfully through the production dashboard. No credentials, note content, or provider response bodies are retained in this record.
+
+Account prompt logging and privacy controls were not changed by this switch; their last owner confirmation remains dated 2026-09-09 in the table above. No automatic retry, fallback routing, production diagnostic logging, or application code change was introduced. See `context/changes/intermittent-core-topics/verification.md` for the operational result and recovery instructions.
 
 ## Core Topics handoff checklist
 
